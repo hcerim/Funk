@@ -1,6 +1,10 @@
 # Funk
 Functional library for C# programming language.
 
+Author: [Harun Ćerim](https://cz.linkedin.com/in/haruncerim)
+
+Supervisor: [Pavel Parízek](https://d3s.mff.cuni.cz/people/pavelparizek/)
+
 **Diploma thesis topic:**
 
 The aim of this thesis is to implement a functional library for C# programming language. Some of the most common exceptions that occur during runtime of the application are System.NullReferenceException and System.InvalidCastException.
