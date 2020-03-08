@@ -1,9 +1,13 @@
 # Funk
 Functional library for C# programming language.
 
+Author: [Harun Ćerim](https://cz.linkedin.com/in/haruncerim)
+
+Supervisor: [Pavel Parízek](https://d3s.mff.cuni.cz/people/pavelparizek/)
+
 **Diploma thesis topic:**
 
-The aim of this thesis is to implement a functional library for C# programming language. Some of the most common exceptions that occur during runtime of the application are System.NullReferenceException and System.InvalidCastException.
+The aim of this thesis is to implement a functional library for C# programming language. Some of the most common exceptions that occur during runtime of the application are [**System.NullReferenceException**](https://docs.microsoft.com/en-us/dotnet/api/system.nullreferenceexception?view=netframework-4.8) and [**System.InvalidCastException**](https://docs.microsoft.com/en-us/dotnet/api/system.invalidcastexception?view=netframework-4.8).
 To solve these kinds of issues, the library will utilize many concepts from functional programming languages such as F# and Scala including immutability, pattern matching and monads by introducing stronger typing. Introducing these concepts into the language will help in avoiding bugs and boilerplate code and therefore have a code written in a declarative rather than in an imperative way. Moreover, the thesis will analyze and compare this library with existing functional libraries such as language-ext and FuncSharp. The thesis will also analyze new features of the C# 8.0 that include nullable reference types and pattern matching.
 
 **References:**
