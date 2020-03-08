@@ -1,4 +1,5 @@
-# Funk
+# Funk <img src="Files/funk.png" width="25"/> 
+
 Functional library for C# programming language.
 
 Author: [Harun Ćerim](https://cz.linkedin.com/in/haruncerim)
