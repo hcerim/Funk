@@ -1,4 +1,4 @@
-# Funk <img src="Files/vinyl.png" width="25"/> 
+<h1 style="color:#f15a24; font-family:Roboto">Funk <img src="Files/vinyl.png" width="25"/></h1>
 
 Functional library for C# programming language.
 
