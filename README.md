@@ -1,6 +1,7 @@
-<h1 style="color:#f15a24; font-family:Roboto"><b>Funk</b> <img src="Files/vinyl.png" width="25"/></h1>
 
-Functional library for C# programming language.
+<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/funk.png" width="150"/> <img src="Files/vinyl.png" width="60"/></h1>
+
+## Functional library for C# programming language.
 
 Author: [Harun Ćerim](https://cz.linkedin.com/in/haruncerim)
 
