@@ -33,6 +33,9 @@ The following specific tasks should also be performed within the scope of this t
 
 - [Abraham, I., 2018. Get Programming With F#](https://www.manning.com/books/get-programming-with-f-sharp).
 
+# Notes
+
+Notes for the project can be found [here](/Files/notes.md).
 
 # License
 
