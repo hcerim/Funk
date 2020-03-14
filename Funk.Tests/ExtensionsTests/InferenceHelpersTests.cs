@@ -8,7 +8,7 @@ namespace Funk.Tests.ExtensionsTests
     public class InferenceHelpersTests : Test
     {
         [Fact]
-        public void Check_Type_Of_Inferred_Func_With_Arity_Of_3_True()
+        public void Check_Type_Of_Inferred_Func_With_Arity_Of_3()
         {
             UnitTest(
                 () => func((int x, int y) => ""),
@@ -28,10 +28,10 @@ namespace Funk.Tests.ExtensionsTests
         }
 
         [Fact]
-        public void Check_Result_Of_Inferred_Func_With_Arity_Of_1()
+        public void Check_Result_Of_Inferred_Func_With_Arity_Of_2()
         {
             UnitTest(
-                () => func<int, string>(x => $"Funk {x}"),
+                () => func((int x) => $"Funk {x}"),
                 f => f(2),
                 r => Assert.Equal("Funk 2", r)
             );
