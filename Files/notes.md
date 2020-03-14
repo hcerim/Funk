@@ -88,21 +88,20 @@ After construction of `Person` object, the object can never change, therefore we
 In mathematics, a function is a `map` between 2 sets (`domain` and `codomain`). Given an element from its domain, a function yields an element
 from its codomain.
 
-<figure class="image">
-  <img src="function.png" width ="5000">
-  <figcaption style="text-align: center;">Figure 1 - Mathematical function is mapping between the elements of 2 sets.</figcaption>
-</figure>
+<img src="function.png" style ="display:block;margin-left:auto;margin-right:auto;width:50%;"></img>
+
+
 
 The types for the domain and codomain constitute a function’s `interface`, also
 called its type, or signature. You can think of this as a contract: a function signature declares that, given an element from the domain, it will yield an element from the codomain.
 
 In C# we have different to represetn functions:
 
-### **Methods**
+#### **Methods**
 
 Fit in the OOP world -> can be overloaded, can implement interface, etc.
 
-### **Delegates** and **Lambda Expressions**
+#### **Delegates** and **Lambda Expressions**
 
 Type-safe function pointers. Delegate and it's implementation are similar to the interface and the implementing class. It is done in a 2-step process. You first define delegate with it's signature and then you instantiate it with implementation.
 
@@ -130,12 +129,12 @@ In C#'s terminology, a `predicate` is a function that, given any input (say, an 
 
 However, sometimes it is more visible of what the function is doing by looking at the delegate rather than directly jumping into the implementation. Again, this is the same situation as in interface-class relationship.
 
-```
+```c#
 public delegate bool GreaterThanZero(int x);
 GreaterThanZero greaterThanZero = x => x > 0;
 ```
 
-### **Dictionaries**
+#### **Dictionaries**
 
 Even though they are data structures and we think of them as data, they can be considers as functions as well. More specifically, `map` functions. They contain the association of keys (elements from the domain) to values (the corresponding elements from the codomain).
 
@@ -152,7 +151,7 @@ frenchFor[true]; // function application performed by a lookup.
 Dictionaries are useful when the mappings can't be computed but stored.
 
 
-## **Higher-order functions (HOFs)**
+### **Higher-order functions (HOFs)**
 
 Functions that accept other functions as arguments, return functions or both are called HOFs.
 
@@ -168,12 +167,41 @@ The most common pattern for HOFs is used in case of a `callback` (inversion of c
 public Get(Guid id, Func<T> callback);
 ```
 
+Some functions (`adapter` functions) don't apply the specified function but rather return the new function. That new function will call the underlying function that was passed as an argument in a modified way.
+
+```c#
+Func<int, int, int> divide = (x, y) => x / y;
+var divideBy = divide.SwapArgs(); // will create a new function that calls divide function in a modified way.
+
+divide(10, 2); // 5
+divideBy(2, 10) // 5 swapped parameters. It will call underlying divide(10, 2).
+
+                                                            expression body
+                                                                  ||
+                                                                  \/
+static Func<T2, T1, R> SwapArgs<T1, T2, R>(this Func<T1, T2, R> f) => (t2, t1) => f(t1, t2);
+                                                                              /\
+                                                                              ||
+                                                                        lambda expression
+```
+They are called adapter functions as the concept comes from OOP where adapter is overriding behavior (sometimes even interface by introducing a wrapper function) of the existing function.
+
 In C# you cannot define delegates using implicitly typed local variables (`var`). Inference helpers in C# can be defined as HOFs that accept a function as an input and return the same function as the output.
 
 ```c#
-public static Func<T1, T2> function<T1, T2>(Func<T1, T2> func) => func;
-public static Action<T1> action<T1>(Action<T1> action) => action;
+public static Func<T1, T2> func<T1, T2>(Func<T1, T2> func) => func;
+public static Action<T1> act<T1>(Action<T1> action) => action;
 
-var func = function((int x) => x * 3);
-var action = action((int x) => {/* some operation */});
+var f = func((int x) => x * 3); // Func<int, int>
+var a = act((int x) => {/* some operation */}); // Action<int>
 ```
+
+Sometimes primary job of HOFs is to produce other functions (function `factories`).
+
+```c#
+Func<int, bool> isMod(int n) => i => i % n == 0; // function that creates a predicate for checking if a certain number is divisible with n.
+Range(1, 20).Where(isMod(2))
+```
+
+<img src="HoF.png" style ="display:block;margin-left:auto;margin-right:auto;width:100%;"></img>
+
