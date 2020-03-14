@@ -88,10 +88,9 @@ After construction of `Person` object, the object can never change, therefore we
 In mathematics, a function is a `map` between 2 sets (`domain` and `codomain`). Given an element from its domain, a function yields an element
 from its codomain.
 
-<figure class="image">
-  <img src="function.png" width ="5000">
-  <figcaption style="text-align: center;">Figure 1 - Mathematical function is mapping between the elements of 2 sets.</figcaption>
-</figure>
+<img src="function.png" style ="display:block;margin-left:auto;margin-right:auto;width:50%;"></img>
+
+
 
 The types for the domain and codomain constitute a function’s `interface`, also
 called its type, or signature. You can think of this as a contract: a function signature declares that, given an element from the domain, it will yield an element from the codomain.
@@ -190,9 +189,19 @@ They are called adapter functions as the concept comes from OOP where adapter is
 In C# you cannot define delegates using implicitly typed local variables (`var`). Inference helpers in C# can be defined as HOFs that accept a function as an input and return the same function as the output.
 
 ```c#
-public static Func<T1, T2> function<T1, T2>(Func<T1, T2> func) => func;
-public static Action<T1> action<T1>(Action<T1> action) => action;
+public static Func<T1, T2> func<T1, T2>(Func<T1, T2> func) => func;
+public static Action<T1> act<T1>(Action<T1> action) => action;
 
-var func = function((int x) => x * 3);
-var action = action((int x) => {/* some operation */});
+var f = func((int x) => x * 3); // Func<int, int>
+var a = act((int x) => {/* some operation */}); // Action<int>
 ```
+
+Sometimes primary job of HOFs is to produce other functions (function `factories`).
+
+```c#
+Func<int, bool> isMod(int n) => i => i % n == 0; // function that creates a predicate for checking if a certain number is divisible with n.
+Range(1, 20).Where(isMod(2))
+```
+
+<img src="HoF.png" style ="display:block;margin-left:auto;margin-right:auto;width:100%;"></img>
+
