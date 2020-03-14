@@ -8,9 +8,9 @@ Functional programming (**FP**) gives you:
 - **Safety** - Stronger typing and declarative style of writing code. This is especially beneficial when dealing with concurrency due to function purity and state immutability.
 - **Clarity** - Code is more readable and understandable. This is especially important during consumption and maintenance of the existing code.
 
-FP emphasizes functions while avoiding state mutation. Functions are first-class values. C# has functions as first-class values, e.g.
+FP emphasizes functions while avoiding state mutation (functions don't have side effects). In FP, functions are first-class values. C# has functions as first-class values, e.g.
 
-```
+```c#
 Func<int, int> triple = x => x * 3; // function as a variable
 var range = Enumerable.Range(1, 3);
 var triples = range.Select(triple); // x => x * 3 instead of triple
@@ -23,7 +23,7 @@ FP rules are when the object is created it should never change again and the var
 
 Mutation (**in-place** value change) example:
 
-```
+```c#
 int[] nums = { 1, 2, 3 };
 nums[0] = 7; // update
 
@@ -32,7 +32,7 @@ nums[0] = 7; // update
 
 Mutation (in-place update) -> sorting example:
 
-```
+```c#
 var original = new List<int> { 5, 7, 1 };
 original.Sort();
 
@@ -43,7 +43,7 @@ Pure FP languages don't allow in-place updates.
 
 Following this principle, sorting or filtering should never update existing list but create a new one without affecting the old one, e.g.
 
-```
+```c#
 Func<int, bool> isOdd = x => x % 2 == 1;
 int[] original = { 7, 6, 1 };
 var sorted = original.OrderBy(x => x);
@@ -52,7 +52,7 @@ var filtered = original.Where(isOdd);  // x => x % 2 == 1 instead of isOdd
 
 Parallel execution example:
 
-```
+```c#
 var nums = Range(-10000, 10000).Reverse().ToList();
 Action task1 = () => WriteLine(nums.Sum());
 Action task2 = () => { nums.Sort(); WriteLine(nums.Sum()); };
@@ -74,7 +74,7 @@ Usually, C# developers work with sequences (`IEnumerable`) in a right (functiona
 
 C# has get-only auto properties -> complier implicitly declares readonly backing field.
 
-```
+```c#
 public string Name { get; } // value can only be assigned in constructor.
 
 public class Person
@@ -85,3 +85,95 @@ public class Person
 
 After construction of `Person` object, the object can never change, therefore we can say it is immutable.
 
+In mathematics, a function is a `map` between 2 sets (`domain` and `codomain`). Given an element from its domain, a function yields an element
+from its codomain.
+
+<figure class="image">
+  <img src="function.png" width ="5000">
+  <figcaption style="text-align: center;">Figure 1 - Mathematical function is mapping between the elements of 2 sets.</figcaption>
+</figure>
+
+The types for the domain and codomain constitute a function’s `interface`, also
+called its type, or signature. You can think of this as a contract: a function signature declares that, given an element from the domain, it will yield an element from the codomain.
+
+In C# we have different to represetn functions:
+
+### **Methods**
+
+Fit in the OOP world -> can be overloaded, can implement interface, etc.
+
+### **Delegates** and **Lambda Expressions**
+
+Type-safe function pointers. Delegate and it's implementation are similar to the interface and the implementing class. It is done in a 2-step process. You first define delegate with it's signature and then you instantiate it with implementation.
+
+```c#
+public delegate int Comparison<in T>(T x, T y);
+
+Comparison<int> alphabetically = (l, r) => l.ToString().CompareTo(r.ToString();
+
+list.Sort(alphabetically);
+```
+
+We can see that it is similar to interface-class relationship. Interface defines the contract and class's responsibility is how to implement it. So we have a delegate that represents an interface (but it is an object) for the function object that implements it. Thanks to delegates, C# has functions as first-class values.
+
+In newer versions of the language, `Func` and `Action` types with various `arities` (number of arguments that a function accepts) are used instead of a raw delegate as it is more straight-forward and produces less code. 
+
+```c#
+Func<int, bool> greaterThanZero = x => x > 0; // e.g. predicate
+```
+
+`=>` represents a lambda expression or just `lamba` used to declare a function inline.
+
+A `closure` is the combination of the lambda expression itself along with the context in which that lambda is declared.
+
+In C#'s terminology, a `predicate` is a function that, given any input (say, an integer), tells you whether it satisfies some condition by returning bool (say, whether it’s greater than zero).
+
+However, sometimes it is more visible of what the function is doing by looking at the delegate rather than directly jumping into the implementation. Again, this is the same situation as in interface-class relationship.
+
+```
+public delegate bool GreaterThanZero(int x);
+GreaterThanZero greaterThanZero = x => x > 0;
+```
+
+### **Dictionaries**
+
+Even though they are data structures and we think of them as data, they can be considers as functions as well. More specifically, `map` functions. They contain the association of keys (elements from the domain) to values (the corresponding elements from the codomain).
+
+```c#
+var frenchFor = new Dictionary<bool, string>
+{
+    [true] = "Vrai",
+    [false] = "Faux",
+};
+
+frenchFor[true]; // function application performed by a lookup.
+```
+
+Dictionaries are useful when the mappings can't be computed but stored.
+
+
+## **Higher-order functions (HOFs)**
+
+Functions that accept other functions as arguments, return functions or both are called HOFs.
+
+They are usually used in functions that either iteratively or conditionally apply function given as an argument, e.g.
+
+```c#
+listOfStrings.Where(x => x.Contains("s")) // higher order function that accepts an IEnumerable and a predicate as an argument.
+```
+
+The most common pattern for HOFs is used in case of a `callback` (inversion of control).
+
+```c#
+public Get(Guid id, Func<T> callback);
+```
+
+In C# you cannot define delegates using implicitly typed local variables (`var`). Inference helpers in C# can be defined as HOFs that accept a function as an input and return the same function as the output.
+
+```c#
+public static Func<T1, T2> function<T1, T2>(Func<T1, T2> func) => func;
+public static Action<T1> action<T1>(Action<T1> action) => action;
+
+var func = function((int x) => x * 3);
+var action = action((int x) => {/* some operation */});
+```
