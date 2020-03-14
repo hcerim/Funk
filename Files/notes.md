@@ -176,7 +176,7 @@ var divideBy = divide.SwapArgs(); // will create a new function that calls divid
 divide(10, 2); // 5
 divideBy(2, 10) // 5 swapped parameters. It will call underlying divide(10, 2).
 
-                                                            expression body
+                                                      expression-bodied syntax
                                                                   ||
                                                                   \/
 static Func<T2, T1, R> SwapArgs<T1, T2, R>(this Func<T1, T2, R> f) => (t2, t1) => f(t1, t2);
@@ -204,4 +204,21 @@ Range(1, 20).Where(isMod(2))
 ```
 
 <img src="HoF.png" style ="display:block;margin-left:auto;margin-right:auto;width:100%;"></img>
+
+HOFs are also used as wrappers to deal with repeatable code and hide implementation detail where appropriate. By that we achieve conciseness, avoiding duplication, separation of concerns.
+
+```c#
+public static T Connect<T>(string connString, Func<IDbConnection, T> f)
+{
+    using var conn = new SqlConnection(connString);
+    conn.Open();
+    return f(conn); // what happens here is parameterized.
+}
+
+public IEnumerable<LogMessage> GetLogs() => Connect(connString, c => c.Query<LogMessage>(/* some query */)); // this method calls Connect passing a function as an argument that performs the query. It does not care about how and when the connection is opened, closed, disposed, etc.
+```
+
+Using as well can be made as a HOF. It would then be an expression rather than a statement which is useful in composition with other functions (`expressions` return a value; `statements` don’t).
+
+Drawbacks of HOFs are increased stack use (callbacks, repackaged callbacks, etc.) which can impact performance (negligible though) and a bit more complex debugging because of callbacks.
 
