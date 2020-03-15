@@ -1,9 +1,9 @@
 ﻿using System;
 using Funk.Tests.Helpers;
 using Xunit;
-using static Funk.Extensions.Operators;
+using static Funk.Operators;
 
-namespace Funk.Tests.ExtensionsTests
+namespace Funk.Tests
 {
     public class InferenceHelpersTests : Test
     {
