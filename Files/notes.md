@@ -174,7 +174,7 @@ Func<int, int, int> divide = (x, y) => x / y;
 var divideBy = divide.SwapArgs(); // will create a new function that calls divide function in a modified way.
 
 divide(10, 2); // 5
-divideBy(2, 10) // 5 swapped parameters. It will call underlying divide(10, 2).
+divideBy(2, 10) // 5 swapped arguments. It will call underlying divide(10, 2).
 
                                                       expression-bodied syntax
                                                                   ||
@@ -204,6 +204,15 @@ Range(1, 20).Where(isMod(2))
 ```
 
 <img src="HoF.png" style ="display:block;margin-left:auto;margin-right:auto;width:100%;"></img>
+
+Sometimes we need HOFs to accept functions as a arguments and return functions.
+
+```c#
+Func<Func<int, int>, Func<int, int>> twice = f => x => f(f(x)); // result of f(x) is int and is used as an argument to call f one more time.
+Func<int, int> plusFour = x => x + 4;
+
+Console.WriteLine(twice(plusFour)(7)); // twice(plusFour) is a function invoked with argument 7 that will produce 15.
+```
 
 HOFs are also used as wrappers to deal with repeatable code and hide implementation detail where appropriate. By that we achieve conciseness, avoiding duplication, separation of concerns.
 
