@@ -13,7 +13,7 @@ namespace Funk.Tests
             UnitTest(
                 () => "John Doe",
                 Record.Create,
-                r => Assert.Equal("John Doe", r.FirstItem)
+                r => Assert.Equal("John Doe", r.Item1)
             );
         }
 
@@ -25,8 +25,8 @@ namespace Funk.Tests
                 p => new Record<string, string>(p.Item1, p.Item2),
                 r =>
                 {
-                    Assert.Equal("John", r.FirstItem);
-                    Assert.Equal("Doe", r.SecondItem);
+                    Assert.Equal("John", r.Item1);
+                    Assert.Equal("Doe", r.Item2);
                 }
             );
         }
@@ -39,9 +39,9 @@ namespace Funk.Tests
                 Record.Create,
                 r =>
                 {
-                    Assert.Equal("John", r.FirstItem);
-                    Assert.Equal("Doe", r.SecondItem);
-                    Assert.Equal(30, r.ThirdItem);
+                    Assert.Equal("John", r.Item1);
+                    Assert.Equal("Doe", r.Item2);
+                    Assert.Equal(30, r.Item3);
                 }
             );
         }
@@ -54,8 +54,8 @@ namespace Funk.Tests
                 p => p.ToRecord(),
                 r =>
                 {
-                    Assert.Equal("John", r.FirstItem);
-                    Assert.Equal(30, r.SecondItem);
+                    Assert.Equal("John", r.Item1);
+                    Assert.Equal(30, r.Item2);
                 }
             );
         }
@@ -68,9 +68,9 @@ namespace Funk.Tests
                 r => r.Map((name, surname) => new Record<string, string, int>(name, surname, 30)),
                 r =>
                 {
-                    Assert.Equal("John", r.FirstItem);
-                    Assert.Equal("Doe", r.SecondItem);
-                    Assert.Equal(30, r.ThirdItem);
+                    Assert.Equal("John", r.Item1);
+                    Assert.Equal("Doe", r.Item2);
+                    Assert.Equal(30, r.Item3);
                 }
             );
         }
