@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace Funk.Extensions
+namespace Funk
 {
     public static partial class Operators
     {
