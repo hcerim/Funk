@@ -21,8 +21,8 @@ namespace Funk.Tests
         public void Create_Record_With_Two_Items_With_Constructor()
         {
             UnitTest(
-                () => ("John","Doe"),
-                p => new Record<string, string>(p.Item1, p.Item2), 
+                () => ("John", "Doe"),
+                p => new Record<string, string>(p.Item1, p.Item2),
                 r =>
                 {
                     Assert.Equal("John", r.FirstItem);
