@@ -5,7 +5,7 @@ using static Funk.Operators;
 
 namespace Funk.Tests
 {
-    public class InferenceHelpersTests : Test
+    public partial class OperatorsTests : Test
     {
         [Fact]
         public void Check_Type_Of_Inferred_Func_With_Arity_Of_3()

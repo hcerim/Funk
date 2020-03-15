@@ -33,10 +33,10 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with record item.
         /// </summary>
-        /// <param name="doer"></param>
-        public void Do(Action<T1> doer)
+        /// <param name="operation"></param>
+        public void Do(Action<T1> operation)
         {
-            doer(FirstItem);
+            operation(FirstItem);
         }
     }
 
@@ -75,10 +75,10 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with record items.
         /// </summary>
-        /// <param name="doer"></param>
-        public void Do(Action<T1, T2> doer)
+        /// <param name="operation"></param>
+        public void Do(Action<T1, T2> operation)
         {
-            doer(FirstItem, SecondItem);
+            operation(FirstItem, SecondItem);
         }
     }
 
@@ -121,10 +121,10 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with record items.
         /// </summary>
-        /// <param name="doer"></param>
-        public void Do(Action<T1, T2, T3> doer)
+        /// <param name="operation"></param>
+        public void Do(Action<T1, T2, T3> operation)
         {
-            doer(FirstItem, SecondItem, ThirdItem);
+            operation(FirstItem, SecondItem, ThirdItem);
         }
     }
 }
