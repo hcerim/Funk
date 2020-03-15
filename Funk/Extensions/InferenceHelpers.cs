@@ -13,7 +13,7 @@ namespace Funk.Extensions
         public static Func<T1, T2, T3, T4, T5, R> func<T1, T2, T3, T4, T5, R>(Func<T1, T2, T3, T4, T5, R> func) => func;
         public static Func<T1, T2, T3, T4, T5, T6, R> func<T1, T2, T3, T4, T5, T6, R>(Func<T1, T2, T3, T4, T5, T6, R> func) => func;
         public static Func<T1, T2, T3, T4, T5, T6, T7, R> func<T1, T2, T3, T4, T5, T6, T7, R>(Func<T1, T2, T3, T4, T5, T6, T7, R> func) => func;
-        
+
         public static Action act(Action act) => act;
         public static Action<T1> act<T1>(Action<T1> act) => act;
         public static Action<T1, T2> act<T1, T2>(Action<T1, T2> act) => act;

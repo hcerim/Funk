@@ -41,7 +41,7 @@ namespace Funk.Tests.ExtensionsTests
         public void Check_Type_Of_Inferred_Action_With_Arity_Of_2()
         {
             UnitTest(
-                () => act((int x, int y) => {}),
+                () => act((int x, int y) => { }),
                 a => a.GetType() == typeof(Action<int, int>),
                 Assert.True
             );
