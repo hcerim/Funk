@@ -13,8 +13,8 @@ namespace Funk.Tests
                 p => record(p.Item1, p.Item2),
                 r =>
                 {
-                    Assert.Equal("John", r.FirstItem);
-                    Assert.Equal("Doe", r.SecondItem);
+                    Assert.Equal("John", r.Item1);
+                    Assert.Equal("Doe", r.Item2);
                 }
             );
         }
