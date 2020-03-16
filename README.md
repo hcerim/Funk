@@ -37,6 +37,10 @@ The following specific tasks should also be performed within the scope of this t
 
 Notes for the project can be found [here](/Files/notes.md).
 
+# Wiki
+
+Funk wiki can be found [here](https://github.com/cerimharun/Funk/wiki).
+
 # License
 
 Funk is licensed under the [MIT](/Files/license.txt) license.
