@@ -1,5 +1,4 @@
 ﻿using System;
-using Funk.Tests.Helpers;
 using Xunit;
 using static Funk.Operators;
 
