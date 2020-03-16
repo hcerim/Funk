@@ -1,6 +1,6 @@
 # Reading notes
 
-## Functional Programming in C#
+## Introduction
 
 Functional programming (**FP**) gives you:
 
@@ -230,4 +230,30 @@ public IEnumerable<LogMessage> GetLogs() => Connect(connString, c => c.Query<Log
 Using as well can be made as a HOF. It would then be an expression rather than a statement which is useful in composition with other functions (`expressions` return a value; `statements` don’t).
 
 Drawbacks of HOFs are increased stack use (callbacks, repackaged callbacks, etc.) which can impact performance (negligible though) and a bit more complex debugging because of callbacks.
+
+## Purity
+
+| `Pure functions`                                          | `Impure functions`                                            |
+| --------------------------------------------------------- | ------------------------------------------------------------- |
+| **The output depends entirely on the input arguments.**   | **Factors other than input arguments may affect the output.** |
+| **Cause no side effects.**                                | **May cause side effects.**                                   |
+|                                                           |                                                               |
+
+Functions that do one of the following are not pure functions:
+
+ - `Mutate` global state.
+ - `Mutate` input arguments.
+ - Throw `exception`.
+ - Perform `I/O` operation.
+
+Therefore, pure functions are easy to test and reason about because they always do the same thing. This leads to possibility of safe optimization (`parallelization`, `lazy evaluation`, `memorization`).
+
+But in the `real-world` application you can hardly/cannot do anything with only pure functions. Any application that `"does"` something includes operations that are impure (e.g. communication with external resources -> file systems, databases, external APIs, etc.).
+
+What you can do is:
+
+ - Isolate `I/O` effects (`impure-pure-impure`).
+ - Avoid mutating arguments and make functions `isolated` (not depending on each others implementation, work with `immutable` objects).
+ - Handle errors functionally (Try, Either, etc.)
+ - Make non-local state immutable.
 
