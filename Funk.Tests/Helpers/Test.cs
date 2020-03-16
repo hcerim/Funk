@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Funk.Tests.Helpers
+namespace Funk.Tests
 {
     public abstract class Test
     {

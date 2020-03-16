@@ -1,5 +1,4 @@
 ﻿using System;
-using Funk.Tests.Helpers;
 using Xunit;
 using static Funk.Operators;
 
@@ -48,10 +47,10 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Check_Type_Of_Inferred_Action_With_Arity_Of_6()
+        public void Check_Type_Of_Inferred_Action_With_Arity_Of_5()
         {
             UnitTest(
-                () => act((int x, int y, int z, string s, string g, double l) => { }),
+                () => act((int x, int y, int z, string s, string g) => { }),
                 a => a.GetType() == typeof(Action<int, int>),
                 Assert.False
             );
