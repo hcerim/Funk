@@ -42,6 +42,17 @@ namespace Funk
         }
 
         /// <summary>
+        /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
+        /// </summary>
+        /// <typeparam name="R1"></typeparam>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public Record<R1> Map<R1>(Func<T1, R1> selector)
+        {
+            return new Record<R1>(selector(Item1));
+        }
+
+        /// <summary>
         /// Executes operation provided with record item.
         /// </summary>
         /// <param name="operation"></param>
@@ -69,6 +80,16 @@ namespace Funk
             Item2 = t2;
         }
 
+        /// <summary>
+        /// Initializes a new record with 2 items.
+        /// </summary>
+        /// <param name="tuple"></param>
+        public Record((T1 t1, T2 t2) tuple)
+        {
+            Item1 = tuple.t1;
+            Item2 = tuple.t2;
+        }
+
         public T1 Item1 { get; }
         public T2 Item2 { get; }
 
@@ -93,6 +114,18 @@ namespace Funk
         public Record<R1, R2> Map<R1, R2>(Func<T1, T2, Record<R1, R2>> selector)
         {
             return selector(Item1, Item2);
+        }
+
+        /// <summary>
+        /// Structure-preserving map. Maps corresponding record items to the new Record of 2.
+        /// </summary>
+        /// <typeparam name="R1"></typeparam>
+        /// <typeparam name="R2"></typeparam>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public Record<R1, R2> Map<R1, R2>(Func<T1, T2, (R1, R2)> selector)
+        {
+            return new Record<R1, R2>(selector(Item1, Item2));
         }
 
         /// <summary>
@@ -126,6 +159,13 @@ namespace Funk
             Item3 = t3;
         }
 
+        public Record((T1 t1, T2 t2, T3 t3) tuple)
+        {
+            Item1 = tuple.t1;
+            Item2 = tuple.t2;
+            Item3 = tuple.t3;
+        }
+
         public T1 Item1 { get; }
         public T2 Item2 { get; }
         public T3 Item3 { get; }
@@ -152,6 +192,19 @@ namespace Funk
         public Record<R1, R2, R3> Map<R1, R2, R3>(Func<T1, T2, T3, Record<R1, R2, R3>> selector)
         {
             return selector(Item1, Item2, Item3);
+        }
+
+        /// <summary>
+        /// Structure-preserving map. Maps corresponding record items to the new Record of 3.
+        /// </summary>
+        /// <typeparam name="R1"></typeparam>
+        /// <typeparam name="R2"></typeparam>
+        /// <typeparam name="R3"></typeparam>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public Record<R1, R2, R3> Map<R1, R2, R3>(Func<T1, T2, T3, (R1, R2, R3)> selector)
+        {
+            return new Record<R1, R2, R3>(selector(Item1, Item2, Item3));
         }
 
         /// <summary>
