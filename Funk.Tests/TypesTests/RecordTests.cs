@@ -8,7 +8,7 @@ namespace Funk.Tests
     public class RecordTests : Test
     {
         [Fact]
-        public void Create_Record_With_Three_Item_With_Constructor()
+        public void Create_Two_Identical_Records_With_Three_Items_With_Constructor()
         {
             UnitTest(
                 () => ("John", "Doe", 30),
@@ -19,6 +19,21 @@ namespace Funk.Tests
                     return record.Equals(record2);
                 },
                 Assert.True
+            );
+        }
+
+        [Fact]
+        public void Create_Two_Different_Records_With_Three_Items_With_Constructor()
+        {
+            UnitTest(
+                () => ("John", "Doe", 30),
+                t =>
+                {
+                    var record = new Record<string, string, int>(t);
+                    var record2 = new Record<string, string, int>(t.Item1, t.Item2, 40);
+                    return record.Equals(record2);
+                },
+                Assert.False
             );
         }
 
