@@ -5,13 +5,8 @@ namespace Funk
     /// <summary>
     /// Record with arity of 1.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
     public struct Record<T1>
     {
-        /// <summary>
-        /// Initializes a new record with 1 item.
-        /// </summary>
-        /// <param name="t1"></param>
         public Record(T1 t1)
         {
             Item1 = t1;
@@ -22,9 +17,6 @@ namespace Funk
         /// <summary>
         /// Maps corresponding record item to the result of the selector.
         /// </summary>
-        /// <typeparam name="R"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public R Match<R>(Func<T1, R> selector)
         {
             return selector(Item1);
@@ -33,9 +25,6 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        /// <typeparam name="R1"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public Record<R1> Map<R1>(Func<T1, Record<R1>> selector)
         {
             return selector(Item1);
@@ -44,9 +33,6 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        /// <typeparam name="R1"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public Record<R1> Map<R1>(Func<T1, R1> selector)
         {
             return new Record<R1>(selector(Item1));
@@ -55,7 +41,6 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with record item.
         /// </summary>
-        /// <param name="operation"></param>
         public void Match(Action<T1> operation)
         {
             operation(Item1);
@@ -65,25 +50,14 @@ namespace Funk
     /// <summary>
     /// Record with arity of 2.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
     public struct Record<T1, T2>
     {
-        /// <summary>
-        /// Initializes a new record with 2 items.
-        /// </summary>
-        /// <param name="t1"></param>
-        /// <param name="t2"></param>
         public Record(T1 t1, T2 t2)
         {
             Item1 = t1;
             Item2 = t2;
         }
 
-        /// <summary>
-        /// Initializes a new record with 2 items.
-        /// </summary>
-        /// <param name="tuple"></param>
         public Record((T1 t1, T2 t2) tuple)
         {
             Item1 = tuple.t1;
@@ -96,9 +70,6 @@ namespace Funk
         /// <summary>
         /// Maps corresponding record items to the result of the selector.
         /// </summary>
-        /// <typeparam name="R"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public R Match<R>(Func<T1, T2, R> selector)
         {
             return selector(Item1, Item2);
@@ -107,10 +78,6 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 2.
         /// </summary>
-        /// <typeparam name="R1"></typeparam>
-        /// <typeparam name="R2"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public Record<R1, R2> Map<R1, R2>(Func<T1, T2, Record<R1, R2>> selector)
         {
             return selector(Item1, Item2);
@@ -119,10 +86,6 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 2.
         /// </summary>
-        /// <typeparam name="R1"></typeparam>
-        /// <typeparam name="R2"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public Record<R1, R2> Map<R1, R2>(Func<T1, T2, (R1, R2)> selector)
         {
             return new Record<R1, R2>(selector(Item1, Item2));
@@ -131,7 +94,6 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with record items.
         /// </summary>
-        /// <param name="operation"></param>
         public void Match(Action<T1, T2> operation)
         {
             operation(Item1, Item2);
@@ -141,17 +103,8 @@ namespace Funk
     /// <summary>
     /// Record with arity of 3.
     /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <typeparam name="T3"></typeparam>
     public struct Record<T1, T2, T3>
     {
-        /// <summary>
-        /// Initializes a new record with 3 items.
-        /// </summary>
-        /// <param name="t1"></param>
-        /// <param name="t2"></param>
-        /// <param name="t3"></param>
         public Record(T1 t1, T2 t2, T3 t3)
         {
             Item1 = t1;
@@ -173,9 +126,6 @@ namespace Funk
         /// <summary>
         /// Maps corresponding record items to the result of the selector.
         /// </summary>
-        /// <typeparam name="R"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public R Match<R>(Func<T1, T2, T3, R> selector)
         {
             return selector(Item1, Item2, Item3);
@@ -184,11 +134,6 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 3.
         /// </summary>
-        /// <typeparam name="R1"></typeparam>
-        /// <typeparam name="R2"></typeparam>
-        /// <typeparam name="R3"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public Record<R1, R2, R3> Map<R1, R2, R3>(Func<T1, T2, T3, Record<R1, R2, R3>> selector)
         {
             return selector(Item1, Item2, Item3);
@@ -197,11 +142,6 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 3.
         /// </summary>
-        /// <typeparam name="R1"></typeparam>
-        /// <typeparam name="R2"></typeparam>
-        /// <typeparam name="R3"></typeparam>
-        /// <param name="selector"></param>
-        /// <returns></returns>
         public Record<R1, R2, R3> Map<R1, R2, R3>(Func<T1, T2, T3, (R1, R2, R3)> selector)
         {
             return new Record<R1, R2, R3>(selector(Item1, Item2, Item3));
@@ -210,10 +150,130 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with record items.
         /// </summary>
-        /// <param name="operation"></param>
         public void Match(Action<T1, T2, T3> operation)
         {
             operation(Item1, Item2, Item3);
+        }
+    }
+
+    /// <summary>
+    /// Record with arity of 4.
+    /// </summary>
+    public struct Record<T1, T2, T3, T4>
+    {
+        public Record(T1 t1, T2 t2, T3 t3, T4 t4)
+        {
+            Item1 = t1;
+            Item2 = t2;
+            Item3 = t3;
+            Item4 = t4;
+        }
+
+        public Record((T1 t1, T2 t2, T3 t3, T4 t4) tuple)
+        {
+            Item1 = tuple.t1;
+            Item2 = tuple.t2;
+            Item3 = tuple.t3;
+            Item4 = tuple.t4;
+        }
+
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
+
+        /// <summary>
+        /// Maps corresponding record items to the result of the selector.
+        /// </summary>
+        public R Match<R>(Func<T1, T2, T3, T4, R> selector)
+        {
+            return selector(Item1, Item2, Item3, Item4);
+        }
+
+        /// <summary>
+        /// Structure-preserving map. Maps corresponding record items to the new Record of 4.
+        /// </summary>
+        public Record<R1, R2, R3, R4> Map<R1, R2, R3, R4>(Func<T1, T2, T3, T4, Record<R1, R2, R3, R4>> selector)
+        {
+            return selector(Item1, Item2, Item3, Item4);
+        }
+
+        /// <summary>
+        /// Structure-preserving map. Maps corresponding record items to the new Record of 4.
+        /// </summary>
+        public Record<R1, R2, R3, R4> Map<R1, R2, R3, R4>(Func<T1, T2, T3, T4, (R1, R2, R3, R4)> selector)
+        {
+            return new Record<R1, R2, R3, R4>(selector(Item1, Item2, Item3, Item4));
+        }
+
+        /// <summary>
+        /// Executes operation provided with record items.
+        /// </summary>
+        public void Match(Action<T1, T2, T3, T4> operation)
+        {
+            operation(Item1, Item2, Item3, Item4);
+        }
+    }
+
+    /// <summary>
+    /// Record with arity of 5.
+    /// </summary>
+    public struct Record<T1, T2, T3, T4, T5>
+    {
+        public Record(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
+        {
+            Item1 = t1;
+            Item2 = t2;
+            Item3 = t3;
+            Item4 = t4;
+            Item5 = t5;
+        }
+
+        public Record((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple)
+        {
+            Item1 = tuple.t1;
+            Item2 = tuple.t2;
+            Item3 = tuple.t3;
+            Item4 = tuple.t4;
+            Item5 = tuple.t5;
+        }
+
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
+        public T5 Item5 { get; }
+
+        /// <summary>
+        /// Maps corresponding record items to the result of the selector.
+        /// </summary>
+        public R Match<R>(Func<T1, T2, T3, T4, T5, R> selector)
+        {
+            return selector(Item1, Item2, Item3, Item4, Item5);
+        }
+
+        /// <summary>
+        /// Structure-preserving map. Maps corresponding record items to the new Record of 5.
+        /// </summary>
+        public Record<R1, R2, R3, R4, R5> Map<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, Record<R1, R2, R3, R4, R5>> selector)
+        {
+            return selector(Item1, Item2, Item3, Item4, Item5);
+        }
+
+        /// <summary>
+        /// Structure-preserving map. Maps corresponding record items to the new Record of 5.
+        /// </summary>
+        public Record<R1, R2, R3, R4, R5> Map<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, (R1, R2, R3, R4, R5)> selector)
+        {
+            return new Record<R1, R2, R3, R4, R5>(selector(Item1, Item2, Item3, Item4, Item5));
+        }
+
+        /// <summary>
+        /// Executes operation provided with record items.
+        /// </summary>
+        public void Match(Action<T1, T2, T3, T4, T5> operation)
+        {
+            operation(Item1, Item2, Item3, Item4, Item5);
         }
     }
 }
