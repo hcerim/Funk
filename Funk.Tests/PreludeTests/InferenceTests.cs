@@ -1,10 +1,10 @@
 ﻿using System;
 using Xunit;
-using static Funk.Operators;
+using static Funk.Prelude;
 
 namespace Funk.Tests
 {
-    public partial class OperatorsTests : Test
+    public partial class PreludeTests : Test
     {
         [Fact]
         public void Check_Type_Of_Inferred_Func_With_Arity_Of_3()

@@ -1,6 +1,6 @@
 ﻿namespace Funk
 {
-    public static class Record
+    public struct Record
     {
         /// <summary>
         /// Creates a record of 1.

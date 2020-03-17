@@ -1,13 +1,13 @@
 ﻿using System;
 using Xunit;
-using static Funk.Operators;
+using static Funk.Prelude;
 
 namespace Funk.Tests
 {
     public class RecordTests : Test
     {
         [Fact]
-        public void Create_Two_Identical_Records_With_Three_Items_With_Constructor()
+        public void Create_2_Identical_Records_With_3_Items_With_Constructor()
         {
             UnitTest(
                 () => ("John", "Doe", 30),
@@ -22,7 +22,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_Two_Different_Records_With_Three_Items_With_Constructor()
+        public void Create_2_Different_Records_With_3_Items_With_Constructor()
         {
             UnitTest(
                 () => ("John", "Doe", 30),
@@ -37,7 +37,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_Record_With_One_Item_With_Factory_Create()
+        public void Create_Record_With_1_Item_With_Factory_Create()
         {
             UnitTest(
                 () => "John Doe",
@@ -47,7 +47,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_Record_With_Two_Items_With_Constructor()
+        public void Create_Record_With_2_Items_With_Constructor()
         {
             UnitTest(
                 () => ("John", "Doe"),
@@ -61,7 +61,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_Record_With_Three_Items_From_Tuple_With_Factory_Create()
+        public void Create_Record_With_3_Items_From_Tuple_With_Factory_Create()
         {
             UnitTest(
                 () => ("John", "Doe", 30),
@@ -76,7 +76,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_Record_With_Two_Items_From_Tuple_With_Factory_Extension()
+        public void Create_Record_With_2_Items_From_Tuple_With_Factory_Extension()
         {
             UnitTest(
                 () => ("John", 30),
@@ -90,7 +90,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_Record_With_Two_Items_To_String()
+        public void Match_Record_With_2_Items_To_String()
         {
             UnitTest(
                 () => Record.Create("John", "Doe"),
@@ -103,7 +103,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Execute_Operation_On_Record_With_Two_Items()
+        public void Execute_Operation_On_Record_With_2_Items()
         {
             UnitTest(
                 () => ("John", "Doe"),
@@ -118,7 +118,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Map_Record_With_Two_Items_Explicit()
+        public void Map_Record_With_2_Items_Explicit()
         {
             UnitTest(
                 () => record("John", "Doe"),
@@ -132,7 +132,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Map_Record_With_Two_Items_Implicit()
+        public void Map_Record_With_2_Items_Implicit()
         {
             UnitTest(
                 () => record("John", "Doe"),
