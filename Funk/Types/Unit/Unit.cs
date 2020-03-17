@@ -18,10 +18,15 @@ namespace Funk
         public T TransformTo<T>(T t) => t;
 
         /// <summary>
-        /// Transforms unit into a specified object.
+        /// Maps Unit to the result of the selector.
         /// </summary>
         [Pure]
-        public T TransformTo<T>(Func<Unit, T> f) => f(Value);
+        public T Match<T>(Func<Unit, T> selector) => selector(Value);
+
+        /// <summary>
+        /// Executes operation provided with the Unit.
+        /// </summary>
+        public void Match(Action<Unit> operation) => operation(Value);
 
         [Pure]
         public override string ToString() => string.Empty;
