@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Funk
 {
-    public static partial class Operators
+    public static partial class Prelude
     {
         /// <summary>
         /// Higher-order function that helps infer Func without explicitly using the type.

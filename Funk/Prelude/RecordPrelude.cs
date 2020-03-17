@@ -1,6 +1,6 @@
 ﻿namespace Funk
 {
-    public static partial class Operators
+    public static partial class Prelude
     {
         /// <summary>
         /// Creates a record of 1.
