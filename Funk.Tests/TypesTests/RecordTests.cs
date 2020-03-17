@@ -4,7 +4,7 @@ using static Funk.Prelude;
 
 namespace Funk.Tests
 {
-    public class RecordTests : Test
+    public partial class RecordTests : Test
     {
         [Fact]
         public void Create_2_Identical_Records_With_3_Items_With_Constructor()
@@ -71,20 +71,6 @@ namespace Funk.Tests
                     Assert.Equal("John", r.Item1);
                     Assert.Equal("Doe", r.Item2);
                     Assert.Equal(30, r.Item3);
-                }
-            );
-        }
-
-        [Fact]
-        public void Create_Record_With_2_Items_From_Tuple_With_Factory_Extension()
-        {
-            UnitTest(
-                () => ("John", 30),
-                p => p.ToRecord(),
-                r =>
-                {
-                    Assert.Equal("John", r.Item1);
-                    Assert.Equal(30, r.Item2);
                 }
             );
         }
