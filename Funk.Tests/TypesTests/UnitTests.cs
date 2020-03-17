@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Funk.Tests.TypesTests
+namespace Funk.Tests
 {
     public class UnitTests : Test
     {
