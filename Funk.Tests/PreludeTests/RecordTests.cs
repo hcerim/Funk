@@ -9,7 +9,7 @@ namespace Funk.Tests
         public void Create_Record_With_2_Items_With_Factory_Functional()
         {
             UnitTest(
-                () => ("John", "Doe"),
+                _ => ("John", "Doe"),
                 p => record(p.Item1, p.Item2),
                 r =>
                 {
@@ -23,7 +23,7 @@ namespace Funk.Tests
         public void Create_Record_With_5_Items_With_Factory_Functional()
         {
             UnitTest(
-                () => ("John", "Doe", 30, record("John"), record("Doe")),
+                _ => ("John", "Doe", 30, record("John"), record("Doe")),
                 p => record(p.Item1, p.Item2, p.Item3, p.Item4, p.Item5),
                 r =>
                 {

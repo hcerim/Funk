@@ -13,11 +13,11 @@ namespace Funk.Tests
         /// <param name="act"></param>
         /// <param name="assert"></param>
         protected static void UnitTest<TArrangeResult, TActResult>(
-            Func<TArrangeResult> arrange,
+            Func<Unit, TArrangeResult> arrange,
             Func<TArrangeResult, TActResult> act,
             Action<TActResult> assert)
         {
-            var arrangeResult = arrange();
+            var arrangeResult = arrange(Unit.Value);
             var actResult = act(arrangeResult);
             assert(actResult);
         }
