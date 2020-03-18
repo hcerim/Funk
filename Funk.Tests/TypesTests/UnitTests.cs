@@ -15,16 +15,6 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Unit_Transform()
-        {
-            UnitTest(
-                _ => Unit.Value,
-                u => u.TransformTo("John"),
-                s => Assert.Equal("John", s)
-            );
-        }
-
-        [Fact]
         public void Unit_Map()
         {
             UnitTest(
