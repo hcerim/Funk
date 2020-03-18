@@ -7,7 +7,7 @@ namespace Funk
     /// Type with only one value -> itself.
     /// Represents a type that contains no information (empty value).
     /// </summary>
-    public struct Unit : IEquatable<Unit>
+    public struct Unit
     {
         public static readonly Unit Value = new Unit();
 
@@ -21,11 +21,5 @@ namespace Funk
         /// Executes operation provided with the Unit.
         /// </summary>
         public void Match(Action<Unit> operation) => operation(Value);
-
-        [Pure]
-        public override string ToString() => string.Empty;
-
-        [Pure]
-        public bool Equals(Unit other) => true;
     }
 }
