@@ -15,7 +15,7 @@ namespace Funk.Tests
                 {
                     var record = new Record<string, string, int>(t);
                     var record2 = new Record<string, string, int>(t.Item1, t.Item2, t.Item3);
-                    return record.Equals(record2);
+                    return record.SafeEquals(record2);
                 },
                 Assert.True
             );
@@ -30,7 +30,7 @@ namespace Funk.Tests
                 {
                     var record = new Record<string, string, int>(t);
                     var record2 = new Record<string, string, int>(t.Item1, t.Item2, 40);
-                    return record.Equals(record2);
+                    return record.SafeEquals(record2);
                 },
                 Assert.False
             );
