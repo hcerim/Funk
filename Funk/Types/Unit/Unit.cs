@@ -12,12 +12,6 @@ namespace Funk
         public static readonly Unit Value = new Unit();
 
         /// <summary>
-        /// Transforms Unit into a specified object.
-        /// </summary>
-        [Pure]
-        public T TransformTo<T>(T t) => t;
-
-        /// <summary>
         /// Maps Unit to the result of the selector.
         /// </summary>
         [Pure]
