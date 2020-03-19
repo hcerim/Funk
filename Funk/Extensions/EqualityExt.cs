@@ -2,7 +2,7 @@
 
 namespace Funk
 {
-    public static class EqualityExtensions
+    public static class EqualityExt
     {
         [Pure]
         public static bool SafeEquals<T>(this T t, T other) => Equals(t, other);
