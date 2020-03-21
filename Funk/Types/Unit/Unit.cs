@@ -5,6 +5,7 @@ namespace Funk
 {
     /// <summary>
     /// Type with only one value -> itself.
+    /// Replacement for empty tuple.
     /// Represents a type that contains no information (empty value).
     /// </summary>
     public struct Unit
