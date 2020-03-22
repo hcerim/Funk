@@ -45,29 +45,29 @@ namespace Funk
         private readonly T1 _first;
 
         [Pure]
-        public R Match<R>(Func<Unit, R> empty, Func<T1, R> first)
+        public R Match<R>(Func<Unit, R> empty, Func<T1, R> ifFirst)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
+                case 1: return ifFirst(_first);
                 default: return empty(Empty);
             }
         }
 
-        public R Match<R>(Func<T1, R> first, Func<Unit, Exception> otherwiseThrow = null)
+        public R Match<R>(Func<T1, R> ifFirst, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
+                case 1: return ifFirst(_first);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
 
-        public void Match(Action<Unit> empty, Action<T1> first)
+        public void Match(Action<Unit> empty, Action<T1> ifFirst)
         {
             switch (Discriminator)
             {
-                case 1: first(_first);
+                case 1: ifFirst(_first);
                     break;
                 default: empty(Empty);
                     break;
@@ -107,35 +107,35 @@ namespace Funk
         private readonly bool _secondDefined;
 
         [Pure]
-        public R Match<R>(Func<Unit, R> empty, Func<T1, R> first, Func<T2, R> second)
+        public R Match<R>(Func<Unit, R> empty, Func<T1, R> ifFirst, Func<T2, R> ifSecond)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
                 default: return empty(Empty);
             }
         }
 
-        public R Match<R>(Func<T1, R> first, Func<T2, R> second, Func<Unit, Exception> otherwiseThrow = null)
+        public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
 
-        public void Match(Action<Unit> empty, Action<T1> first, Action<T2> second)
+        public void Match(Action<Unit> empty, Action<T1> ifFirst, Action<T2> ifSecond)
         {
             switch (Discriminator)
             {
                 case 1:
-                    first(_first);
+                    ifFirst(_first);
                     break;
                 case 2:
-                    second(_second);
+                    ifSecond(_second);
                     break;
                 default:
                     empty(Empty);
@@ -195,40 +195,40 @@ namespace Funk
         private readonly bool _thirdDefined;
 
         [Pure]
-        public R Match<R>(Func<Unit, R> empty, Func<T1, R> first, Func<T2, R> second, Func<T3, R> third)
+        public R Match<R>(Func<Unit, R> empty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
-                case 3: return third(_third);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
+                case 3: return ifThird(_third);
                 default: return empty(Empty);
             }
         }
 
-        public R Match<R>(Func<T1, R> first, Func<T2, R> second, Func<T3, R> third, Func<Unit, Exception> otherwiseThrow = null)
+        public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
-                case 3: return third(_third);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
+                case 3: return ifThird(_third);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
 
-        public void Match(Action<Unit> empty, Action<T1> first, Action<T2> second, Action<T3> third)
+        public void Match(Action<Unit> empty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird)
         {
             switch (Discriminator)
             {
                 case 1:
-                    first(_first);
+                    ifFirst(_first);
                     break;
                 case 2:
-                    second(_second);
+                    ifSecond(_second);
                     break;
                 case 3:
-                    third(_third);
+                    ifThird(_third);
                     break;
                 default:
                     empty(Empty);
@@ -307,45 +307,45 @@ namespace Funk
         private readonly bool _fourthDefined;
 
         [Pure]
-        public R Match<R>(Func<Unit, R> empty, Func<T1, R> first, Func<T2, R> second, Func<T3, R> third, Func<T4, R> fourth)
+        public R Match<R>(Func<Unit, R> empty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
-                case 3: return third(_third);
-                case 4: return fourth(_fourth);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
+                case 3: return ifThird(_third);
+                case 4: return ifFourth(_fourth);
                 default: return empty(Empty);
             }
         }
 
-        public R Match<R>(Func<T1, R> first, Func<T2, R> second, Func<T3, R> third, Func<T4, R> fourth, Func<Unit, Exception> otherwiseThrow = null)
+        public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
-                case 3: return third(_third);
-                case 4: return fourth(_fourth);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
+                case 3: return ifThird(_third);
+                case 4: return ifFourth(_fourth);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
 
-        public void Match(Action<Unit> empty, Action<T1> first, Action<T2> second, Action<T3> third, Action<T4> fourth)
+        public void Match(Action<Unit> empty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth)
         {
             switch (Discriminator)
             {
                 case 1:
-                    first(_first);
+                    ifFirst(_first);
                     break;
                 case 2:
-                    second(_second);
+                    ifSecond(_second);
                     break;
                 case 3:
-                    third(_third);
+                    ifThird(_third);
                     break;
                 case 4:
-                    fourth(_fourth);
+                    ifFourth(_fourth);
                     break;
                 default:
                     empty(Empty);
@@ -443,50 +443,50 @@ namespace Funk
         private readonly bool _fifthDefined;
 
         [Pure]
-        public R Match<R>(Func<Unit, R> empty, Func<T1, R> first, Func<T2, R> second, Func<T3, R> third, Func<T4, R> fourth, Func<T5, R> fifth)
+        public R Match<R>(Func<Unit, R> empty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
-                case 3: return third(_third);
-                case 4: return fourth(_fourth);
-                case 5: return fifth(_fifth);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
+                case 3: return ifThird(_third);
+                case 4: return ifFourth(_fourth);
+                case 5: return ifFifth(_fifth);
                 default: return empty(Empty);
             }
         }
 
-        public R Match<R>(Func<T1, R> first, Func<T2, R> second, Func<T3, R> third, Func<T4, R> fourth, Func<T5, R> fifth, Func<Unit, Exception> otherwiseThrow = null)
+        public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
             {
-                case 1: return first(_first);
-                case 2: return second(_second);
-                case 3: return third(_third);
-                case 4: return fourth(_fourth);
-                case 5: return fifth(_fifth);
+                case 1: return ifFirst(_first);
+                case 2: return ifSecond(_second);
+                case 3: return ifThird(_third);
+                case 4: return ifFourth(_fourth);
+                case 5: return ifFifth(_fifth);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
 
-        public void Match(Action<Unit> empty, Action<T1> first, Action<T2> second, Action<T3> third, Action<T4> fourth, Action<T5> fifth)
+        public void Match(Action<Unit> empty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth, Action<T5> ifFifth)
         {
             switch (Discriminator)
             {
                 case 1:
-                    first(_first);
+                    ifFirst(_first);
                     break;
                 case 2:
-                    second(_second);
+                    ifSecond(_second);
                     break;
                 case 3:
-                    third(_third);
+                    ifThird(_third);
                     break;
                 case 4:
-                    fourth(_fourth);
+                    ifFourth(_fourth);
                     break;
                 case 5:
-                    fifth(_fifth);
+                    ifFifth(_fifth);
                     break;
                 default:
                     empty(Empty);
