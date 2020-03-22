@@ -13,11 +13,13 @@ namespace Funk
             if (item is null)
             {
                 IsEmpty = true;
+                NotEmpty = false;
                 Discriminator = 0;
             }
             else
             {
                 IsEmpty = false;
+                NotEmpty = true;
                 Discriminator = discriminator;
             }
         }
@@ -28,6 +30,7 @@ namespace Funk
         }
 
         public bool IsEmpty { get; }
+        public bool NotEmpty { get; }
         protected int Discriminator { get; }
     }
 
