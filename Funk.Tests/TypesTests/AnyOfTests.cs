@@ -129,6 +129,41 @@ namespace Funk.Tests
                 a => Assert.Throws<Exception>(a)
             );
         }
+
+        [Fact]
+        public void Match_On_Empty_AnyOf_2_Empty_Check_Unsafe()
+        {
+            UnitTest(
+                _ => new User(new Biography
+                {
+                    Nationality = "Bosnian"
+                }),
+                u => u.NotEmpty.Match(
+                    _ => throw new Exception("Funk"),
+                    _ => u.UnsafeGetSecond().Nationality
+                ),
+                s => Assert.Equal("Bosnian", s)
+            );
+        }
+
+        [Fact]
+        public void Match_On_Empty_AnyOf_2_Empty_Check_Safe()
+        {
+            UnitTest(
+                _ => new User(new Biography
+                {
+                    Nationality = "Bosnian"
+                }),
+                u => u.NotEmpty.Match(
+                    _ => throw new Exception("Funk"),
+                    _ => u.Match(
+                        i => i.Name,
+                        b => b.Nationality
+                    )
+                ),
+                s => Assert.Equal("Bosnian", s)
+            );
+        }
     }
 
     public class User : AnyOf<BasicInfo, Biography>
