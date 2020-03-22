@@ -2,7 +2,7 @@
 
 namespace Funk
 {
-    public static class RecordExtensions
+    public static class RecordExt
     {
         /// <summary>
         /// Creates a record of 1.

@@ -2,7 +2,7 @@
 
 namespace Funk
 {
-    public static class NullCheckExtensions
+    public static class NullCheckExt
     {
         [Pure]
         public static bool IsNull<T>(this T t) where T : class => t.SafeEquals(null);

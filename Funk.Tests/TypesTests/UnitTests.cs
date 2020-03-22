@@ -29,18 +29,8 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => Unit.Value,
-                u => u.Equals(new Unit()),
+                u => u.SafeEquals(new Unit()),
                 Assert.True
-            );
-        }
-
-        [Fact]
-        public void Unit_ToString()
-        {
-            UnitTest(
-                _ => Unit.Value,
-                u => u.ToString(),
-                Assert.Empty
             );
         }
     }
