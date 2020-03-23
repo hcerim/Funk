@@ -103,7 +103,7 @@ namespace Funk
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)
         {
-            return otherwiseThrow is null ? new EmptyValueException("Maybe value is empty.") : otherwiseThrow(Unit.Value);
+            return otherwiseThrow.IsNull() ? new EmptyValueException("Maybe value is empty.") : otherwiseThrow(Unit.Value);
         }
     }
 }
