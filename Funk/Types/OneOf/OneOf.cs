@@ -105,6 +105,7 @@ namespace Funk
         /// <summary>
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -118,6 +119,7 @@ namespace Funk
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -211,6 +213,7 @@ namespace Funk
         /// <summary>
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -224,6 +227,7 @@ namespace Funk
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -237,6 +241,7 @@ namespace Funk
         /// <summary>
         /// Returns third item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_third is null | Discriminator.SafeNotEquals(3))
@@ -342,6 +347,7 @@ namespace Funk
         /// <summary>
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -355,6 +361,7 @@ namespace Funk
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -368,6 +375,7 @@ namespace Funk
         /// <summary>
         /// Returns third item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_third is null | Discriminator.SafeNotEquals(3))
@@ -381,6 +389,7 @@ namespace Funk
         /// <summary>
         /// Returns fourth item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_fourth is null | Discriminator.SafeNotEquals(4))
@@ -498,6 +507,7 @@ namespace Funk
         /// <summary>
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -511,6 +521,7 @@ namespace Funk
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -524,6 +535,7 @@ namespace Funk
         /// <summary>
         /// Returns third item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_third is null | Discriminator.SafeNotEquals(3))
@@ -537,6 +549,7 @@ namespace Funk
         /// <summary>
         /// Returns fourth item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_fourth is null | Discriminator.SafeNotEquals(4))
@@ -550,6 +563,7 @@ namespace Funk
         /// <summary>
         /// Returns fifth item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T5 UnsafeGetFifth(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_fifth is null | Discriminator.SafeNotEquals(5))
