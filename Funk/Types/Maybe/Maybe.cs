@@ -4,6 +4,10 @@ using Funk.Exceptions;
 
 namespace Funk
 {
+    /// <summary>
+    /// Maybe monad.
+    /// Type that represents the possible absence of data with appropriate handling.
+    /// </summary>
     public struct Maybe<T>
     {
         public Maybe(T item)

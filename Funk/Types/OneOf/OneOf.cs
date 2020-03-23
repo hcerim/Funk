@@ -5,12 +5,12 @@ using Funk.Exceptions;
 namespace Funk
 {
     /// <summary>
-    /// Disjoint union base class.
-    /// Provides empty value handling.
+    /// Type that holds no value but provides empty value handling.
+    /// Base type for any disjoint union implementation.
     /// </summary>
-    public abstract class AnyOf
+    public abstract class OneOf
     {
-        protected AnyOf(object item, int discriminator)
+        protected OneOf(object item, int discriminator)
         {
             if (item.IsNull())
             {
@@ -36,18 +36,17 @@ namespace Funk
     }
 
     /// <summary>
-    /// 3-dimensional disjoint union.
-    /// Represents one of the 3 possible values (T1, T2 or Empty).
+    /// Type that represents one of the 3 possible values (T1, T2 or Empty).
     /// </summary>
-    public class AnyOf<T1, T2> : AnyOf
+    public class OneOf<T1, T2> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
@@ -131,24 +130,23 @@ namespace Funk
     }
 
     /// <summary>
-    /// 4-dimensional disjoint union.
-    /// Represents one of the 4 possible values (T1, T2, T3 or Empty).
+    /// Type that represents one of the 4 possible values (T1, T2, T3 or Empty).
     /// </summary>
-    public class AnyOf<T1, T2, T3> : AnyOf
+    public class OneOf<T1, T2, T3> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
         }
 
-        public AnyOf(T3 t3)
+        public OneOf(T3 t3)
             : base(t3, 3)
         {
             _third = t3;
@@ -251,30 +249,29 @@ namespace Funk
     }
 
     /// <summary>
-    /// 5-dimensional disjoint union.
-    /// Represents one of the 5 possible values (T1, T2, T3, T4 or Empty).
+    /// Type that represents one of the 5 possible values (T1, T2, T3, T4 or Empty).
     /// </summary>
-    public class AnyOf<T1, T2, T3, T4> : AnyOf
+    public class OneOf<T1, T2, T3, T4> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
         }
 
-        public AnyOf(T3 t3)
+        public OneOf(T3 t3)
             : base(t3, 3)
         {
             _third = t3;
         }
 
-        public AnyOf(T4 t4)
+        public OneOf(T4 t4)
             : base(t4, 4)
         {
             _fourth = t4;
@@ -396,36 +393,35 @@ namespace Funk
     }
 
     /// <summary>
-    /// 6-dimensional disjoint union.
-    /// Represents one of the 6 possible values (T1, T2, T3, T4, T5 or Empty).
+    /// Type that represents one of the 6 possible values (T1, T2, T3, T4, T5 or Empty).
     /// </summary>
-    public class AnyOf<T1, T2, T3, T4, T5> : AnyOf
+    public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
         }
 
-        public AnyOf(T3 t3)
+        public OneOf(T3 t3)
             : base(t3, 3)
         {
             _third = t3;
         }
 
-        public AnyOf(T4 t4)
+        public OneOf(T4 t4)
             : base(t4, 4)
         {
             _fourth = t4;
         }
 
-        public AnyOf(T5 t5)
+        public OneOf(T5 t5)
             : base(t5, 5)
         {
             _fifth = t5;

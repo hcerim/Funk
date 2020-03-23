@@ -5,15 +5,15 @@ using static Funk.Prelude;
 
 namespace Funk.Tests
 {
-    public class AnyOfTests : Test
+    public class OneOfTests : Test
     {
         [Fact]
         public void Create_AnyOf_3_Type_Check()
         {
             UnitTest(
-                _ => new AnyOf<string, int, double>("Funk"),
+                _ => new OneOf<string, int, double>("Funk"),
                 a => a,
-                a => Assert.IsType<AnyOf<string, int, double>>(a)
+                a => Assert.IsType<OneOf<string, int, double>>(a)
             );
         }
 
@@ -21,7 +21,7 @@ namespace Funk.Tests
         public void Create_AnyOf_3_With_First()
         {
             UnitTest(
-                _ => new AnyOf<string, int, double>("Funk"),
+                _ => new OneOf<string, int, double>("Funk"),
                 a => a.UnsafeGetFirst(),
                 s => Assert.Equal("Funk", s)
             );
@@ -31,7 +31,7 @@ namespace Funk.Tests
         public void Create_AnyOf_3_With_First_Get_Second_Implicit()
         {
             UnitTest(
-                _ => new AnyOf<string, int, double>("Funk"),
+                _ => new OneOf<string, int, double>("Funk"),
                 a => act(() => a.UnsafeGetSecond()),
                 a => Assert.Throws<EmptyValueException>(a)
             );
@@ -41,7 +41,7 @@ namespace Funk.Tests
         public void Create_AnyOf_3_With_First_Get_Second_Explicit()
         {
             UnitTest(
-                _ => new AnyOf<string, int, double>("Funk"),
+                _ => new OneOf<string, int, double>("Funk"),
                 a => act(() => a.UnsafeGetSecond(_ => new Exception("Funk"))),
                 a => Assert.Throws<Exception>(a)
             );
@@ -51,7 +51,7 @@ namespace Funk.Tests
         public void Create_AnyOf_2_With_First_Get_Second_Implicit()
         {
             UnitTest(
-                _ => new AnyOf<string, int>(null),
+                _ => new OneOf<string, int>(null),
                 a => act(() => a.UnsafeGetSecond()),
                 a => Assert.Throws<EmptyValueException>(a)
             );
@@ -120,7 +120,7 @@ namespace Funk.Tests
         public void Match_On_Empty_AnyOf_2_With_Nullable_Value_Empty()
         {
             UnitTest(
-                _ => new AnyOf<int?, double>(null),
+                _ => new OneOf<int?, double>(null),
                 a => a.Match(
                     _ => 1,
                     n=> n.Value,
@@ -137,7 +137,7 @@ namespace Funk.Tests
                 _ =>
                 {
                     int? number = 3;
-                    return new AnyOf<int?, double>(number);
+                    return new OneOf<int?, double>(number);
                 },
                 a => a.Match(
                     _ => 1,
@@ -198,7 +198,7 @@ namespace Funk.Tests
         }
     }
 
-    public class User : AnyOf<BasicInfo, Biography>
+    public class User : OneOf<BasicInfo, Biography>
     {
         public User(BasicInfo t1)
             : base(t1)
