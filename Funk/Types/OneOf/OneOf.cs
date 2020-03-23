@@ -4,94 +4,49 @@ using Funk.Exceptions;
 
 namespace Funk
 {
-    public abstract class AnyOf
+    /// <summary>
+    /// Type that holds no value but provides empty value handling.
+    /// Base type for any disjoint union implementation.
+    /// </summary>
+    public abstract class OneOf
     {
-        protected AnyOf(object item, int discriminator)
+        protected OneOf(object item, int discriminator)
         {
-            if (item is null)
+            if (item.IsNull())
             {
-                IsEmpty = true;
-                NotEmpty = false;
                 Discriminator = 0;
             }
             else
             {
-                IsEmpty = false;
                 NotEmpty = true;
                 Discriminator = discriminator;
             }
         }
 
+        [Pure]
         protected static Exception GetException(string itemName, Func<Unit, Exception> otherwiseThrow = null)
         {
-            return otherwiseThrow is null ? new EmptyValueException($"{itemName} item is empty.") : otherwiseThrow(Unit.Value);
+            return otherwiseThrow.IsNull() ? new EmptyValueException($"{itemName} item is empty.") : otherwiseThrow(Unit.Value);
         }
 
-        public bool IsEmpty { get; }
+        [Pure]
+        public bool IsEmpty => !NotEmpty;
         public bool NotEmpty { get; }
         protected int Discriminator { get; }
     }
 
-    public class AnyOf<T1> : AnyOf
+    /// <summary>
+    /// Type that represents one of the 3 possible values (T1, T2 or Empty).
+    /// </summary>
+    public class OneOf<T1, T2> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        private readonly T1 _first;
-
-        [Pure]
-        public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst)
-        {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst(_first);
-                default: return ifEmpty(Unit.Value);
-            }
-        }
-
-        public R Match<R>(Func<T1, R> ifFirst, Func<Unit, Exception> otherwiseThrow = null)
-        {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst(_first);
-                default: throw GetException("Every", otherwiseThrow);
-            }
-        }
-
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst)
-        {
-            switch (Discriminator)
-            {
-                case 1: ifFirst(_first);
-                    break;
-                default: ifEmpty(Unit.Value);
-                    break;
-            }
-        }
-
-        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (_first is null | Discriminator.SafeNotEquals(1))
-            {
-                throw GetException("First", otherwiseThrow);
-            }
-
-            return _first;
-        }
-    }
-
-    public class AnyOf<T1, T2> : AnyOf
-    {
-        public AnyOf(T1 t1)
-            : base(t1, 1)
-        {
-            _first = t1;
-        }
-
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
@@ -100,6 +55,9 @@ namespace Funk
         private readonly T1 _first;
         private readonly T2 _second;
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector.
+        /// </summary>
         [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond)
         {
@@ -111,6 +69,10 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
@@ -121,6 +83,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Executes operation provided with available item.
+        /// </summary>
         public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond)
         {
             switch (Discriminator)
@@ -137,6 +102,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Returns first item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -147,6 +115,9 @@ namespace Funk
             return _first;
         }
 
+        /// <summary>
+        /// Returns second item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -158,21 +129,24 @@ namespace Funk
         }
     }
 
-    public class AnyOf<T1, T2, T3> : AnyOf
+    /// <summary>
+    /// Type that represents one of the 4 possible values (T1, T2, T3 or Empty).
+    /// </summary>
+    public class OneOf<T1, T2, T3> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
         }
 
-        public AnyOf(T3 t3)
+        public OneOf(T3 t3)
             : base(t3, 3)
         {
             _third = t3;
@@ -182,6 +156,9 @@ namespace Funk
         private readonly T2 _second;
         private readonly T3 _third;
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector.
+        /// </summary>
         [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird)
         {
@@ -194,6 +171,10 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
@@ -205,6 +186,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Executes operation provided with available item.
+        /// </summary>
         public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird)
         {
             switch (Discriminator)
@@ -224,6 +208,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Returns first item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -234,6 +221,9 @@ namespace Funk
             return _first;
         }
 
+        /// <summary>
+        /// Returns second item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -244,6 +234,9 @@ namespace Funk
             return _second;
         }
 
+        /// <summary>
+        /// Returns third item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_third is null | Discriminator.SafeNotEquals(3))
@@ -255,27 +248,30 @@ namespace Funk
         }
     }
 
-    public class AnyOf<T1, T2, T3, T4> : AnyOf
+    /// <summary>
+    /// Type that represents one of the 5 possible values (T1, T2, T3, T4 or Empty).
+    /// </summary>
+    public class OneOf<T1, T2, T3, T4> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
         }
 
-        public AnyOf(T3 t3)
+        public OneOf(T3 t3)
             : base(t3, 3)
         {
             _third = t3;
         }
 
-        public AnyOf(T4 t4)
+        public OneOf(T4 t4)
             : base(t4, 4)
         {
             _fourth = t4;
@@ -286,6 +282,9 @@ namespace Funk
         private readonly T3 _third;
         private readonly T4 _fourth;
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector.
+        /// </summary>
         [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth)
         {
@@ -299,6 +298,10 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
@@ -311,6 +314,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Executes operation provided with available item.
+        /// </summary>
         public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth)
         {
             switch (Discriminator)
@@ -333,6 +339,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Returns first item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -343,6 +352,9 @@ namespace Funk
             return _first;
         }
 
+        /// <summary>
+        /// Returns second item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -353,6 +365,9 @@ namespace Funk
             return _second;
         }
 
+        /// <summary>
+        /// Returns third item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_third is null | Discriminator.SafeNotEquals(3))
@@ -363,6 +378,9 @@ namespace Funk
             return _third;
         }
 
+        /// <summary>
+        /// Returns fourth item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_fourth is null | Discriminator.SafeNotEquals(4))
@@ -374,33 +392,36 @@ namespace Funk
         }
     }
 
-    public class AnyOf<T1, T2, T3, T4, T5> : AnyOf
+    /// <summary>
+    /// Type that represents one of the 6 possible values (T1, T2, T3, T4, T5 or Empty).
+    /// </summary>
+    public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
-        public AnyOf(T1 t1)
+        public OneOf(T1 t1)
             : base(t1, 1)
         {
             _first = t1;
         }
 
-        public AnyOf(T2 t2)
+        public OneOf(T2 t2)
             : base(t2, 2)
         {
             _second = t2;
         }
 
-        public AnyOf(T3 t3)
+        public OneOf(T3 t3)
             : base(t3, 3)
         {
             _third = t3;
         }
 
-        public AnyOf(T4 t4)
+        public OneOf(T4 t4)
             : base(t4, 4)
         {
             _fourth = t4;
         }
 
-        public AnyOf(T5 t5)
+        public OneOf(T5 t5)
             : base(t5, 5)
         {
             _fifth = t5;
@@ -412,6 +433,9 @@ namespace Funk
         private readonly T4 _fourth;
         private readonly T5 _fifth;
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector.
+        /// </summary>
         [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth)
         {
@@ -426,6 +450,10 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
@@ -439,6 +467,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Executes operation provided with available item.
+        /// </summary>
         public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth, Action<T5> ifFifth)
         {
             switch (Discriminator)
@@ -464,6 +495,9 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Returns first item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_first is null | Discriminator.SafeNotEquals(1))
@@ -474,6 +508,9 @@ namespace Funk
             return _first;
         }
 
+        /// <summary>
+        /// Returns second item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_second is null | Discriminator.SafeNotEquals(2))
@@ -484,6 +521,9 @@ namespace Funk
             return _second;
         }
 
+        /// <summary>
+        /// Returns third item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_third is null | Discriminator.SafeNotEquals(3))
@@ -494,6 +534,9 @@ namespace Funk
             return _third;
         }
 
+        /// <summary>
+        /// Returns fourth item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_fourth is null | Discriminator.SafeNotEquals(4))
@@ -504,6 +547,9 @@ namespace Funk
             return _fourth;
         }
 
+        /// <summary>
+        /// Returns fifth item or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
         public T5 UnsafeGetFifth(Func<Unit, Exception> otherwiseThrow = null)
         {
             if (_fifth is null | Discriminator.SafeNotEquals(5))
