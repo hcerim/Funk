@@ -120,10 +120,11 @@ namespace Funk.Tests
         public void Match_On_Empty_AnyOf_2_With_Nullable_Value_Empty()
         {
             UnitTest(
-                _ => new AnyOf<int?>(null),
+                _ => new AnyOf<int?, double>(null),
                 a => a.Match(
                     _ => 1,
-                    n => n.Value
+                    n=> n.Value,
+                    n => 1.1
                 ),
                 n => Assert.Equal(1, n)
             );
@@ -136,11 +137,12 @@ namespace Funk.Tests
                 _ =>
                 {
                     int? number = 3;
-                    return new AnyOf<int?>(number);
+                    return new AnyOf<int?, double>(number);
                 },
                 a => a.Match(
                     _ => 1,
-                    n => n.Value
+                    n => n.Value,
+                    n => 1.1
                 ),
                 n => Assert.Equal(3, n)
             );
