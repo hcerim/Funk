@@ -10,13 +10,13 @@ namespace Funk
 
         public static void Match(this bool item, Action<Unit> ifFalse, Action<Unit> ifTrue)
         {
-            if (item is false)
+            if (item)
             {
-                ifFalse(Unit.Value);
+                ifTrue(Unit.Value);
             }
             else
             {
-                ifTrue(Unit.Value);
+                ifFalse(Unit.Value);
             }
         }
     }
