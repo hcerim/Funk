@@ -93,11 +93,10 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return Value;
-                default: throw GetException(otherwiseThrow);
-            }
+            return Match(
+                _ => throw GetException(otherwiseThrow),
+                v => v
+            );
         }
 
         [Pure]
