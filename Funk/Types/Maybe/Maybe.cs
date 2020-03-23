@@ -33,31 +33,40 @@ namespace Funk
         [Pure]
         public bool IsEmpty => !NotEmpty;
 
+        /// <summary>
+        /// Maps available Maybe item (value or empty) to the result of the corresponding selector.
+        /// </summary>
         [Pure]
-        public R Match<R>(Func<Unit, R> ifEmpty, Func<T, R> ifFirst)
+        public R Match<R>(Func<Unit, R> ifEmpty, Func<T, R> ifNotEmpty)
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(Value);
+                case 1: return ifNotEmpty(Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
 
-        public R Match<R>(Func<T, R> ifFirst, Func<Unit, Exception> otherwiseThrow = null)
+        /// <summary>
+        /// Maps not empty value to the result of the selector or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        public R Match<R>(Func<T, R> ifNotEmpty, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(Value);
+                case 1: return ifNotEmpty(Value);
                 default: throw GetException(otherwiseThrow);
             }
         }
 
-        public void Match(Action<Unit> ifEmpty, Action<T> ifFirst)
+        /// <summary>
+        /// Executes operation provided with available Maybe (value or empty) item.
+        /// </summary>
+        public void Match(Action<Unit> ifEmpty, Action<T> ifNotEmpty)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(Value);
+                    ifNotEmpty(Value);
                     break;
                 default:
                     ifEmpty(Unit.Value);
@@ -65,12 +74,23 @@ namespace Funk
             }
         }
 
+        /// <summary>
+        /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
+        /// Use FlatMap if you have nested Maybes.
+        /// </summary>
         [Pure]
         public Maybe<R> Map<R>(Func<T, R> selector) => FlatMap(t => selector(t).AsMaybe());
 
+        /// <summary>
+        /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
+        /// </summary>
         [Pure]
         public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty<R>(), selector);
 
+        /// <summary>
+        /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
@@ -83,7 +103,7 @@ namespace Funk
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)
         {
-            return otherwiseThrow is null ? new EmptyValueException("Maybe value is empty.") : otherwiseThrow(Unit.Value);
+            return otherwiseThrow.IsNull() ? new EmptyValueException("Maybe value is empty.") : otherwiseThrow(Unit.Value);
         }
     }
 }

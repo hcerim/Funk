@@ -8,7 +8,8 @@ namespace Funk.Tests
         [Fact]
         public void Get_Maybe_Or_Else()
         {
-            UnitTest(_ => maybe(default(string)),
+            UnitTest(
+                _ => maybe(default(string)),
                 m => m.GetOrElse(_ => "Funk"),
                 s => Assert.Equal("Funk", s)
             );
@@ -17,7 +18,8 @@ namespace Funk.Tests
         [Fact]
         public void Get_Maybe_Or_Null()
         {
-            UnitTest(_ => maybe(default(object)),
+            UnitTest(
+                _ => maybe(default(object)),
                 m => m.GetOrNull(),
                 Assert.Null
             );
@@ -26,7 +28,8 @@ namespace Funk.Tests
         [Fact]
         public void Get_Maybe_Or()
         {
-            UnitTest(_ => maybe(default(string)),
+            UnitTest(
+                _ => maybe(default(string)),
                 m => m.Or(_ => maybe("Harun")),
                 s => Assert.Equal("Harun", s.UnsafeGet())
             );
@@ -35,7 +38,8 @@ namespace Funk.Tests
         [Fact]
         public void Get_Maybe_With_Nullable()
         {
-            UnitTest(_ =>
+            UnitTest(
+                _ =>
                 {
                     int? number = 1;
                     return maybe(number);
@@ -48,7 +52,8 @@ namespace Funk.Tests
         [Fact]
         public void Get_Maybe_With_Nullable_Empty()
         {
-            UnitTest(_ => maybe((int?) null),
+            UnitTest(
+                _ => maybe((int?) null),
                 m => m.Map().Or(_ => maybe(2)),
                 s => Assert.Equal(2, s.UnsafeGet())
             );
