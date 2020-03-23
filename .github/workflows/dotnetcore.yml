@@ -7,17 +7,29 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  setup:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Build with dotnet
+  
+  build:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Build
       run: dotnet build --configuration Release
-    - name: Test with dotnet
+      
+  test:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Test
       run: dotnet test --configuration Release
