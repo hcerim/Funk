@@ -10,9 +10,6 @@ namespace Funk
     /// </summary>
     public struct Maybe<T>
     {
-        [Pure]
-        public static Maybe<T> Empty => new Maybe<T>();
-
         public Maybe(T item)
         {
             if (item is null)
@@ -28,8 +25,7 @@ namespace Funk
             Value = item;
         }
 
-        private T Value { get; }
-
+        private object Value { get; }
         private int Discriminator { get; }
         public bool NotEmpty { get; }
 
@@ -44,7 +40,7 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifNotEmpty(Value);
+                case 1: return ifNotEmpty((T)Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
@@ -56,7 +52,7 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifNotEmpty(Value);
+                case 1: return ifNotEmpty((T)Value);
                 default: throw GetException(otherwiseThrow);
             }
         }
@@ -69,7 +65,7 @@ namespace Funk
             switch (Discriminator)
             {
                 case 1:
-                    ifNotEmpty?.Invoke(Value);
+                    ifNotEmpty?.Invoke((T)Value);
                     break;
                 default:
                     ifEmpty?.Invoke(Unit.Value);
@@ -88,7 +84,7 @@ namespace Funk
         /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// </summary>
         [Pure]
-        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe<R>.Empty, selector);
+        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty, selector);
 
         /// <summary>
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
@@ -101,6 +97,8 @@ namespace Funk
                 v => v
             );
         }
+
+        public static implicit operator Maybe<T>(Unit unit) => new Maybe<T>();
 
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)

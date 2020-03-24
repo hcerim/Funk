@@ -9,5 +9,8 @@ namespace Funk
 
         [Pure]
         public static Maybe<T> Create<T>(T? item) where T: struct => new Maybe<T>((T)item);
+
+        [Pure]
+        public static Unit Empty => Unit.Value;
     }
 }
