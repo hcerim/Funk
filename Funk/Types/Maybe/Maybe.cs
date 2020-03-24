@@ -25,8 +25,7 @@ namespace Funk
             Value = item;
         }
 
-        private T Value { get; }
-
+        private object Value { get; }
         private int Discriminator { get; }
         public bool NotEmpty { get; }
 
@@ -41,7 +40,7 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifNotEmpty(Value);
+                case 1: return ifNotEmpty((T)Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
@@ -53,7 +52,7 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifNotEmpty(Value);
+                case 1: return ifNotEmpty((T)Value);
                 default: throw GetException(otherwiseThrow);
             }
         }
@@ -61,15 +60,15 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available Maybe (value or empty) item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T> ifNotEmpty)
+        public void Match(Action<Unit> ifEmpty = null, Action<T> ifNotEmpty = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifNotEmpty(Value);
+                    ifNotEmpty?.Invoke((T)Value);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -85,7 +84,7 @@ namespace Funk
         /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// </summary>
         [Pure]
-        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty<R>(), selector);
+        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty, selector);
 
         /// <summary>
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
@@ -93,12 +92,13 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return Value;
-                default: throw GetException(otherwiseThrow);
-            }
+            return Match(
+                _ => throw GetException(otherwiseThrow),
+                v => v
+            );
         }
+
+        public static implicit operator Maybe<T>(Unit unit) => new Maybe<T>();
 
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)

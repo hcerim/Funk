@@ -5,8 +5,7 @@ using Funk.Exceptions;
 namespace Funk
 {
     /// <summary>
-    /// Type that holds no value but provides empty value handling.
-    /// Base type for any disjoint union implementation.
+    /// Base type for any disjoint union implementation. Contains the value and empty value handling.
     /// </summary>
     public abstract class OneOf
     {
@@ -21,6 +20,7 @@ namespace Funk
                 NotEmpty = true;
                 Discriminator = discriminator;
             }
+            Value = item;
         }
 
         [Pure]
@@ -33,6 +33,7 @@ namespace Funk
         public bool IsEmpty => !NotEmpty;
         public bool NotEmpty { get; }
         protected int Discriminator { get; }
+        protected object Value { get; }
     }
 
     /// <summary>
@@ -40,20 +41,23 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2> Empty => new OneOf<T1, T2>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
-            _first = t1;
         }
 
         public OneOf(T2 t2)
             : base(t2, 2)
         {
-            _second = t2;
         }
-
-        private readonly T1 _first;
-        private readonly T2 _second;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -63,8 +67,8 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
@@ -77,8 +81,8 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
@@ -86,18 +90,18 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke((T1)Value);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke((T2)Value);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -108,12 +112,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_first is null | Discriminator.SafeNotEquals(1))
+            if (Discriminator.SafeNotEquals(1))
             {
                 throw GetException("First", otherwiseThrow);
             }
 
-            return _first;
+            return (T1)Value;
         }
 
         /// <summary>
@@ -122,12 +126,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_second is null | Discriminator.SafeNotEquals(2))
+            if (Discriminator.SafeNotEquals(2))
             {
                 throw GetException("Second", otherwiseThrow);
             }
 
-            return _second;
+            return (T2)Value;
         }
     }
 
@@ -136,27 +140,28 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2, T3> Empty => new OneOf<T1, T2, T3>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
-            _first = t1;
         }
 
         public OneOf(T2 t2)
             : base(t2, 2)
         {
-            _second = t2;
         }
 
         public OneOf(T3 t3)
             : base(t3, 3)
         {
-            _third = t3;
         }
-
-        private readonly T1 _first;
-        private readonly T2 _second;
-        private readonly T3 _third;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -166,9 +171,9 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
-                case 3: return ifThird(_third);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
+                case 3: return ifThird((T3)Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
@@ -181,9 +186,9 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
-                case 3: return ifThird(_third);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
+                case 3: return ifThird((T3)Value);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
@@ -191,21 +196,21 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke((T1)Value);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke((T2)Value);
                     break;
                 case 3:
-                    ifThird(_third);
+                    ifThird?.Invoke((T3)Value);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -216,12 +221,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_first is null | Discriminator.SafeNotEquals(1))
+            if (Discriminator.SafeNotEquals(1))
             {
                 throw GetException("First", otherwiseThrow);
             }
 
-            return _first;
+            return (T1)Value;
         }
 
         /// <summary>
@@ -230,12 +235,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_second is null | Discriminator.SafeNotEquals(2))
+            if (Discriminator.SafeNotEquals(2))
             {
                 throw GetException("Second", otherwiseThrow);
             }
 
-            return _second;
+            return (T2)Value;
         }
 
         /// <summary>
@@ -244,12 +249,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_third is null | Discriminator.SafeNotEquals(3))
+            if (Discriminator.SafeNotEquals(3))
             {
                 throw GetException("Third", otherwiseThrow);
             }
 
-            return _third;
+            return (T3)Value;
         }
     }
 
@@ -258,34 +263,33 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2, T3, T4> Empty => new OneOf<T1, T2, T3, T4>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
-            _first = t1;
         }
 
         public OneOf(T2 t2)
             : base(t2, 2)
         {
-            _second = t2;
         }
 
         public OneOf(T3 t3)
             : base(t3, 3)
         {
-            _third = t3;
         }
 
         public OneOf(T4 t4)
             : base(t4, 4)
         {
-            _fourth = t4;
         }
-
-        private readonly T1 _first;
-        private readonly T2 _second;
-        private readonly T3 _third;
-        private readonly T4 _fourth;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -295,10 +299,10 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
-                case 3: return ifThird(_third);
-                case 4: return ifFourth(_fourth);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
+                case 3: return ifThird((T3)Value);
+                case 4: return ifFourth((T4)Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
@@ -311,10 +315,10 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
-                case 3: return ifThird(_third);
-                case 4: return ifFourth(_fourth);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
+                case 3: return ifThird((T3)Value);
+                case 4: return ifFourth((T4)Value);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
@@ -322,24 +326,24 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke((T1)Value);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke((T2)Value);
                     break;
                 case 3:
-                    ifThird(_third);
+                    ifThird?.Invoke((T3)Value);
                     break;
                 case 4:
-                    ifFourth(_fourth);
+                    ifFourth?.Invoke((T4)Value);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -350,12 +354,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_first is null | Discriminator.SafeNotEquals(1))
+            if (Discriminator.SafeNotEquals(1))
             {
                 throw GetException("First", otherwiseThrow);
             }
 
-            return _first;
+            return (T1)Value;
         }
 
         /// <summary>
@@ -364,12 +368,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_second is null | Discriminator.SafeNotEquals(2))
+            if (Discriminator.SafeNotEquals(2))
             {
                 throw GetException("Second", otherwiseThrow);
             }
 
-            return _second;
+            return (T2)Value;
         }
 
         /// <summary>
@@ -378,12 +382,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_third is null | Discriminator.SafeNotEquals(3))
+            if (Discriminator.SafeNotEquals(3))
             {
                 throw GetException("Third", otherwiseThrow);
             }
 
-            return _third;
+            return (T3)Value;
         }
 
         /// <summary>
@@ -392,12 +396,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_fourth is null | Discriminator.SafeNotEquals(4))
+            if (Discriminator.SafeNotEquals(4))
             {
                 throw GetException("Fourth", otherwiseThrow);
             }
 
-            return _fourth;
+            return (T4)Value;
         }
     }
 
@@ -406,41 +410,38 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2, T3, T4, T5> Empty => new OneOf<T1, T2, T3, T4, T5>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
-            _first = t1;
         }
 
         public OneOf(T2 t2)
             : base(t2, 2)
         {
-            _second = t2;
         }
 
         public OneOf(T3 t3)
             : base(t3, 3)
         {
-            _third = t3;
         }
 
         public OneOf(T4 t4)
             : base(t4, 4)
         {
-            _fourth = t4;
         }
 
         public OneOf(T5 t5)
             : base(t5, 5)
         {
-            _fifth = t5;
         }
-
-        private readonly T1 _first;
-        private readonly T2 _second;
-        private readonly T3 _third;
-        private readonly T4 _fourth;
-        private readonly T5 _fifth;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -450,11 +451,11 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
-                case 3: return ifThird(_third);
-                case 4: return ifFourth(_fourth);
-                case 5: return ifFifth(_fifth);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
+                case 3: return ifThird((T3)Value);
+                case 4: return ifFourth((T4)Value);
+                case 5: return ifFifth((T5)Value);
                 default: return ifEmpty(Unit.Value);
             }
         }
@@ -467,11 +468,11 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return ifFirst(_first);
-                case 2: return ifSecond(_second);
-                case 3: return ifThird(_third);
-                case 4: return ifFourth(_fourth);
-                case 5: return ifFifth(_fifth);
+                case 1: return ifFirst((T1)Value);
+                case 2: return ifSecond((T2)Value);
+                case 3: return ifThird((T3)Value);
+                case 4: return ifFourth((T4)Value);
+                case 5: return ifFifth((T5)Value);
                 default: throw GetException("Every", otherwiseThrow);
             }
         }
@@ -479,27 +480,27 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth, Action<T5> ifFifth)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null, Action<T5> ifFifth = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke((T1)Value);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke((T2)Value);
                     break;
                 case 3:
-                    ifThird(_third);
+                    ifThird?.Invoke((T3)Value);
                     break;
                 case 4:
-                    ifFourth(_fourth);
+                    ifFourth?.Invoke((T4)Value);
                     break;
                 case 5:
-                    ifFifth(_fifth);
+                    ifFifth?.Invoke((T5)Value);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -510,12 +511,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_first is null | Discriminator.SafeNotEquals(1))
+            if (Discriminator.SafeNotEquals(1))
             {
                 throw GetException("First", otherwiseThrow);
             }
 
-            return _first;
+            return (T1)Value;
         }
 
         /// <summary>
@@ -524,12 +525,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_second is null | Discriminator.SafeNotEquals(2))
+            if (Discriminator.SafeNotEquals(2))
             {
                 throw GetException("Second", otherwiseThrow);
             }
 
-            return _second;
+            return (T2)Value;
         }
 
         /// <summary>
@@ -538,12 +539,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_third is null | Discriminator.SafeNotEquals(3))
+            if (Discriminator.SafeNotEquals(3))
             {
                 throw GetException("Third", otherwiseThrow);
             }
 
-            return _third;
+            return (T3)Value;
         }
 
         /// <summary>
@@ -552,12 +553,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_fourth is null | Discriminator.SafeNotEquals(4))
+            if (Discriminator.SafeNotEquals(4))
             {
                 throw GetException("Fourth", otherwiseThrow);
             }
 
-            return _fourth;
+            return (T4)Value;
         }
 
         /// <summary>
@@ -566,12 +567,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T5 UnsafeGetFifth(Func<Unit, Exception> otherwiseThrow = null)
         {
-            if (_fifth is null | Discriminator.SafeNotEquals(5))
+            if (Discriminator.SafeNotEquals(5))
             {
                 throw GetException("Fifth", otherwiseThrow);
             }
 
-            return _fifth;
+            return (T5)Value;
         }
     }
 }
