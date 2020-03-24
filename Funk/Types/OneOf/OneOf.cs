@@ -40,6 +40,14 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2> Empty => new OneOf<T1, T2>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
@@ -86,18 +94,18 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke(_first);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke(_second);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -136,6 +144,14 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2, T3> Empty => new OneOf<T1, T2, T3>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
@@ -191,21 +207,21 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke(_first);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke(_second);
                     break;
                 case 3:
-                    ifThird(_third);
+                    ifThird?.Invoke(_third);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -258,6 +274,14 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2, T3, T4> Empty => new OneOf<T1, T2, T3, T4>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
@@ -322,24 +346,24 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke(_first);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke(_second);
                     break;
                 case 3:
-                    ifThird(_third);
+                    ifThird?.Invoke(_third);
                     break;
                 case 4:
-                    ifFourth(_fourth);
+                    ifFourth?.Invoke(_fourth);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }
@@ -406,6 +430,14 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
+        [Pure]
+        public static OneOf<T1, T2, T3, T4, T5> Empty => new OneOf<T1, T2, T3, T4, T5>();
+
+        private OneOf()
+            : base(default, 0)
+        {
+        }
+
         public OneOf(T1 t1)
             : base(t1, 1)
         {
@@ -479,27 +511,27 @@ namespace Funk
         /// <summary>
         /// Executes operation provided with available item.
         /// </summary>
-        public void Match(Action<Unit> ifEmpty, Action<T1> ifFirst, Action<T2> ifSecond, Action<T3> ifThird, Action<T4> ifFourth, Action<T5> ifFifth)
+        public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null, Action<T5> ifFifth = null)
         {
             switch (Discriminator)
             {
                 case 1:
-                    ifFirst(_first);
+                    ifFirst?.Invoke(_first);
                     break;
                 case 2:
-                    ifSecond(_second);
+                    ifSecond?.Invoke(_second);
                     break;
                 case 3:
-                    ifThird(_third);
+                    ifThird?.Invoke(_third);
                     break;
                 case 4:
-                    ifFourth(_fourth);
+                    ifFourth?.Invoke(_fourth);
                     break;
                 case 5:
-                    ifFifth(_fifth);
+                    ifFifth?.Invoke(_fifth);
                     break;
                 default:
-                    ifEmpty(Unit.Value);
+                    ifEmpty?.Invoke(Unit.Value);
                     break;
             }
         }

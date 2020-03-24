@@ -26,6 +26,42 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Create_Maybe_With_Empty_String_Incorrect()
+        {
+            UnitTest(
+                _ => "",
+                s =>
+                {
+                    var maybe = s.AsMaybe().Map(ss => $"{s} is here");
+                    var result = maybe.Match(
+                        _ => "Funk is empty",
+                        ss => ss
+                    );
+                    return result;
+                },
+                r => Assert.Equal(" is here", r)
+            );
+        }
+
+        [Fact]
+        public void Create_Maybe_With_Empty_String_Correct()
+        {
+            UnitTest(
+                _ => "",
+                s =>
+                {
+                    var maybe = s.AsNotEmptyString().Map(ss => $"{s} is here");
+                    var result = maybe.Match(
+                        _ => "Funk is empty",
+                        ss => ss
+                    );
+                    return result;
+                },
+                r => Assert.Equal("Funk is empty", r)
+            );
+        }
+
+        [Fact]
         public void Create_Maybe_With_Empty_Value()
         {
             UnitTest(
