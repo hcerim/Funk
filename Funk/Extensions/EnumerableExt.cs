@@ -146,5 +146,22 @@ namespace Funk
             var right = collection.Except(left).ToReadOnlyCollection();
             return Record.Create(left, right);
         }
+
+        /// <summary>
+        /// Creates an immutable dictionary of key and enumerables out of enumerable by a specified selector.
+        /// </summary>
+        public static IImmutableDictionary<TKey, IReadOnlyCollection<TSource>> ToDictionary<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
+        {
+            return enumerable.ToReadOnlyCollection().GroupBy(keySelector).ToImmutableDictionary(i => i.Key, i => i.ToReadOnlyCollection());
+        }
+
+        /// <summary>
+        /// Creates a collection of records out of enumerable by a specified selector.
+        /// </summary>
+        /// <returns></returns>
+        public static IReadOnlyCollection<Record<TKey, IReadOnlyCollection<TSource>>> ToRecord<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
+        {
+            return enumerable.ToDictionary(keySelector).Select(i => Record.Create(i.Key, i.Value)).ToReadOnlyCollection();
+        }
     }
 }

@@ -201,7 +201,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>(),
-                m => m.AsLastOrDefault(),
+                l => l.AsLastOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
         }
@@ -211,7 +211,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>{null, "Funk"},
-                m => m.AsFirstOrDefault(),
+                l => l.AsFirstOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
         }
@@ -221,7 +221,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string> { null, "Funk", "Funky" },
-                m => m.WhereOrDefault(s => s.SafeEquals("Funky")),
+                l => l.WhereOrDefault(s => s.SafeEquals("Funky")),
                 s =>
                 {
                     Assert.False(s.IsEmpty);
@@ -235,7 +235,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string> { null, "Funk", "Funky" },
-                m => m.WhereOrDefault(),
+                l => l.WhereOrDefault(),
                 s =>
                 {
                     Assert.False(s.IsEmpty);
@@ -249,13 +249,41 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string> { null, "Funk", "Funky", "Harun", "Bosnia" },
-                m => m.ExceptNulls().ConditionalSplit(s => s.Contains("Funk")),
+                l => l.ExceptNulls().ConditionalSplit(s => s.Contains("Funk")),
                 r =>
                 {
                     Assert.Equal(2, r.Item1.Count);
                     Assert.Equal("Funky", r.Item1.ElementAt(1));
                     Assert.Equal(2, r.Item2.Count);
                     Assert.Equal("Harun", r.Item2.ElementAt(0));
+                }
+            );
+        }
+
+        [Fact]
+        public void Enumerable_To_Dictionary()
+        {
+            UnitTest(
+                _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.ToDictionary(i => i),
+                d =>
+                {
+                    Assert.Equal(4, d.Count);
+                    Assert.Equal("Funky", d["Funky"].ElementAt(0));
+                }
+            );
+        }
+
+        [Fact]
+        public void Enumerable_To_Record()
+        {
+            UnitTest(
+                _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.ToRecord(i => i),
+                r =>
+                {
+                    Assert.Equal(4, r.Count);
+                    Assert.True(r.AsFirstOrDefault(record => record.Item2.Contains("Funky")).NotEmpty);
                 }
             );
         }
