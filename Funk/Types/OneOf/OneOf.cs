@@ -62,7 +62,6 @@ namespace Funk
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
         /// </summary>
-        [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond)
         {
             switch (Discriminator)
@@ -165,7 +164,6 @@ namespace Funk
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
         /// </summary>
-        [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird)
         {
             switch (Discriminator)
@@ -292,7 +290,6 @@ namespace Funk
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
         /// </summary>
-        [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth)
         {
             switch (Discriminator)
@@ -443,7 +440,6 @@ namespace Funk
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
         /// </summary>
-        [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth)
         {
             switch (Discriminator)
