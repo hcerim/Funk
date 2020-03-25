@@ -2,7 +2,7 @@
 using System.Linq;
 using Xunit;
 
-namespace Funk.Tests.ExtensionsTests
+namespace Funk.Tests
 {
     public class EnumerableTests : Test
     {
