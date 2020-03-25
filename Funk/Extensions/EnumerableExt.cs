@@ -29,9 +29,22 @@ namespace Funk
         [Pure]
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T> enumerable) where T : class
         {
-            var list = new List<T>();
-            list.AddRange(enumerable ?? new List<T>());
-            return list.Where(i => i.SafeNotEquals(null)).ToReadOnlyCollection();
+            return enumerable.ToNotEmptyCollection().Match(
+                _ => ImmutableList.Create<T>(),
+                e => e.Where(i => i.SafeNotEquals(null)).ToReadOnlyCollection()
+            );
+        }
+
+        /// <summary>
+        /// Returns a collection of not null values. Handles null enumerable.
+        /// </summary>
+        [Pure]
+        public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T?> enumerable) where T : struct
+        {
+            return enumerable.ToNotEmptyCollection().Match(
+                _ => ImmutableList.Create<T>(),
+                e => e.Where(i => i.SafeNotEquals(null)).Select(j => j.Value).ToReadOnlyCollection()
+            );
         }
 
         /// <summary>
@@ -41,10 +54,16 @@ namespace Funk
         public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable) => enumerable.ToReadOnlyCollection().SelectMany(m => m.AsReadOnlyCollection()).ToReadOnlyCollection();
 
         /// <summary>
-        /// Flattens enumerable of enumerables into one collection. Handles null enumerable and null children.
+        /// Flattens enumerable of enumerables into one collection. Handles null enumerable and null children and their children.
         /// </summary>
         [Pure]
-        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) => enumerable.ToReadOnlyCollection().SelectMany(i => i.ToReadOnlyCollection()).ToReadOnlyCollection();
+        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) where T : class => enumerable.ExceptNulls().SelectMany(i => i.ExceptNulls()).ToReadOnlyCollection();
+
+        /// <summary>
+        /// Flattens enumerable of enumerables into one collection. Handles null enumerable and null children and their children.
+        /// </summary>
+        [Pure]
+        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T?>> enumerable) where T : struct => enumerable.ExceptNulls().SelectMany(i => i.ExceptNulls()).ToReadOnlyCollection();
 
         /// <summary>
         /// Returns collection of not empty Maybes.
@@ -80,7 +99,16 @@ namespace Funk
         [Pure]
         public static Maybe<T> AsFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
         {
-            return enumerable.Where(predicate ?? (i => true)).ToNotEmptyCollection().Map(c => c.First());
+            return enumerable.WhereOrDefault(predicate).Map(c => c.First());
+        }
+
+        /// <summary>
+        /// Returns a Maybe of ReadOnlyCollection of items that satisfy the predicate or returns an empty Maybe. Handles null enumerable.
+        /// </summary>
+        [Pure]
+        public static Maybe<IReadOnlyCollection<T>> WhereOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
+        {
+            return enumerable.ToReadOnlyCollection().Where(predicate ?? (i => true)).ToNotEmptyCollection();
         }
 
         /// <summary>
