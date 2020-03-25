@@ -17,9 +17,9 @@ namespace Funk
         public static bool SafeNotEquals<T>(this T t, T other) => !t.SafeEquals(other);
 
         [Pure]
-        public static bool SafeNotEquals<T>(this T t, T? other) where T : struct => ((T?)t).SafeNotEquals(other);
+        public static bool SafeNotEquals<T>(this T t, T? other) where T : struct => !t.SafeEquals(other);
 
         [Pure]
-        public static bool SafeNotEquals<T>(this T? t, T other) where T : struct => t.SafeNotEquals((T?) other);
+        public static bool SafeNotEquals<T>(this T? t, T other) where T : struct => !t.SafeEquals(other);
     }
 }
