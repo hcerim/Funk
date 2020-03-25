@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Funk
 {
@@ -15,7 +14,6 @@ namespace Funk
         /// <summary>
         /// Maps Unit to the result of the selector.
         /// </summary>
-        [Pure]
         public T Match<T>(Func<Unit, T> selector) => selector(Value);
 
         /// <summary>

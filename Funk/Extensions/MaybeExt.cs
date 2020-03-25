@@ -22,7 +22,6 @@ namespace Funk
         /// <summary>
         /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
         /// </summary>
-        [Pure]
         public static R GetOrElse<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
 
         /// <summary>
@@ -49,7 +48,6 @@ namespace Funk
         /// <summary>
         /// Returns enumerable if Maybe is not empty. Otherwise it returns either specified enumerable by the selector or an empty enumerable.
         /// </summary>
-        [Pure]
         public static IEnumerable<T> GetOr<T>(this Maybe<IEnumerable<T>> maybe, Func<Unit, IEnumerable<T>> otherwise = null)
         {
             return maybe.GetOrElse(_ => otherwise.AsMaybe().Match(
@@ -61,7 +59,6 @@ namespace Funk
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
-        [Pure]
         public static Maybe<R> Or<T, R>(this Maybe<T> maybe, Func<Unit, Maybe<R>> ifEmpty)
             where T : R
         {

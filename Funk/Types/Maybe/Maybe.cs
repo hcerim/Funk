@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 using Funk.Exceptions;
 
 namespace Funk
@@ -35,7 +36,6 @@ namespace Funk
         /// <summary>
         /// Maps available Maybe item (value or empty) to the result of the corresponding selector.
         /// </summary>
-        [Pure]
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T, R> ifNotEmpty)
         {
             switch (Discriminator)
@@ -77,14 +77,23 @@ namespace Funk
         /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// Use FlatMap if you have nested Maybes.
         /// </summary>
-        [Pure]
         public Maybe<R> Map<R>(Func<T, R> selector) => FlatMap(t => selector(t).AsMaybe());
+
+        /// <summary>
+        /// Maps not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
+        /// Use FlatMap if you have nested Maybes.
+        /// </summary>
+        public async Task<Maybe<R>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(async t => (await selector(t)).AsMaybe());
 
         /// <summary>
         /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// </summary>
-        [Pure]
         public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty, selector);
+
+        /// <summary>
+        /// Maps not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
+        /// </summary>
+        public async Task<Maybe<R>> FlatMap<R>(Func<T, Task<Maybe<R>>> selector) => await Match(async _ => await Task.Run(() => new Maybe<R>()), async v => await selector(v));
 
         /// <summary>
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
