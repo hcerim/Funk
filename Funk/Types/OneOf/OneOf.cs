@@ -9,6 +9,9 @@ namespace Funk
     /// </summary>
     public abstract class OneOf
     {
+        [Pure]
+        public static Unit Empty => Unit.Value;
+
         protected OneOf(object item, int discriminator)
         {
             if (item.IsNull())
@@ -41,9 +44,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2> : OneOf
     {
-        [Pure]
-        public static OneOf<T1, T2> Empty => new OneOf<T1, T2>();
-
         private OneOf()
             : base(default, 0)
         {
@@ -133,6 +133,8 @@ namespace Funk
 
             return (T2)Value;
         }
+
+        public static implicit operator OneOf<T1, T2>(Unit unit) => new OneOf<T1, T2>();
     }
 
     /// <summary>
@@ -140,9 +142,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3> : OneOf
     {
-        [Pure]
-        public static OneOf<T1, T2, T3> Empty => new OneOf<T1, T2, T3>();
-
         private OneOf()
             : base(default, 0)
         {
@@ -256,6 +255,8 @@ namespace Funk
 
             return (T3)Value;
         }
+
+        public static implicit operator OneOf<T1, T2, T3>(Unit unit) => new OneOf<T1, T2, T3>();
     }
 
     /// <summary>
@@ -263,9 +264,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4> : OneOf
     {
-        [Pure]
-        public static OneOf<T1, T2, T3, T4> Empty => new OneOf<T1, T2, T3, T4>();
-
         private OneOf()
             : base(default, 0)
         {
@@ -403,6 +401,8 @@ namespace Funk
 
             return (T4)Value;
         }
+
+        public static implicit operator OneOf<T1, T2, T3, T4>(Unit unit) => new OneOf<T1, T2, T3, T4>();
     }
 
     /// <summary>
@@ -410,9 +410,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
-        [Pure]
-        public static OneOf<T1, T2, T3, T4, T5> Empty => new OneOf<T1, T2, T3, T4, T5>();
-
         private OneOf()
             : base(default, 0)
         {
@@ -574,5 +571,7 @@ namespace Funk
 
             return (T5)Value;
         }
+
+        public static implicit operator OneOf<T1, T2, T3, T4, T5>(Unit unit) => new OneOf<T1, T2, T3, T4, T5>();
     }
 }

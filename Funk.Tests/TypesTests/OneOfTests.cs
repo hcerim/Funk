@@ -8,7 +8,7 @@ namespace Funk.Tests
     public class OneOfTests : Test
     {
         [Fact]
-        public void Create_AnyOf_3_Type_Check()
+        public void Create_OneOf_3_Type_Check()
         {
             UnitTest(
                 _ => new OneOf<string, int, double>("Funk"),
@@ -18,7 +18,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_AnyOf_3_With_First()
+        public void Create_OneOf_3_With_First()
         {
             UnitTest(
                 _ => new OneOf<string, int, double>("Funk"),
@@ -28,7 +28,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_AnyOf_3_With_First_Get_Second_Implicit()
+        public void Create_OneOf_3_With_First_Get_Second_Implicit()
         {
             UnitTest(
                 _ => new OneOf<string, int, double>("Funk"),
@@ -38,7 +38,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_AnyOf_3_With_First_Get_Second_Explicit()
+        public void Create_OneOf_3_With_First_Get_Second_Explicit()
         {
             UnitTest(
                 _ => new OneOf<string, int, double>("Funk"),
@@ -48,17 +48,17 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_AnyOf_2_With_First_Get_Second_Implicit()
+        public void Create_OneOf_2_With_First_Get_Second_Implicit()
         {
             UnitTest(
-                _ => new OneOf<string, int>(null),
+                _ => GetEmptyOneOf(),
                 a => act(() => a.UnsafeGetSecond()),
                 a => Assert.Throws<EmptyValueException>(a)
             );
         }
 
         [Fact]
-        public void Match_On_Non_Empty_AnyOf_2_With_Result()
+        public void Match_On_Non_Empty_OneOf_2_With_Result()
         {
             UnitTest(
                 _ => new User(new BasicInfo
@@ -76,7 +76,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_With_Result()
+        public void Match_On_Empty_OneOf_2_With_Result()
         {
             UnitTest(
                 _ => new User(default(Biography)),
@@ -90,10 +90,10 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_With_Exception_Explicit()
+        public void Match_On_Empty_OneOf_2_With_Exception_Explicit()
         {
             UnitTest(
-                _ => new User(default(Biography)),
+                _ => GetEmptyUser(),
                 u => act(() => u.Match(
                     i => i.Name,
                     b => b.Nationality,
@@ -104,10 +104,10 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_With_Exception_Implicit()
+        public void Match_On_Empty_OneOf_2_With_Exception_Implicit()
         {
             UnitTest(
-                _ => new User(default(Biography)),
+                _ => GetEmptyUser(),
                 u => act(() => u.Match(
                     i => i.Name,
                     b => b.Nationality
@@ -117,7 +117,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_With_Nullable_Value_Empty()
+        public void Match_On_Empty_OneOf_2_With_Nullable_Value_Empty()
         {
             UnitTest(
                 _ => new OneOf<int?, double>(null),
@@ -131,7 +131,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_With_Nullable_Value()
+        public void Match_On_Empty_OneOf_2_With_Nullable_Value()
         {
             UnitTest(
                 _ =>
@@ -149,10 +149,10 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_With_Exception()
+        public void Match_On_Empty_OneOf_2_With_Exception()
         {
             UnitTest(
-                _ => new User(default(Biography)),
+                _ => GetEmptyUser(),
                 u => act(() => u.Match(
                     _ => throw new Exception("Funk"),
                     i => { },
@@ -163,7 +163,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_Empty_Check_Unsafe()
+        public void Match_On_Empty_OneOf_2_Empty_Check_Unsafe()
         {
             UnitTest(
                 _ => new User(new Biography
@@ -179,7 +179,7 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Match_On_Empty_AnyOf_2_Empty_Check_Safe()
+        public void Match_On_Empty_OneOf_2_Empty_Check_Safe()
         {
             UnitTest(
                 _ => new User(new Biography
@@ -196,6 +196,16 @@ namespace Funk.Tests
                 s => Assert.Equal("Bosnian", s)
             );
         }
+
+        private static OneOf<string, int> GetEmptyOneOf()
+        {
+            return OneOf.Empty;
+        }
+
+        private static User GetEmptyUser()
+        {
+            return OneOf.Empty;
+        }
     }
 
     public class User : OneOf<BasicInfo, Biography>
@@ -209,6 +219,8 @@ namespace Funk.Tests
             : base(t2)
         {
         }
+
+        public static implicit operator User(Unit unit) => new User(default(BasicInfo));
     }
 
     public class BasicInfo
