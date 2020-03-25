@@ -253,7 +253,9 @@ namespace Funk.Tests
                 r =>
                 {
                     Assert.Equal(2, r.Item1.Count);
+                    Assert.Equal("Funky", r.Item1.ElementAt(1));
                     Assert.Equal(2, r.Item2.Count);
+                    Assert.Equal("Harun", r.Item2.ElementAt(0));
                 }
             );
         }
