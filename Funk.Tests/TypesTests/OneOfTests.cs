@@ -202,8 +202,28 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new User(default(BasicInfo)),
-                u => u.Info.IsEmpty && u.Biography.IsEmpty,
+                u => u.Info.IsEmpty && u.Bio.IsEmpty,
                 Assert.True
+            );
+        }
+
+        [Fact]
+        public void Match_On_Empty_OneOf_2_Get_Second_Empty()
+        {
+            UnitTest(
+                _ => new OneOf<int, int>(first:2), 
+                u => act(() => u.Second.UnsafeGet()),
+                a => Assert.Throws<EmptyValueException>(a)
+            );
+        }
+
+        [Fact]
+        public void Match_On_Empty_OneOf_2_Get_Second()
+        {
+            UnitTest(
+                _ => new OneOf<int, int>(second: 2),
+                u => u.Second.UnsafeGet(),
+                i => Assert.Equal(2, i)
             );
         }
 
@@ -215,7 +235,7 @@ namespace Funk.Tests
                 {
                     Nationality = "Bosnian"
                 }),
-                u => u.Biography.UnsafeGet().Nationality,
+                u => u.Bio.UnsafeGet().Nationality,
                 s => Assert.Equal("Bosnian", s)
             );
         }
@@ -237,18 +257,18 @@ namespace Funk.Tests
         {
         }
 
-        public User(BasicInfo t1)
-            : base(t1)
+        public User(BasicInfo info)
+            : base(info)
         {
         }
 
-        public User(Biography t2)
-            : base(t2)
+        public User(Biography bio)
+            : base(bio)
         {
         }
 
         public Maybe<BasicInfo> Info => First;
-        public Maybe<Biography> Biography => Second;
+        public Maybe<Biography> Bio => Second;
 
         public static implicit operator User(Unit unit) => new User();
     }

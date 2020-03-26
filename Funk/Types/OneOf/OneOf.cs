@@ -47,13 +47,13 @@ namespace Funk
         {
         }
 
-        public OneOf(T1 t1)
-            : base(t1, 1)
+        public OneOf(T1 first)
+            : base(first, 1)
         {
         }
 
-        public OneOf(T2 t2)
-            : base(t2, 2)
+        public OneOf(T2 second)
+            : base(second, 2)
         {
         }
 
@@ -156,18 +156,18 @@ namespace Funk
         {
         }
 
-        public OneOf(T1 t1)
-            : base(t1, 1)
+        public OneOf(T1 first)
+            : base(first, 1)
         {
         }
 
-        public OneOf(T2 t2)
-            : base(t2, 2)
+        public OneOf(T2 second)
+            : base(second, 2)
         {
         }
 
-        public OneOf(T3 t3)
-            : base(t3, 3)
+        public OneOf(T3 third)
+            : base(third, 3)
         {
         }
 
@@ -295,23 +295,23 @@ namespace Funk
         {
         }
 
-        public OneOf(T1 t1)
-            : base(t1, 1)
+        public OneOf(T1 first)
+            : base(first, 1)
         {
         }
 
-        public OneOf(T2 t2)
-            : base(t2, 2)
+        public OneOf(T2 second)
+            : base(second, 2)
         {
         }
 
-        public OneOf(T3 t3)
-            : base(t3, 3)
+        public OneOf(T3 third)
+            : base(third, 3)
         {
         }
 
-        public OneOf(T4 t4)
-            : base(t4, 4)
+        public OneOf(T4 fourth)
+            : base(fourth, 4)
         {
         }
 
@@ -464,28 +464,28 @@ namespace Funk
         {
         }
 
-        public OneOf(T1 t1)
-            : base(t1, 1)
+        public OneOf(T1 first)
+            : base(first, 1)
         {
         }
 
-        public OneOf(T2 t2)
-            : base(t2, 2)
+        public OneOf(T2 second)
+            : base(second, 2)
         {
         }
 
-        public OneOf(T3 t3)
-            : base(t3, 3)
+        public OneOf(T3 third)
+            : base(third, 3)
         {
         }
 
-        public OneOf(T4 t4)
-            : base(t4, 4)
+        public OneOf(T4 fourth)
+            : base(fourth, 4)
         {
         }
 
-        public OneOf(T5 t5)
-            : base(t5, 5)
+        public OneOf(T5 fifth)
+            : base(fifth, 5)
         {
         }
 
