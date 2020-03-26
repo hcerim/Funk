@@ -77,13 +77,13 @@ namespace Funk
         /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// Use FlatMap if you have nested Maybes.
         /// </summary>
-        public Maybe<R> Map<R>(Func<T, R> selector) => FlatMap(t => selector(t).AsMaybe());
+        public Maybe<R> Map<R>(Func<T, R> selector) => FlatMap(v => selector(v).AsMaybe());
 
         /// <summary>
         /// Maps not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
         /// Use FlatMap if you have nested Maybes.
         /// </summary>
-        public async Task<Maybe<R>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(async t => (await selector(t)).AsMaybe());
+        public async Task<Maybe<R>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(async v => (await selector(v)).AsMaybe());
 
         /// <summary>
         /// Maps not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
@@ -99,13 +99,7 @@ namespace Funk
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            return Match(
-                _ => throw GetException(otherwiseThrow),
-                v => v
-            );
-        }
+        public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null) => Match(_ => throw GetException(otherwiseThrow), v => v);
 
         public static implicit operator Maybe<T>(Unit unit) => new Maybe<T>();
 
