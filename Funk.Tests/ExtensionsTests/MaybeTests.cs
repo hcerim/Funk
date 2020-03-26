@@ -54,8 +54,8 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => maybe((int?) null),
-                m => m.Map().Or(_ => maybe(2)),
-                s => Assert.Equal(2, s.UnsafeGet())
+                m => m.Or(_ => maybe(default(int?))).Or(_ => maybe((int?)1)),
+                s => Assert.Equal(1, s.GetOrElse(_ => (int?)2).GetValueOrDefault())
             );
         }
     }
