@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Funk.Exceptions;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -91,7 +92,7 @@ namespace Funk
         /// Structure-preserving map.
         /// Binds not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// </summary>
-        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty, selector);
+        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Empty, selector);
 
         /// <summary>
         /// Structure-preserving map.
