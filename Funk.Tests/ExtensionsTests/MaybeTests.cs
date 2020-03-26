@@ -58,5 +58,14 @@ namespace Funk.Tests
                 s => Assert.Equal(1, s.GetOrElse(_ => (int?)2).GetValueOrDefault())
             );
         }
+        [Fact]
+        public void Get_Maybe_With_Nullable_Empty_With_Default()
+        {
+            UnitTest(
+                _ => maybe((int?)null),
+                m => m.Map().Or(_ => maybe(default(int?)).Map()).Or(_ => maybe(default(int?)).Map()),
+                s => Assert.Equal(0, s.GetOrDefault())
+            );
+        }
     }
 }
