@@ -60,6 +60,18 @@ namespace Funk
         }
 
         /// <summary>
+        /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T1> First => Maybe.Create((T1)Value);
+
+        /// <summary>
+        /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T2> Second => Maybe.Create((T2)Value);
+
+        /// <summary>
         /// Maps available item to the result of the corresponding selector.
         /// </summary>
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond)
@@ -160,6 +172,24 @@ namespace Funk
             : base(t3, 3)
         {
         }
+
+        /// <summary>
+        /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T1> First => Maybe.Create((T1)Value);
+
+        /// <summary>
+        /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T2> Second => Maybe.Create((T2)Value);
+
+        /// <summary>
+        /// Third value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T3> Third => Maybe.Create((T3)Value);
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -286,6 +316,30 @@ namespace Funk
             : base(t4, 4)
         {
         }
+
+        /// <summary>
+        /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T1> First => Maybe.Create((T1)Value);
+
+        /// <summary>
+        /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T2> Second => Maybe.Create((T2)Value);
+
+        /// <summary>
+        /// Third value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T3> Third => Maybe.Create((T3)Value);
+
+        /// <summary>
+        /// Fourth value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T4> Fourth => Maybe.Create((T4)Value);
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -436,6 +490,36 @@ namespace Funk
             : base(t5, 5)
         {
         }
+
+        /// <summary>
+        /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T1> First => Maybe.Create((T1)Value);
+
+        /// <summary>
+        /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T2> Second => Maybe.Create((T2)Value);
+
+        /// <summary>
+        /// Third value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T3> Third => Maybe.Create((T3)Value);
+
+        /// <summary>
+        /// Fourth value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T4> Fourth => Maybe.Create((T4)Value);
+
+        /// <summary>
+        /// Fifth value of the OneOf as Maybe. If it is empty Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<T5> Fifth => Maybe.Create((T5)Value);
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.

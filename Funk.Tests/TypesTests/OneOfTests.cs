@@ -197,6 +197,29 @@ namespace Funk.Tests
             );
         }
 
+        [Fact]
+        public void Match_On_Empty_OneOf_2_Check_Empty_First_And_Second()
+        {
+            UnitTest(
+                _ => new User(default(BasicInfo)),
+                u => u.Info.IsEmpty && u.Biography.IsEmpty,
+                Assert.True
+            );
+        }
+
+        [Fact]
+        public void Match_On_Empty_OneOf_2_Not_Check_Empty_Second()
+        {
+            UnitTest(
+                _ => new User(new Biography
+                {
+                    Nationality = "Bosnian"
+                }),
+                u => u.Biography.UnsafeGet().Nationality,
+                s => Assert.Equal("Bosnian", s)
+            );
+        }
+
         private static OneOf<string, int> GetEmptyOneOf()
         {
             return OneOf.Empty;
@@ -219,6 +242,9 @@ namespace Funk.Tests
             : base(t2)
         {
         }
+
+        public Maybe<BasicInfo> Info => First;
+        public Maybe<Biography> Biography => Second;
 
         public static implicit operator User(Unit unit) => new User(default(BasicInfo));
     }
