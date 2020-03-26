@@ -32,6 +32,13 @@ namespace Funk
         public static T GetOrNull<T>(this Maybe<T> maybe) where T : class => maybe.Match(_ => null, v => v);
 
         /// <summary>
+        /// Preferably use GetOrElse.
+        /// Gets Maybe value if not empty. Otherwise, returns default value.
+        /// </summary>
+        [Pure]
+        public static T GetOrDefault<T>(this Maybe<T> maybe) => maybe.Match(_ => default, v => v);
+
+        /// <summary>
         /// Preferably use FlatMap.
         /// Returns Maybe of Maybe if not empty. Otherwise it returns empty Maybe.
         /// This is a FlatMap with a default selector.

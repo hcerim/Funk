@@ -7,7 +7,7 @@ namespace Funk.Internal
     internal static class InternalExt
     {
         [Pure] 
-        private static UnhandledValueException UnhandledException => new UnhandledValueException("Expression did not cover all possible input values.");
+        private static UnhandledValueException UnhandledException => new UnhandledValueException("Expression did not cover all possible cases.");
 
         internal static R Otherwise<R>(Func<Unit, R> otherwise = null, Func<Unit, Exception> otherwiseThrow = null)
         {
