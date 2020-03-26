@@ -1,6 +1,9 @@
 
 <h1 style="color:#f15a24; font-family:Roboto"><img src="Files/funk.png" width="150"/> <img src="Files/vinyl.png" width="60"/></h1>
 
+![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
+![Tests](https://github.com/cerimharun/Funk/workflows/Tests/badge.svg)
+
 ## Functional library for C# programming language.
 
 Author: [Harun Ćerim](https://cz.linkedin.com/in/haruncerim)
