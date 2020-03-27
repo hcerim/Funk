@@ -61,13 +61,13 @@ namespace Funk
         /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : Empty;
+        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : empty;
 
         /// <summary>
         /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : Empty;
+        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : empty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -175,19 +175,19 @@ namespace Funk
         /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : Empty;
+        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : empty;
 
         /// <summary>
         /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : Empty;
+        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : empty;
 
         /// <summary>
         /// Third value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : Empty;
+        public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : empty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -319,25 +319,25 @@ namespace Funk
         /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : Empty;
+        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : empty;
 
         /// <summary>
         /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : Empty;
+        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : empty;
 
         /// <summary>
         /// Third value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : Empty;
+        public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : empty;
 
         /// <summary>
         /// Fourth value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T4> Fourth => Discriminator.SafeEquals(4) ? Maybe.Create((T4)Value) : Empty;
+        public Maybe<T4> Fourth => Discriminator.SafeEquals(4) ? Maybe.Create((T4)Value) : empty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -493,31 +493,31 @@ namespace Funk
         /// First value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : Empty;
+        public Maybe<T1> First => Discriminator.SafeEquals(1) ? Maybe.Create((T1)Value) : empty;
 
         /// <summary>
         /// Second value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : Empty;
+        public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : empty;
 
         /// <summary>
         /// Third value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : Empty;
+        public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : empty;
 
         /// <summary>
         /// Fourth value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T4> Fourth => Discriminator.SafeEquals(4) ? Maybe.Create((T4)Value) : Empty;
+        public Maybe<T4> Fourth => Discriminator.SafeEquals(4) ? Maybe.Create((T4)Value) : empty;
 
         /// <summary>
         /// Fifth value of the OneOf as Maybe. If it is empty Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T5> Fifth => Discriminator.SafeEquals(5) ? Maybe.Create((T5)Value) : Empty;
+        public Maybe<T5> Fifth => Discriminator.SafeEquals(5) ? Maybe.Create((T5)Value) : empty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.

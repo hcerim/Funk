@@ -17,6 +17,24 @@ namespace Funk.Exceptions
         [Pure]
         public static EnumerableException Create(string message, IEnumerable<Exception> exceptions) => new EnumerableException(message, exceptions);
 
+        /// <summary>
+        /// Creates a new EnumerableException with updated Nested exceptions with the new exception.
+        /// </summary>
+        public static EnumerableException Create(EnumerableException exc, Exception exception)
+        {
+            return Create(exc?.Message, exception.MergeRange(exc?.Nested));
+        }
+
+        /// <summary>
+        /// Creates a new EnumerableException with updated Nested exceptions with new exceptions.
+        /// </summary>
+        public static EnumerableException Create(EnumerableException exc, IEnumerable<Exception> exceptions)
+        {
+            var list = new List<Exception>(exc?.Nested);
+            list.AddRange(exceptions.Map());
+            return Create(exc?.Message, list.ExceptNulls());
+        }
+
         public EnumerableException(string message)
             : base(FunkExceptionType.Enumerable, message)
         {

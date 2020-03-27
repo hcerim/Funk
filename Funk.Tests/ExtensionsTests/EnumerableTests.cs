@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using static Funk.Prelude;
 
 namespace Funk.Tests
 {
@@ -11,7 +12,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>{"Funk", "Funky Funk", "Da Funk"}, 
-                l => l.ToReadOnlyCollection(),
+                l => l.Map(),
                 c => Assert.Equal("Funky Funk", c.ElementAt(1))
             );
         }
@@ -21,7 +22,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => default(List<string>),
-                l => l.ToReadOnlyCollection(),
+                l => l.Map(),
                 Assert.Empty
             );
         }
@@ -190,7 +191,7 @@ namespace Funk.Tests
         public void Create_Maybe_Of_Empty_Enumerable()
         {
             UnitTest(
-                _ => new List<string>().ToNotEmptyCollection(), 
+                _ => new List<string>().AsNotEmptyCollection(), 
                 m => m.Map(c => c.ElementAt(2)),
                 s => Assert.True(s.IsEmpty)
             );
@@ -201,7 +202,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>(),
-                l => l.AsLastOrDefault(),
+                l => l.LastOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
         }
@@ -211,7 +212,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>{null, "Funk"},
-                l => l.AsFirstOrDefault(),
+                l => l.FirstOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
         }
@@ -293,7 +294,7 @@ namespace Funk.Tests
                 r =>
                 {
                     Assert.Equal(4, r.Count);
-                    Assert.True(r.AsFirstOrDefault(record => record.Item2.Contains("Funky")).NotEmpty);
+                    Assert.True(r.FirstOrDefault(record => record.Item2.Contains("Funky")).NotEmpty);
                 }
             );
         }
@@ -307,7 +308,7 @@ namespace Funk.Tests
                     s => new
                     {
                         Name = s,
-                        InitialLetter = s.FirstOrDefault()
+                        InitialLetter = Enumerable.FirstOrDefault(s)
                     },
                     (first, second) => new
                     {
@@ -325,6 +326,27 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Enumerable_FlatMapReduce()
+        {
+            UnitTest(
+                _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.FlatMapReduce(
+                    s => new List<Record<string, char>>
+                    {
+                        rec(s, Enumerable.FirstOrDefault(s))
+                    },
+                    (first, second) => rec(second.Item1, first.Item2)
+                ),
+                o =>
+                {
+                    Assert.True(o.NotEmpty);
+                    Assert.Equal('F', o.UnsafeGet().Item2);
+                    Assert.Equal("Bosnia", o.UnsafeGet().Item1);
+                }
+            );
+        }
+
+        [Fact]
         public void Enumerable_MapReduce_Empty()
         {
             UnitTest(
@@ -333,7 +355,7 @@ namespace Funk.Tests
                     s => new
                     {
                         Name = s,
-                        InitialLetter = s.FirstOrDefault()
+                        InitialLetter = Enumerable.FirstOrDefault(s)
                     },
                     (first, second) => new
                     {
