@@ -2,7 +2,7 @@
 using Xunit;
 using static Funk.Prelude;
 
-namespace Funk.Tests.ExtensionsTests
+namespace Funk.Tests
 {
     public class ObjectTests : Test
     {

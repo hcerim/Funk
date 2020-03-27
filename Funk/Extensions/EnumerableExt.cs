@@ -130,7 +130,7 @@ namespace Funk
         }
 
         /// <summary>
-        /// Creates an immutable dictionary of key and enumerables out of enumerable by a specified selector.
+        /// Creates an immutable dictionary of key as a discriminator and corresponding enumerable. Handles null enumerable.
         /// </summary>
         public static IImmutableDictionary<TKey, IReadOnlyCollection<TSource>> ToDictionary<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
         {
@@ -138,10 +138,10 @@ namespace Funk
         }
 
         /// <summary>
-        /// Creates a collection of records out of enumerable by a specified selector.
+        /// Creates a collection of records of key as a discriminator and corresponding enumerable. Handles null enumerable.
         /// </summary>
         /// <returns></returns>
-        public static IReadOnlyCollection<Record<TKey, IReadOnlyCollection<TSource>>> ToRecord<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
+        public static IReadOnlyCollection<Record<TKey, IReadOnlyCollection<TSource>>> ToRecordCollection<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
         {
             return enumerable.ToDictionary(keySelector).Select(i => Record.Create(i.Key, i.Value)).ToReadOnlyCollection();
         }

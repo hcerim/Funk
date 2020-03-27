@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
+using Funk.Exceptions;
 
-namespace Funk.Types.Exceptional
+namespace Funk
 {
-    public sealed class Exceptional<T, E> : OneOf<T, E> where E : Exception
+    public sealed class Exceptional<T, E> : OneOf<T, E> where E : EnumerableException
     {
         private Exceptional()
         {

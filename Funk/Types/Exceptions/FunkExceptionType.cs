@@ -3,6 +3,7 @@
     public enum FunkExceptionType
     {
         EmptyValue = 0,
-        UnhandledValue = 1
+        UnhandledValue = 1,
+        Enumerable = 2
     }
 }

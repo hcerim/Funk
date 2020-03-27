@@ -275,11 +275,21 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Enumerable_To_Dictionary_Empty()
+        {
+            UnitTest(
+                _ => default(List<string>),
+                l => l.ToDictionary(i => i),
+                Assert.Empty
+            );
+        }
+
+        [Fact]
         public void Enumerable_To_Record()
         {
             UnitTest(
                 _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
-                l => l.ToRecord(i => i),
+                l => l.ToRecordCollection(i => i),
                 r =>
                 {
                     Assert.Equal(4, r.Count);
