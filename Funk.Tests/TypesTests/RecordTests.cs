@@ -107,8 +107,8 @@ namespace Funk.Tests
         public void Map_Record_With_2_Items_Explicit()
         {
             UnitTest(
-                _ => record("John", "Doe"),
-                r => r.Map((name, surname) => record($"{name} {surname}", 30)),
+                _ => rec("John", "Doe"),
+                r => r.Map((name, surname) => rec($"{name} {surname}", 30)),
                 r =>
                 {
                     Assert.Equal("John Doe", r.Item1);
@@ -121,7 +121,7 @@ namespace Funk.Tests
         public void Map_Record_With_2_Items_Implicit()
         {
             UnitTest(
-                _ => record("John", "Doe"),
+                _ => rec("John", "Doe"),
                 r => r.Map((name, surname) => ($"{name} {surname}", 30)),
                 r =>
                 {

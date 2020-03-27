@@ -9,7 +9,7 @@ namespace Funk.Tests
         public void Get_Maybe_Or_Else()
         {
             UnitTest(
-                _ => maybe(default(string)),
+                _ => may(default(string)),
                 m => m.GetOrElse(_ => "Funk"),
                 s => Assert.Equal("Funk", s)
             );
@@ -19,7 +19,7 @@ namespace Funk.Tests
         public void Get_Maybe_Or_Null()
         {
             UnitTest(
-                _ => maybe(default(object)),
+                _ => may(default(object)),
                 m => m.GetOrNull(),
                 Assert.Null
             );
@@ -29,8 +29,8 @@ namespace Funk.Tests
         public void Get_Maybe_Or()
         {
             UnitTest(
-                _ => maybe(default(string)),
-                m => m.Or(_ => maybe("Harun")),
+                _ => may(default(string)),
+                m => m.Or(_ => may("Harun")),
                 s => Assert.Equal("Harun", s.UnsafeGet())
             );
         }
@@ -42,9 +42,9 @@ namespace Funk.Tests
                 _ =>
                 {
                     int? number = 1;
-                    return maybe(number);
+                    return may(number);
                 },
-                m => m.Map().Or(_ => maybe(2)),
+                m => m.Map().Or(_ => may(2)),
                 s => Assert.Equal(1, s.UnsafeGet())
             );
         }
@@ -53,8 +53,8 @@ namespace Funk.Tests
         public void Get_Maybe_With_Nullable_Empty()
         {
             UnitTest(
-                _ => maybe((int?) null),
-                m => m.Or(_ => maybe(default(int?))).Or(_ => maybe((int?)1)),
+                _ => may((int?) null),
+                m => m.Or(_ => may(default(int?))).Or(_ => may((int?)1)),
                 s => Assert.Equal(1, s.GetOrElse(_ => (int?)2).GetValueOrDefault())
             );
         }
@@ -62,8 +62,8 @@ namespace Funk.Tests
         public void Get_Maybe_With_Nullable_Empty_With_Default()
         {
             UnitTest(
-                _ => maybe((int?)null),
-                m => m.Map().Or(_ => maybe(default(int?)).Map()).Or(_ => maybe(default(int?)).Map()),
+                _ => may((int?)null),
+                m => m.Map().Or(_ => may(default(int?)).Map()).Or(_ => may(default(int?)).Map()),
                 s => Assert.Equal(0, s.GetOrDefault())
             );
         }

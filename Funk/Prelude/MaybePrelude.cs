@@ -5,6 +5,6 @@ namespace Funk
     public static partial class Prelude
     {
         [Pure]
-        public static Maybe<T> maybe<T>(T item) => item.AsMaybe();
+        public static Maybe<T> may<T>(T item) => item.AsMaybe();
     }
 }
