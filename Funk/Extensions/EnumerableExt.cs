@@ -145,5 +145,30 @@ namespace Funk
         {
             return enumerable.ToDictionary(keySelector).Select(i => Record.Create(i.Key, i.Value)).ToReadOnlyCollection();
         }
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps the specified enumerable to a new enumerable of specified type. Handles null enumerable.
+        /// </summary>
+        public static IReadOnlyCollection<R> Map<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper)
+        {
+            return enumerable.ToReadOnlyCollection().Select(mapper).ToReadOnlyCollection();
+        }
+
+        /// <summary>
+        /// Aggregates enumerable to the specified result as Maybe. Handles null enumerable.
+        /// </summary>
+        public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer)
+        {
+            return enumerable.ToNotEmptyCollection().Map(e => e.Aggregate(reducer));
+        }
+
+        /// <summary>
+        /// Maps the specified enumerable to a new enumerable of specified type and aggregates enumerable of the new type to the specified result as Maybe. Handles null enumerable.
+        /// </summary>
+        public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer)
+        {
+            return enumerable.Map(mapper).Reduce(reducer);
+        }
     }
 }
