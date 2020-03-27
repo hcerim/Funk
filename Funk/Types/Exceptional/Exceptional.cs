@@ -16,6 +16,11 @@ namespace Funk
         {
         }
 
+        public Exceptional(E exception)
+            : base(exception.ToException())
+        {
+        }
+
         public Exceptional(EnumerableException<E> exception)
             : base(exception)
         {
