@@ -42,10 +42,7 @@ namespace Funk
         /// </summary>
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T> enumerable) where T : class
         {
-            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).Match(
-                _ => ImmutableList.Create<T>(),
-                c => c
-            );
+            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).GetOrElse(_ => ImmutableList.Create<T>().Map());
         }
 
         /// <summary>
@@ -53,10 +50,7 @@ namespace Funk
         /// </summary>
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T?> enumerable) where T : struct
         {
-            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).Match(
-                _ => ImmutableList.Create<T>(),
-                c => c.Map(i => i.Value)
-            );
+            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).GetOrElse(_ => ImmutableList.Create<T?>().Map()).Map(i => i.Value);
         }
 
         /// <summary>
@@ -185,6 +179,7 @@ namespace Funk
         /// </summary>
         public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer)
         {
+            // TODO: Consolidate with Exceptional.
             return enumerable.AsNotEmptyCollection().Map(e => e.Aggregate(reducer));
         }
 
@@ -193,6 +188,7 @@ namespace Funk
         /// </summary>
         public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer)
         {
+            // TODO: Consolidate with Exceptional.
             return enumerable.Map(mapper).Reduce(reducer);
         }
 
@@ -201,6 +197,7 @@ namespace Funk
         /// </summary>
         public static Maybe<R> FlatMapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer)
         {
+            // TODO: Consolidate with Exceptional.
             return enumerable.FlatMap(mapper).Reduce(reducer);
         }
     }

@@ -232,6 +232,16 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Create_Maybe_Of_Empty_Enumerable_With_Predicate()
+        {
+            UnitTest(
+                _ => default(List<string>),
+                l => l.WhereOrDefault(s => s.SafeEquals("Funky")),
+                s => Assert.True(s.IsEmpty)
+            );
+        }
+
+        [Fact]
         public void Create_Maybe_Of_Enumerable_Without_Predicate()
         {
             UnitTest(

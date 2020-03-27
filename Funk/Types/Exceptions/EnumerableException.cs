@@ -18,21 +18,23 @@ namespace Funk.Exceptions
         public static EnumerableException Create(string message, IEnumerable<Exception> exceptions) => new EnumerableException(message, exceptions);
 
         /// <summary>
-        /// Creates a new EnumerableException with updated Nested exceptions with the new exception.
+        /// Structure-preserving map.
+        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
         /// </summary>
-        public static EnumerableException Create(EnumerableException exc, Exception exception)
+        public EnumerableException MapWith(Func<Unit, Exception> selector)
         {
-            return Create(exc?.Message, exception.MergeRange(exc?.Nested));
+            return Create(Message, selector(Unit.Value).MergeRange(Nested));
         }
 
         /// <summary>
-        /// Creates a new EnumerableException with updated Nested exceptions with new exceptions.
+        /// Structure-preserving map.
+        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
         /// </summary>
-        public static EnumerableException Create(EnumerableException exc, IEnumerable<Exception> exceptions)
+        public EnumerableException MapWith(Func<Unit, IEnumerable<Exception>> selector)
         {
-            var list = new List<Exception>(exc?.Nested);
-            list.AddRange(exceptions.Map());
-            return Create(exc?.Message, list.ExceptNulls());
+            var list = new List<Exception>(Nested);
+            list.AddRange(selector(Unit.Value).Map());
+            return Create(Message, list.ExceptNulls());
         }
 
         public EnumerableException(string message)
