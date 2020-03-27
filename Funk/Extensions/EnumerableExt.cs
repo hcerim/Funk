@@ -59,7 +59,7 @@ namespace Funk
         public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T?>> enumerable) where T : struct => enumerable.ExceptNulls().SelectMany(i => i.ExceptNulls()).ToReadOnlyCollection();
 
         /// <summary>
-        /// Returns collection of not empty Maybes.
+        /// Returns collection of not empty Maybes. Handles null params.
         /// </summary>
         public static IReadOnlyCollection<T> Flatten<T>(params Maybe<T>[] maybes) => Flatten(maybes.ToReadOnlyCollection());
 
@@ -69,7 +69,7 @@ namespace Funk
         public static IReadOnlyCollection<T> FlatMerge<T>(this Maybe<T> maybe, IEnumerable<Maybe<T>> enumerable) => Flatten(new[] { maybe }.Concat(enumerable.ToReadOnlyCollection()));
 
         /// <summary>
-        /// Merges not empty Maybe with other not empty Maybes into one collection.
+        /// Merges not empty Maybe with other not empty Maybes into one collection. Handles null params.
         /// </summary>
         public static IReadOnlyCollection<T> FlatMerge<T>(this Maybe<T> maybe, params Maybe<T>[] maybes) => maybe.FlatMerge(maybes.ToReadOnlyCollection());
 
@@ -144,6 +144,31 @@ namespace Funk
         public static IReadOnlyCollection<Record<TKey, IReadOnlyCollection<TSource>>> ToRecord<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
         {
             return enumerable.ToDictionary(keySelector).Select(i => Record.Create(i.Key, i.Value)).ToReadOnlyCollection();
+        }
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps the specified enumerable to a new enumerable of specified type. Handles null enumerable.
+        /// </summary>
+        public static IReadOnlyCollection<R> Map<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper)
+        {
+            return enumerable.ToReadOnlyCollection().Select(mapper).ToReadOnlyCollection();
+        }
+
+        /// <summary>
+        /// Aggregates enumerable to the specified result as Maybe. Handles null enumerable.
+        /// </summary>
+        public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer)
+        {
+            return enumerable.ToNotEmptyCollection().Map(e => e.Aggregate(reducer));
+        }
+
+        /// <summary>
+        /// Maps the specified enumerable to a new enumerable of specified type and aggregates enumerable of the new type to the specified result as Maybe. Handles null enumerable.
+        /// </summary>
+        public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer)
+        {
+            return enumerable.Map(mapper).Reduce(reducer);
         }
     }
 }

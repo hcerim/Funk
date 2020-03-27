@@ -287,5 +287,52 @@ namespace Funk.Tests
                 }
             );
         }
+
+        [Fact]
+        public void Enumerable_MapReduce()
+        {
+            UnitTest(
+                _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.MapReduce(
+                    s => new
+                    {
+                        Name = s,
+                        InitialLetter = s.FirstOrDefault()
+                    },
+                    (first, second) => new
+                    {
+                        second.Name,
+                        first.InitialLetter
+                    }
+                ),
+                o =>
+                {
+                    Assert.True(o.NotEmpty);
+                    Assert.Equal('F', o.UnsafeGet().InitialLetter);
+                    Assert.Equal("Bosnia", o.UnsafeGet().Name);
+                }
+            );
+        }
+
+        [Fact]
+        public void Enumerable_MapReduce_Empty()
+        {
+            UnitTest(
+                _ => default(List<string>),
+                l => l.MapReduce(
+                    s => new
+                    {
+                        Name = s,
+                        InitialLetter = s.FirstOrDefault()
+                    },
+                    (first, second) => new
+                    {
+                        second.Name,
+                        first.InitialLetter
+                    }
+                ),
+                o => Assert.True(o.IsEmpty)
+            );
+        }
     }
 }
