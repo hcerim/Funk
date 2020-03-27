@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -8,6 +9,6 @@ namespace Funk
         public static Maybe<T> Create<T>(T item) => new Maybe<T>(item);
 
         [Pure]
-        public static Maybe<T> Create<T>(T? item) where T: struct => new Maybe<T>((T)item);
+        public static Maybe<T> Create<T>(T? item) where T: struct => item.IsNotNull() ? new Maybe<T>((T)item) : empty;
     }
 }

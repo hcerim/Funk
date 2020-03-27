@@ -40,18 +40,12 @@ namespace Funk
         /// <summary>
         /// Returns a collection of not null values. Handles null enumerable.
         /// </summary>
-        public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T> enumerable) where T : class
-        {
-            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).GetOrElse(_ => ImmutableList.Create<T>().Map());
-        }
+        public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T> enumerable) where T : class => enumerable.FlatMap(i => i.AsMaybe().AsReadOnlyCollection());
 
         /// <summary>
         /// Returns a collection of not null values. Handles null enumerable.
         /// </summary>
-        public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T?> enumerable) where T : struct
-        {
-            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).GetOrElse(_ => ImmutableList.Create<T?>().Map()).Map(i => i.Value);
-        }
+        public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T?> enumerable) where T : struct => enumerable.FlatMap(i => i.AsMaybe().AsReadOnlyCollection());
 
         /// <summary>
         /// Flattens enumerable of not empty Maybes into one collection. Handles null enumerable.
