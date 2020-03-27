@@ -14,7 +14,7 @@ namespace Funk
     {
         public Maybe(T item)
         {
-            if (item is null)
+            if (item.IsNull())
             {
                 NotEmpty = false;
                 Discriminator = 0;
