@@ -64,7 +64,7 @@ namespace Funk.Exceptions
         /// Returns an immutable dictionary of key as a discriminator and collection of corresponding exceptions.
         /// </summary>
         [Pure]
-        public IReadOnlyDictionary<TKey, IReadOnlyCollection<Exception>> ToDictionary<TKey>(Func<Exception, TKey> keySelector) => Nested.ToDictionary(keySelector);
+        public IReadOnlyDictionary<TKey, IReadOnlyCollection<E>> ToDictionary<TKey>(Func<E, TKey> keySelector) => Nested.ToDictionary(keySelector);
 
         public IEnumerator<E> GetEnumerator()
         {
