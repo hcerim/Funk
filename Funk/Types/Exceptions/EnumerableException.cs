@@ -20,26 +20,6 @@ namespace Funk.Exceptions
 
     public sealed class EnumerableException<E> : FunkException, IEnumerable<E> where E : Exception
     {
-        /// <summary>
-        /// Structure-preserving map.
-        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
-        /// </summary>
-        public EnumerableException<E> MapWith(Func<Unit, E> selector)
-        {
-            return EnumerableException.Create(Message, selector(Unit.Value).MergeRange(Nested));
-        }
-
-        /// <summary>
-        /// Structure-preserving map.
-        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
-        /// </summary>
-        public EnumerableException<E> MapWith(Func<Unit, IEnumerable<E>> selector)
-        {
-            var list = new List<E>(Nested);
-            list.AddRange(selector(Unit.Value).Map());
-            return EnumerableException.Create(Message, list.ExceptNulls());
-        }
-
         public EnumerableException(string message)
             : base(FunkExceptionType.Enumerable, message)
         {
@@ -59,6 +39,26 @@ namespace Funk.Exceptions
         }
 
         public IReadOnlyCollection<E> Nested { get; }
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
+        /// </summary>
+        public EnumerableException<E> MapWith(Func<Unit, E> selector)
+        {
+            return EnumerableException.Create(Message, selector(Unit.Value).MergeRange(Nested));
+        }
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
+        /// </summary>
+        public EnumerableException<E> MapWith(Func<Unit, IEnumerable<E>> selector)
+        {
+            var list = new List<E>(Nested);
+            list.AddRange(selector(Unit.Value).Map());
+            return EnumerableException.Create(Message, list.ExceptNulls());
+        }
 
         /// <summary>
         /// Returns an immutable dictionary of key as a discriminator and collection of corresponding exceptions.
