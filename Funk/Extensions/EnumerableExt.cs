@@ -55,24 +55,24 @@ namespace Funk
         {
             return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).Match(
                 _ => ImmutableList.Create<T>(),
-                c => c.Select(i => i.Value).Map()
+                c => c.Map(i => i.Value)
             );
         }
 
         /// <summary>
         /// Flattens enumerable of not empty Maybes into one collection. Handles null enumerable.
         /// </summary>
-        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable) => enumerable.Map().SelectMany(m => m.AsReadOnlyCollection()).Map();
+        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable) => enumerable.FlatMap(m => m.AsReadOnlyCollection());
 
         /// <summary>
         /// Flattens enumerable of enumerables into one collection. Handles null enumerable and null children and their children.
         /// </summary>
-        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) where T : class => enumerable.ExceptNulls().SelectMany(i => i.ExceptNulls()).Map();
+        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) where T : class => enumerable.FlatMap(i => i.ExceptNulls());
 
         /// <summary>
         /// Flattens enumerable of enumerables into one collection. Handles null enumerable and null children and their children.
         /// </summary>
-        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T?>> enumerable) where T : struct => enumerable.ExceptNulls().SelectMany(i => i.ExceptNulls()).Map();
+        public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T?>> enumerable) where T : struct => enumerable.FlatMap(i => i.ExceptNulls());
 
         /// <summary>
         /// Returns collection of not empty Maybes. Handles null params.

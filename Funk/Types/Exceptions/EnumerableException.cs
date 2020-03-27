@@ -22,7 +22,7 @@ namespace Funk.Exceptions
         /// </summary>
         public static EnumerableException Create(EnumerableException exc, Exception exception)
         {
-            return Create(exc?.Message, exception.MergeRange(exc?.Nested).ExceptNulls());
+            return Create(exc?.Message, exception.MergeRange(exc?.Nested));
         }
 
         /// <summary>
