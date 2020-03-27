@@ -331,10 +331,7 @@ namespace Funk.Tests
                         first.InitialLetter
                     }
                 ),
-                o =>
-                {
-                    Assert.True(o.IsEmpty);
-                }
+                o => Assert.True(o.IsEmpty)
             );
         }
     }
