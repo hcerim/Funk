@@ -69,6 +69,12 @@ namespace Funk
         [Pure]
         public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : empty;
 
+        [Pure]
+        public bool IsFirst => First.NotEmpty;
+
+        [Pure]
+        public bool IsSecond => Second.NotEmpty;
+
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
         /// </summary>
@@ -188,6 +194,15 @@ namespace Funk
         /// </summary>
         [Pure]
         public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : empty;
+
+        [Pure]
+        public bool IsFirst => First.NotEmpty;
+
+        [Pure]
+        public bool IsSecond => Second.NotEmpty;
+
+        [Pure]
+        public bool IsThird => Third.NotEmpty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -338,6 +353,18 @@ namespace Funk
         /// </summary>
         [Pure]
         public Maybe<T4> Fourth => Discriminator.SafeEquals(4) ? Maybe.Create((T4)Value) : empty;
+
+        [Pure]
+        public bool IsFirst => First.NotEmpty;
+
+        [Pure]
+        public bool IsSecond => Second.NotEmpty;
+
+        [Pure]
+        public bool IsThird => Third.NotEmpty;
+
+        [Pure]
+        public bool IsFourth => Fourth.NotEmpty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
@@ -518,6 +545,21 @@ namespace Funk
         /// </summary>
         [Pure]
         public Maybe<T5> Fifth => Discriminator.SafeEquals(5) ? Maybe.Create((T5)Value) : empty;
+
+        [Pure]
+        public bool IsFirst => First.NotEmpty;
+
+        [Pure]
+        public bool IsSecond => Second.NotEmpty;
+
+        [Pure]
+        public bool IsThird => Third.NotEmpty;
+
+        [Pure]
+        public bool IsFourth => Fourth.NotEmpty;
+
+        [Pure]
+        public bool IsFifth => Fifth.NotEmpty;
 
         /// <summary>
         /// Maps available item to the result of the corresponding selector.
