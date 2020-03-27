@@ -242,12 +242,12 @@ namespace Funk.Tests
 
         private static OneOf<string, int> GetEmptyOneOf()
         {
-            return Empty;
+            return empty;
         }
 
         private static User GetEmptyUser()
         {
-            return Empty;
+            return empty;
         }
     }
 

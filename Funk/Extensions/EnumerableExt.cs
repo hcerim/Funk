@@ -79,7 +79,7 @@ namespace Funk
         public static Maybe<IReadOnlyCollection<T>> ToNotEmptyCollection<T>(this IEnumerable<T> enumerable)
         {
             var collection = enumerable.ToReadOnlyCollection();
-            return collection.NotEmptyOrNull() ? collection.AsMaybe() : Empty;
+            return collection.NotEmptyOrNull() ? collection.AsMaybe() : empty;
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Funk
         /// <summary>
         /// Checks whether a given string is null or empty and returns a Maybe of that string if it is not. Otherwise, it returns empty Maybe.
         /// </summary>
-        public static Maybe<string> AsNotEmptyString(this string item) => string.IsNullOrEmpty(item) ? Empty : item.AsMaybe();
+        public static Maybe<string> AsNotEmptyString(this string item) => string.IsNullOrEmpty(item) ? empty : item.AsMaybe();
 
         /// <summary>
         /// Returns a record of 2 collections where first collection satisfies the predicate and second doesn't. Handles null enumerable.

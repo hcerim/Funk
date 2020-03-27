@@ -92,7 +92,7 @@ namespace Funk
         /// Structure-preserving map.
         /// Binds not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// </summary>
-        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Empty, selector);
+        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => empty, selector);
 
         /// <summary>
         /// Structure-preserving map.

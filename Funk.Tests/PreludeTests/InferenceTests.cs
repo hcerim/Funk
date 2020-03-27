@@ -10,7 +10,7 @@ namespace Funk.Tests
         public void Check_Type_Of_Inferred_Func_With_Arity_Of_3()
         {
             UnitTest(
-                _ => func((int x, int y) => ""),
+                _ => fun((int x, int y) => ""),
                 f => f.GetType() == typeof(Func<int, int, string>),
                 Assert.True
             );
@@ -20,7 +20,7 @@ namespace Funk.Tests
         public void Check_Type_Of_Inferred_Func_With_Arity_Of_4()
         {
             UnitTest(
-                _ => func((int x, int y, int z) => ""),
+                _ => fun((int x, int y, int z) => ""),
                 f => f.GetType() == typeof(Func<int, int, string>),
                 Assert.False
             );
@@ -30,7 +30,7 @@ namespace Funk.Tests
         public void Check_Result_Of_Inferred_Func_With_Arity_Of_2()
         {
             UnitTest(
-                _ => func((int x) => $"Funk {x}"),
+                _ => fun((int x) => $"Funk {x}"),
                 f => f(2),
                 r => Assert.Equal("Funk 2", r)
             );
