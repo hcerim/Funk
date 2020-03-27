@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Funk.Types.Exceptional
+namespace Funk
 {
     public sealed class Exceptional<T, E> : OneOf<T, E> where E : Exception
     {
