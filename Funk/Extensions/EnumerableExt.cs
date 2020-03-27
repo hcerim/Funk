@@ -42,9 +42,9 @@ namespace Funk
         /// </summary>
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T> enumerable) where T : class
         {
-            return enumerable.AsNotEmptyCollection().Match(
+            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).Match(
                 _ => ImmutableList.Create<T>(),
-                e => e.Where(i => i.SafeNotEquals(null)).Map()
+                c => c
             );
         }
 
@@ -53,9 +53,9 @@ namespace Funk
         /// </summary>
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T?> enumerable) where T : struct
         {
-            return enumerable.AsNotEmptyCollection().Match(
+            return enumerable.WhereOrDefault(i => i.SafeNotEquals(null)).Match(
                 _ => ImmutableList.Create<T>(),
-                e => e.Where(i => i.SafeNotEquals(null)).Select(j => j.Value).Map()
+                c => c.Select(i => i.Value).Map()
             );
         }
 
