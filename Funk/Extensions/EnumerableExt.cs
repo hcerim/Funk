@@ -83,7 +83,7 @@ namespace Funk
         public static Maybe<IReadOnlyCollection<T>> AsNotEmptyCollection<T>(this IEnumerable<T> enumerable)
         {
             var collection = enumerable.Map();
-            return collection.NotEmptyOrNull() ? collection.AsMaybe() : empty;
+            return collection.NotEmpty() ? collection.AsMaybe() : empty;
         }
 
         /// <summary>
@@ -108,14 +108,14 @@ namespace Funk
         public static Maybe<T> LastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.Map().Reverse().FirstOrDefault(predicate);
 
         /// <summary>
-        /// Checks whether a given enumerable is empty or null.
+        /// Checks whether a given enumerable is empty. Handles null enumerable.
         /// </summary>
-        public static bool IsEmptyOrNull<T>(this IEnumerable<T> enumerable) => enumerable is null || !enumerable.Any();
+        public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable.Map().Count.SafeEquals(0);
 
         /// <summary>
-        /// Checks whether a given enumerable is not empty or null.
+        /// Checks whether a given enumerable is not empty or null. Handles null enumerable.
         /// </summary>
-        public static bool NotEmptyOrNull<T>(this IEnumerable<T> enumerable) => !enumerable.IsEmptyOrNull();
+        public static bool NotEmpty<T>(this IEnumerable<T> enumerable) => !enumerable.IsEmpty();
 
         /// <summary>
         /// Checks whether a given string is null or empty and returns a Maybe of that string if it is not. Otherwise, it returns empty Maybe.
