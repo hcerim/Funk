@@ -42,7 +42,7 @@ namespace Funk
         /// </summary>
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T> enumerable) where T : class
         {
-            return enumerable.ToNotEmptyCollection().Match(
+            return enumerable.AsNotEmptyCollection().Match(
                 _ => ImmutableList.Create<T>(),
                 e => e.Where(i => i.SafeNotEquals(null)).Map()
             );
@@ -53,7 +53,7 @@ namespace Funk
         /// </summary>
         public static IReadOnlyCollection<T> ExceptNulls<T>(this IEnumerable<T?> enumerable) where T : struct
         {
-            return enumerable.ToNotEmptyCollection().Match(
+            return enumerable.AsNotEmptyCollection().Match(
                 _ => ImmutableList.Create<T>(),
                 e => e.Where(i => i.SafeNotEquals(null)).Select(j => j.Value).Map()
             );
@@ -92,7 +92,7 @@ namespace Funk
         /// <summary>
         /// Returns a Maybe of the enumerable if not empty or null. Otherwise, it returns an empty Maybe. Handles null enumerable.
         /// </summary>
-        public static Maybe<IReadOnlyCollection<T>> ToNotEmptyCollection<T>(this IEnumerable<T> enumerable)
+        public static Maybe<IReadOnlyCollection<T>> AsNotEmptyCollection<T>(this IEnumerable<T> enumerable)
         {
             var collection = enumerable.Map();
             return collection.NotEmptyOrNull() ? collection.AsMaybe() : empty;
@@ -101,7 +101,7 @@ namespace Funk
         /// <summary>
         /// Returns a Maybe of the first element in the enumerable that satisfies the condition or returns an empty Maybe. Handles null enumerable.
         /// </summary>
-        public static Maybe<T> AsFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
+        public static Maybe<T> FirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
         {
             return enumerable.WhereOrDefault(predicate).Map(c => c.First());
         }
@@ -111,13 +111,13 @@ namespace Funk
         /// </summary>
         public static Maybe<IReadOnlyCollection<T>> WhereOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
         {
-            return enumerable.Map().Where(predicate ?? (i => true)).ToNotEmptyCollection();
+            return enumerable.Map().Where(predicate ?? (i => true)).AsNotEmptyCollection();
         }
 
         /// <summary>
         /// Returns a Maybe of the last element in the enumerable that satisfies the condition or returns an empty Maybe. Handles null enumerable.
         /// </summary>
-        public static Maybe<T> AsLastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.Map().Reverse().AsFirstOrDefault(predicate);
+        public static Maybe<T> LastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.Map().Reverse().FirstOrDefault(predicate);
 
         /// <summary>
         /// Checks whether a given enumerable is empty or null.
@@ -185,7 +185,7 @@ namespace Funk
         /// </summary>
         public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer)
         {
-            return enumerable.ToNotEmptyCollection().Map(e => e.Aggregate(reducer));
+            return enumerable.AsNotEmptyCollection().Map(e => e.Aggregate(reducer));
         }
 
         /// <summary>
