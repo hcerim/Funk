@@ -59,7 +59,7 @@ namespace Funk
         public static IReadOnlyCollection<T> Flatten<T>(this IEnumerable<IEnumerable<T?>> enumerable) where T : struct => enumerable.ExceptNulls().SelectMany(i => i.ExceptNulls()).ToReadOnlyCollection();
 
         /// <summary>
-        /// Returns collection of not empty Maybes.
+        /// Returns collection of not empty Maybes. Handles null params.
         /// </summary>
         public static IReadOnlyCollection<T> Flatten<T>(params Maybe<T>[] maybes) => Flatten(maybes.ToReadOnlyCollection());
 
@@ -69,7 +69,7 @@ namespace Funk
         public static IReadOnlyCollection<T> FlatMerge<T>(this Maybe<T> maybe, IEnumerable<Maybe<T>> enumerable) => Flatten(new[] { maybe }.Concat(enumerable.ToReadOnlyCollection()));
 
         /// <summary>
-        /// Merges not empty Maybe with other not empty Maybes into one collection.
+        /// Merges not empty Maybe with other not empty Maybes into one collection. Handles null params.
         /// </summary>
         public static IReadOnlyCollection<T> FlatMerge<T>(this Maybe<T> maybe, params Maybe<T>[] maybes) => maybe.FlatMerge(maybes.ToReadOnlyCollection());
 
