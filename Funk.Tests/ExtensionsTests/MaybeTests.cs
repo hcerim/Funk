@@ -44,7 +44,7 @@ namespace Funk.Tests
                     int? number = 1;
                     return may(number);
                 },
-                m => m.Map().Or(_ => may(2)),
+                m => m.Or(_ => may(2)),
                 s => Assert.Equal(1, s.UnsafeGet())
             );
         }
@@ -55,7 +55,7 @@ namespace Funk.Tests
             UnitTest(
                 _ => may((int?) null),
                 m => m.Or(_ => may(default(int?))).Or(_ => may((int?)1)),
-                s => Assert.Equal(1, s.GetOrElse(_ => (int?)2).GetValueOrDefault())
+                s => Assert.Equal(1, s.GetOrElse(_ => 2))
             );
         }
         [Fact]
@@ -63,8 +63,8 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => may((int?)null),
-                m => m.Map().Or(_ => may(default(int?)).Map()).Or(_ => may(default(int?)).Map()),
-                s => Assert.Equal(0, s.GetOrDefault())
+                m => m.Or(_ => may(default(int?))).Or(_ => may(default(int?))),
+                s => Assert.True(s.IsEmpty)
             );
         }
     }
