@@ -9,7 +9,7 @@ namespace Funk.Tests
         public void Create_Maybe()
         {
             UnitTest(
-                _ => maybe("Funk"),
+                _ => may("Funk"),
                 m => m.UnsafeGet(),
                 s => Assert.Equal("Funk", s)
             );

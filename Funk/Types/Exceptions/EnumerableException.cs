@@ -8,14 +8,23 @@ namespace Funk.Exceptions
 {
     public class EnumerableException : FunkException, IEnumerable<Exception>
     {
-        private EnumerableException(Exception exception)
-            : base(FunkExceptionType.Enumerable, exception?.Message)
+        [Pure]
+        public static EnumerableException Create(string message) => new EnumerableException(message);
+
+        [Pure]
+        public static EnumerableException Create(Exception exception) => new EnumerableException(exception);
+
+        [Pure]
+        public static EnumerableException Create(string message, IEnumerable<Exception> exceptions) => new EnumerableException(message, exceptions);
+
+        public EnumerableException(string message)
+            : base(FunkExceptionType.Enumerable, message)
         {
             Nested = ImmutableList<Exception>.Empty;
         }
 
-        public EnumerableException(string message)
-            : base(FunkExceptionType.Enumerable, message)
+        public EnumerableException(Exception exception)
+            : base(FunkExceptionType.Enumerable, exception?.Message)
         {
             Nested = ImmutableList<Exception>.Empty;
         }
@@ -24,11 +33,6 @@ namespace Funk.Exceptions
             : base(FunkExceptionType.Enumerable, message)
         {
             Nested = nested.ExceptNulls();
-        }
-
-        public static EnumerableException FromException(Exception exception)
-        {
-            return new EnumerableException(exception);
         }
 
         public IReadOnlyCollection<Exception> Nested { get; }
