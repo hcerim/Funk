@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using static Funk.Prelude;
 
 namespace Funk.Tests
 {
@@ -11,7 +12,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>{"Funk", "Funky Funk", "Da Funk"}, 
-                l => l.ToReadOnlyCollection(),
+                l => l.Map(),
                 c => Assert.Equal("Funky Funk", c.ElementAt(1))
             );
         }
@@ -21,7 +22,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => default(List<string>),
-                l => l.ToReadOnlyCollection(),
+                l => l.Map(),
                 Assert.Empty
             );
         }
@@ -320,6 +321,27 @@ namespace Funk.Tests
                     Assert.True(o.NotEmpty);
                     Assert.Equal('F', o.UnsafeGet().InitialLetter);
                     Assert.Equal("Bosnia", o.UnsafeGet().Name);
+                }
+            );
+        }
+
+        [Fact]
+        public void Enumerable_FlatMapReduce()
+        {
+            UnitTest(
+                _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.FlatMapReduce(
+                    s => new List<Record<string, char>>
+                    {
+                        rec(s, s.FirstOrDefault())
+                    },
+                    (first, second) => rec(second.Item1, first.Item2)
+                ),
+                o =>
+                {
+                    Assert.True(o.NotEmpty);
+                    Assert.Equal('F', o.UnsafeGet().Item2);
+                    Assert.Equal("Bosnia", o.UnsafeGet().Item1);
                 }
             );
         }

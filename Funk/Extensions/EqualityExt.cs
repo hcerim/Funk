@@ -28,37 +28,37 @@ namespace Funk
         /// Handles null enumerable.
         /// </summary>
         [Pure]
-        public static bool SafeAnyEquals<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToReadOnlyCollection().Any(i => i.SafeEquals(item));
+        public static bool SafeAnyEquals<T>(this IEnumerable<T> enumerable, T item) => enumerable.Map().Any(i => i.SafeEquals(item));
 
         /// <summary>
         /// Handles null enumerable.
         /// </summary>
         [Pure]
-        public static bool SafeAnyEquals<T>(this IEnumerable<T?> enumerable, T item) where T: struct => enumerable.ToReadOnlyCollection().Any(i => i.SafeEquals(item));
+        public static bool SafeAnyEquals<T>(this IEnumerable<T?> enumerable, T item) where T: struct => enumerable.Map().Any(i => i.SafeEquals(item));
 
         /// <summary>
         /// Handles null enumerable.
         /// </summary>
         [Pure]
-        public static bool SafeAnyEquals<T>(this IEnumerable<T> enumerable, T? item) where T : struct => enumerable.ToReadOnlyCollection().Any(i => i.SafeEquals(item));
+        public static bool SafeAnyEquals<T>(this IEnumerable<T> enumerable, T? item) where T : struct => enumerable.Map().Any(i => i.SafeEquals(item));
 
         /// <summary>
         /// Handles null enumerable.
         /// </summary>
         [Pure]
-        public static bool SafeAllEquals<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToReadOnlyCollection().All(i => i.SafeEquals(item));
+        public static bool SafeAllEquals<T>(this IEnumerable<T> enumerable, T item) => enumerable.Map().All(i => i.SafeEquals(item));
 
         /// <summary>
         /// Handles null enumerable.
         /// </summary>
         [Pure]
-        public static bool SafeAllEquals<T>(this IEnumerable<T?> enumerable, T item) where T : struct => enumerable.ToReadOnlyCollection().All(i => i.SafeEquals(item));
+        public static bool SafeAllEquals<T>(this IEnumerable<T?> enumerable, T item) where T : struct => enumerable.Map().All(i => i.SafeEquals(item));
 
         /// <summary>
         /// Handles null enumerable.
         /// </summary>
         [Pure]
-        public static bool SafeAllEquals<T>(this IEnumerable<T> enumerable, T? item) where T : struct => enumerable.ToReadOnlyCollection().All(i => i.SafeEquals(item));
+        public static bool SafeAllEquals<T>(this IEnumerable<T> enumerable, T? item) where T : struct => enumerable.Map().All(i => i.SafeEquals(item));
 
         /// <summary>
         /// Handles null enumerable.
