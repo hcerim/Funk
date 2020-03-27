@@ -6,56 +6,59 @@ using System.Diagnostics.Contracts;
 
 namespace Funk.Exceptions
 {
-    public class EnumerableException : FunkException, IEnumerable<Exception>
+    public static class EnumerableException
     {
         [Pure]
-        public static EnumerableException Create(string message) => new EnumerableException(message);
+        public static EnumerableException<E> Create<E>(string message) where E : Exception => new EnumerableException<E>(message);
 
         [Pure]
-        public static EnumerableException Create(Exception exception) => new EnumerableException(exception);
+        public static EnumerableException<E> Create<E>(E exception) where E : Exception => new EnumerableException<E>(exception);
 
         [Pure]
-        public static EnumerableException Create(string message, IEnumerable<Exception> exceptions) => new EnumerableException(message, exceptions);
+        public static EnumerableException<E> Create<E>(string message, IEnumerable<E> exceptions) where E : Exception => new EnumerableException<E>(message, exceptions);
+    }
 
+    public sealed class EnumerableException<E> : FunkException, IEnumerable<E> where E : Exception
+    {
         /// <summary>
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
         /// </summary>
-        public EnumerableException MapWith(Func<Unit, Exception> selector)
+        public EnumerableException<E> MapWith(Func<Unit, E> selector)
         {
-            return Create(Message, selector(Unit.Value).MergeRange(Nested));
+            return EnumerableException.Create(Message, selector(Unit.Value).MergeRange(Nested));
         }
 
         /// <summary>
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
         /// </summary>
-        public EnumerableException MapWith(Func<Unit, IEnumerable<Exception>> selector)
+        public EnumerableException<E> MapWith(Func<Unit, IEnumerable<E>> selector)
         {
-            var list = new List<Exception>(Nested);
+            var list = new List<E>(Nested);
             list.AddRange(selector(Unit.Value).Map());
-            return Create(Message, list.ExceptNulls());
+            return EnumerableException.Create(Message, list.ExceptNulls());
         }
 
         public EnumerableException(string message)
             : base(FunkExceptionType.Enumerable, message)
         {
-            Nested = ImmutableList<Exception>.Empty;
+            Nested = ImmutableList<E>.Empty;
         }
 
-        public EnumerableException(Exception exception)
+        public EnumerableException(E exception)
             : base(FunkExceptionType.Enumerable, exception?.Message)
         {
-            Nested = ImmutableList<Exception>.Empty;
+            Nested = ImmutableList<E>.Empty;
         }
 
-        public EnumerableException(string message, IEnumerable<Exception> nested)
+        public EnumerableException(string message, IEnumerable<E> nested)
             : base(FunkExceptionType.Enumerable, message)
         {
             Nested = nested.ExceptNulls();
         }
 
-        public IReadOnlyCollection<Exception> Nested { get; }
+        public IReadOnlyCollection<E> Nested { get; }
 
         /// <summary>
         /// Returns an immutable dictionary of key as a discriminator and collection of corresponding exceptions.
@@ -63,7 +66,7 @@ namespace Funk.Exceptions
         [Pure]
         public IReadOnlyDictionary<TKey, IReadOnlyCollection<Exception>> ToDictionary<TKey>(Func<Exception, TKey> keySelector) => Nested.ToDictionary(keySelector);
 
-        public virtual IEnumerator<Exception> GetEnumerator()
+        public IEnumerator<E> GetEnumerator()
         {
             return Nested.GetEnumerator();
         }

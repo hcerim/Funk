@@ -8,12 +8,12 @@ namespace Funk
     public static partial class Prelude
     {
         [Pure]
-        public static EnumerableException exc(string message) => EnumerableException.Create(message);
+        public static EnumerableException<E> exc<E>(string message) where E : Exception => EnumerableException.Create<E>(message);
 
         [Pure]
-        public static EnumerableException exc(Exception exception) => exception.ToException();
+        public static EnumerableException<E> exc<E>(E exception) where E : Exception => exception.ToException();
 
         [Pure]
-        public static EnumerableException exc(string message, IEnumerable<Exception> exceptions) => EnumerableException.Create(message, exceptions);
+        public static EnumerableException<E> exc<E>(string message, IEnumerable<E> exceptions) where E : Exception => EnumerableException.Create(message, exceptions);
     }
 }
