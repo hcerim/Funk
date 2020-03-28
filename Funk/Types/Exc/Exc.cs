@@ -95,7 +95,7 @@ namespace Funk
         }
 
         internal Exc(E exception)
-            : base(exception.ToException())
+            : base(exception.ToEnumerableException())
         {
         }
 

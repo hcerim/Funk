@@ -9,7 +9,13 @@ namespace Funk
     public static class ExceptionExt
     {
         [Pure]
-        public static EnumerableException<E> ToException<E>(this E exception) where E : Exception => EnumerableException.Create(exception);
+        public static EnumerableException<E> ToEnumerableException<E>(this E exception) where E : Exception => EnumerableException.Create(exception);
+
+        [Pure]
+        public static EnumerableException<E> ToEnumerableException<E>(this E exception, string message) where E : Exception => EnumerableException.Create(message, exception);
+
+        [Pure]
+        public static EnumerableException<E> ToEnumerableException<E>(this IEnumerable<E> exceptions, string message) where E : Exception => EnumerableException.Create(message, exceptions.Map());
 
         public static EnumerableException<E> Merge<E>(this E exc, E exception) where E : Exception
         {

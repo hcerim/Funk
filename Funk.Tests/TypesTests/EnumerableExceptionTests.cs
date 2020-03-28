@@ -13,7 +13,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToException(),
+                e => e.ToEnumerableException(),
                 e =>
                 {
                     Assert.NotEmpty(e);
@@ -28,7 +28,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => act(() => throw e.ToException()),
+                e => act(() => throw e.ToEnumerableException()),
                 a =>
                 {
                     var exception = Assert.Throws<EnumerableException<FunkException>>(a);
@@ -42,7 +42,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToException().MapWith(_ => new EmptyValueException("Empty :(")),
+                e => e.ToEnumerableException().MapWith(_ => new EmptyValueException("Empty :(")),
                 e =>
                 {
                     Assert.Equal(2, e.Count());
@@ -59,7 +59,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToException().MapWithMany(_ => new List<FunkException>
+                e => e.ToEnumerableException().MapWithMany(_ => new List<FunkException>
                 {
                     new EmptyValueException("Empty :("),
                     new EmptyValueException("Empty again :/"),
