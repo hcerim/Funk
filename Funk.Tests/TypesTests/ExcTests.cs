@@ -1,5 +1,6 @@
 ﻿using System;
 using Funk.Exceptions;
+using Funk.Extensions;
 using Xunit;
 using static Funk.Prelude;
 
@@ -30,6 +31,20 @@ namespace Funk.Tests.TypesTests
                 _ => "Funk12",
                 s => act(() => Exc.Create<string, EmptyValueException>(_ => GetNameById(s))),
                 a => Assert.Throws<ArgumentException>(a)
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Throws_Recover()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s => Exc.Create<string, ArgumentException>(_ => GetNameById(s)).RecoverOnFailure(e => GetNameById("Funk123")),
+                e =>
+                {
+                    Assert.True(e.IsSuccess);
+                    Assert.Equal("Harun", e.Success.UnsafeGet());
+                }
             );
         }
 

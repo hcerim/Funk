@@ -28,6 +28,7 @@ namespace Funk
         }
 
         /// <summary>
+        /// Preferably use Create with an explicit exception type definition.
         /// Returns Exceptional of possible result and exception. Indicates that the operation can throw any exception.
         /// </summary>
         public static Exc<T, Exception> Create<T>(Func<Unit, T> operation)
@@ -58,6 +59,7 @@ namespace Funk
         }
 
         /// <summary>
+        /// Preferably use Create with an explicit exception type definition.
         /// Returns Task of Exceptional of possible result and exception. Indicates that the operation can throw any exception.
         /// </summary>
         public static async Task<Exc<T, Exception>> Create<T>(Func<Unit, Task<T>> operation)
