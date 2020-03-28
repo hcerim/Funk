@@ -57,7 +57,7 @@ namespace Funk
             }
             catch (E e)
             {
-                return await Task.Run(() => new Exc<T, E>(e));
+                return new Exc<T, E>(e);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Funk
             }
             catch (Exception e)
             {
-                return await Task.Run(() => new Exc<T, Exception>(e));
+                return new Exc<T, Exception>(e);
             }
         }
     }
