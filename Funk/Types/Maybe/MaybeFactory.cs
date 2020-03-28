@@ -16,5 +16,11 @@ namespace Funk
         /// </summary>
         [Pure]
         public static Maybe<T> Create<T>(T? item) where T: struct => item.IsNotNull() ? new Maybe<T>((T)item) : empty;
+
+        /// <summary>
+        /// Creates empty Maybe.
+        /// </summary>
+        [Pure]
+        public static Unit Empty => empty;
     }
 }
