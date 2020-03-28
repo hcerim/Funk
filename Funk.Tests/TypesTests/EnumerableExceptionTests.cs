@@ -14,7 +14,12 @@ namespace Funk.Tests
             UnitTest(
                 _ => new FunkException("Funk"),
                 e => e.ToException(),
-                Assert.Empty
+                e =>
+                {
+                    Assert.NotEmpty(e);
+                    Assert.IsType<FunkException>(e.Root.UnsafeGet());
+                    Assert.Single(e);
+                }
             );
         }
 
@@ -40,9 +45,9 @@ namespace Funk.Tests
                 e => e.ToException().MapWith(_ => new EmptyValueException("Empty :(")),
                 e =>
                 {
-                    Assert.Single(e);
-                    Assert.IsType<EmptyValueException>(e.ElementAt(0));
-                    var action = act(() => throw e.Nested.UnsafeGet().First());
+                    Assert.Equal(2, e.Count());
+                    Assert.IsType<FunkException>(e.ElementAt(0));
+                    var action = act(() => throw e.Nested.UnsafeGet().ElementAt(1));
                     var exception = Assert.Throws<EmptyValueException>(action);
                     Assert.Equal("Empty :(", exception.Message);
                 }
@@ -63,10 +68,15 @@ namespace Funk.Tests
                 }),
                 e =>
                 {
-                    Assert.Equal(4, e.Count());
+                    Assert.Equal(5, e.Count());
+                    Assert.Equal("Funk", e.Root.UnsafeGet().Message);
                     foreach (var rec in e.Select((exe, counter) => rec(exe, counter)))
                     {
-                        if (rec.Item2.SafeEqualsToAny(0, 1))
+                        if (rec.Item2.SafeEquals(0))
+                        {
+                            Assert.IsType<FunkException>(rec.Item1);
+                        }
+                        else if (rec.Item2.SafeEqualsToAny(1,2))
                         {
                             Assert.IsType<EmptyValueException>(rec.Item1);
                         }

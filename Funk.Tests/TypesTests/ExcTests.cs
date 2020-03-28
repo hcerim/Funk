@@ -17,7 +17,7 @@ namespace Funk.Tests
                 f =>
                 {
                     Assert.True(f.NotEmpty);
-                    Assert.Empty(f.UnsafeGet());
+                    Assert.NotEmpty(f.UnsafeGet());
                     var action = act(() => throw f.UnsafeGet());
                     Assert.Throws<EnumerableException<ArgumentException>>(action);
                 }

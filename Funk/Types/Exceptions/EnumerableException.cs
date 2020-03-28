@@ -45,24 +45,37 @@ namespace Funk.Exceptions
         public EnumerableException(E exception)
             : base(FunkExceptionType.Enumerable, exception?.Message)
         {
-            nested = ImmutableList<E>.Empty;
+            nested = exception.ToImmutableList();
+            Root = exception.AsMaybe();
         }
 
         public EnumerableException(string message, E exception)
             : base(FunkExceptionType.Enumerable, message)
         {
             nested = exception.ToImmutableList();
+            Root = exception.AsMaybe();
         }
 
         public EnumerableException(string message, IEnumerable<E> exceptions)
             : base(FunkExceptionType.Enumerable, message)
         {
-            nested = exceptions.ExceptNulls();
+            var list = exceptions.ExceptNulls();
+            nested = list;
+            Root = list.FirstOrDefault().AsMaybe();
         }
 
+        /// <summary>
+        /// Collection of aggregated exceptions including the root one.
+        /// </summary>
         public Maybe<IImmutableList<E>> Nested => nested.AsNotEmptyList();
 
         private IImmutableList<E> nested { get; }
+
+        /// <summary>
+        /// First exception. Root cause of this exception.
+        /// If you pass a collection of exception, it will be the first one.
+        /// </summary>
+        public Maybe<E> Root { get; }
 
         /// <summary>
         /// Structure-preserving map.
