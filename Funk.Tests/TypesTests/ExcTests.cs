@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Funk.Exceptions;
 using Funk.Extensions;
 using Xunit;
@@ -104,6 +105,23 @@ namespace Funk.Tests.TypesTests
             );
         }
 
+        [Fact]
+        public void Create_Exceptional_Throws_Recover_Chain_Throws_Async()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return act(() =>
+                    {
+                        var result = Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s));
+                        result.RecoverOnFailure(e => GetNameByIdAsync(null)).GetAwaiter().GetResult();
+                    });
+                },
+                a => Assert.Throws<InvalidOperationException>(a)
+            );
+        }
+
         private static string GetNameById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -113,6 +131,19 @@ namespace Funk.Tests.TypesTests
             if (id.SafeEquals("Funk123"))
             {
                 return "Harun";
+            }
+            throw new ArgumentException("Invalid id");
+        }
+
+        private static async Task<string> GetNameByIdAsync(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new InvalidOperationException("Id cannot be null.");
+            }
+            if (id.SafeEquals("Funk123"))
+            {
+                return await Task.Run(() => "Harun");
             }
             throw new ArgumentException("Invalid id");
         }
