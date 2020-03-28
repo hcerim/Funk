@@ -2,8 +2,9 @@
 {
     public enum FunkExceptionType
     {
-        EmptyValue = 0,
-        UnhandledValue = 1,
-        Enumerable = 2
+        Undefined = 0,
+        EmptyValue = 1,
+        UnhandledValue = 2,
+        Enumerable = 3
     }
 }
