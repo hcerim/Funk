@@ -72,8 +72,8 @@ namespace Funk.Exceptions
         private IImmutableList<E> nested { get; }
 
         /// <summary>
-        /// First exception. Root cause of this exception.
-        /// If you pass a collection of exception, it will be the first one.
+        /// Root error cause.
+        /// If you pass a collection of exceptions, it will be the first one.
         /// </summary>
         public Maybe<E> Root { get; }
 
@@ -83,20 +83,44 @@ namespace Funk.Exceptions
         /// </summary>
         public EnumerableException<E> MapWith(Func<Unit, E> selector)
         {
-            return MapWith(_ => selector(Unit.Value).ToImmutableList());
+            return MapWithMany(_ => selector(Unit.Value).ToImmutableList());
         }
 
         /// <summary>
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
         /// </summary>
-        public EnumerableException<E> MapWith(Func<Unit, IEnumerable<E>> selector)
+        public EnumerableException<E> MapWithMany(Func<Unit, IEnumerable<E>> selector)
         {
             var exceptions = selector(Unit.Value).Map();
             return EnumerableException.Create(Message, Nested.Match(
                 _ => exceptions,
                 c => c.Concat(exceptions)
             ));
+        }
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception and its nested ones.
+        /// </summary>
+        public EnumerableException<E> Bind(EnumerableException<E> exception)
+        {
+            var list = new List<E>();
+            list.AddRange(Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map()));
+            list.AddRange(exception?.Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map()));
+            return EnumerableException.Create(Message, list);
+        }
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions and their nested ones.
+        /// </summary>
+        public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions)
+        {
+            var list = new List<E>();
+            list.AddRange(Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map()));
+            list.AddRange(exceptions.FlatMap(e => e.Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map())));
+            return EnumerableException.Create(Message, list);
         }
 
         /// <summary>

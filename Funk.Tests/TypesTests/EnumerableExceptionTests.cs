@@ -59,7 +59,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToException().MapWith(_ => new List<FunkException>
+                e => e.ToException().MapWithMany(_ => new List<FunkException>
                 {
                     new EmptyValueException("Empty :("),
                     new EmptyValueException("Empty again :/"),
