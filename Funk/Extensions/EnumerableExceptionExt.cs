@@ -13,7 +13,7 @@ namespace Funk
 
         public static EnumerableException<E> Merge<E>(this E exc, E exception) where E : Exception
         {
-            return EnumerableException.Create(exc?.Message, exception.ToImmutableList());
+            return exc.MergeRange(exception.ToImmutableList());
         }
 
         public static EnumerableException<E> MergeRange<E>(this E exc, IEnumerable<E> exceptions) where E : Exception
