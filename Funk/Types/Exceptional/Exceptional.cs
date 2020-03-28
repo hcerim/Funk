@@ -38,7 +38,11 @@ namespace Funk
         [Pure]
         public Maybe<EnumerableException<E>> Failure => Second;
 
-        public Maybe<IReadOnlyCollection<E>> NestedFailures => Failure.Map(e => e.Nested);
+        /// <summary>
+        /// If Failure, Maybe contains nested exceptions inside EnumerableException if there are any. Otherwise, Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<IReadOnlyCollection<E>> NestedFailures => Failure.FlatMap(e => e.Nested.AsNotEmptyCollection());
 
         [Pure]
         public bool IsSuccess => IsFirst;
