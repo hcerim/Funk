@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Funk.Exceptions;
-using Funk.Extensions;
 using Xunit;
 using static Funk.Prelude;
 
