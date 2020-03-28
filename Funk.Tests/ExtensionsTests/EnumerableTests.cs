@@ -32,7 +32,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => default(string).AsMaybe(),
-                m => m.AsReadOnlyCollection(),
+                m => m.AsImmutableList(),
                 Assert.Empty
             );
         }
@@ -42,7 +42,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => "Funk".AsMaybe(),
-                m => m.AsReadOnlyCollection(),
+                m => m.AsImmutableList(),
                 c =>
                 {
                     Assert.NotEmpty(c);
@@ -191,7 +191,7 @@ namespace Funk.Tests
         public void Create_Maybe_Of_Empty_Enumerable()
         {
             UnitTest(
-                _ => new List<string>().AsNotEmptyCollection(), 
+                _ => new List<string>().AsNotEmptyList(), 
                 m => m.Map(c => c.ElementAt(2)),
                 s => Assert.True(s.IsEmpty)
             );
@@ -300,7 +300,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string> { "Funk", "Funky", "Harun", "Bosnia" },
-                l => l.ToRecordCollection(i => i),
+                l => l.ToRecordList(i => i),
                 r =>
                 {
                     Assert.Equal(4, r.Count);

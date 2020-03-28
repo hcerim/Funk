@@ -7,14 +7,14 @@ namespace Funk.Tests
     public partial class RecordTests : Test
     {
         [Fact]
-        public void Create_2_Identical_Records_With_3_Items_With_Constructor()
+        public void Create_2_Identical_Records_With_3_Items_With_Prelude()
         {
             UnitTest(
                 _ => ("John", "Doe", 30),
                 t =>
                 {
-                    var record = new Record<string, string, int>(t);
-                    var record2 = new Record<string, string, int>(t.Item1, t.Item2, t.Item3);
+                    var record = rec(t);
+                    var record2 = rec(t.Item1, t.Item2, t.Item3);
                     return record.SafeEquals(record2);
                 },
                 Assert.True
@@ -22,14 +22,14 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_2_Different_Records_With_3_Items_With_Constructor()
+        public void Create_2_Different_Records_With_3_Items_With_Prelude()
         {
             UnitTest(
                 _ => ("John", "Doe", 30),
                 t =>
                 {
-                    var record = new Record<string, string, int>(t);
-                    var record2 = new Record<string, string, int>(t.Item1, t.Item2, 40);
+                    var record = rec(t);
+                    var record2 = rec(t.Item1, t.Item2, 40);
                     return record.SafeEquals(record2);
                 },
                 Assert.False
@@ -47,11 +47,11 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Create_Record_With_2_Items_With_Constructor()
+        public void Create_Record_With_2_Items_With_Prelude()
         {
             UnitTest(
                 _ => ("John", "Doe"),
-                p => new Record<string, string>(p.Item1, p.Item2),
+                p => rec(p.Item1, p.Item2),
                 r =>
                 {
                     Assert.Equal("John", r.Item1);

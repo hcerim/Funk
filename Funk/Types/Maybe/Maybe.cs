@@ -12,7 +12,7 @@ namespace Funk
     /// </summary>
     public struct Maybe<T>
     {
-        public Maybe(T item)
+        internal Maybe(T item)
         {
             if (item.IsNull())
             {

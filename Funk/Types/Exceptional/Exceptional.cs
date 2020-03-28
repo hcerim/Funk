@@ -1,27 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using Funk.Exceptions;
 
 namespace Funk
 {
+    /// <summary>
+    /// Exceptional monad.
+    /// Can represent successful result, error (in a form of EnumerableException of a specified exception type) or empty value.
+    /// </summary>
     public sealed class Exceptional<T, E> : OneOf<T, EnumerableException<E>> where E : Exception
     {
         private Exceptional()
         {
         }
 
-        public Exceptional(T result)
+        internal Exceptional(T result)
             : base(result)
         {
         }
 
-        public Exceptional(E exception)
+        internal Exceptional(E exception)
             : base(exception.ToException())
         {
         }
 
-        public Exceptional(EnumerableException<E> exception)
+        internal Exceptional(EnumerableException<E> exception)
             : base(exception)
         {
         }
@@ -42,7 +46,7 @@ namespace Funk
         /// If Failure, Maybe contains nested exceptions inside EnumerableException if there are any. Otherwise, Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<IReadOnlyCollection<E>> NestedFailures => Failure.FlatMap(e => e.Nested.AsNotEmptyCollection());
+        public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
         [Pure]
         public bool IsSuccess => IsFirst;

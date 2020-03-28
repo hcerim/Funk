@@ -7,7 +7,7 @@ namespace Funk
     /// </summary>
     public struct Record<T1>
     {
-        public Record(T1 t1)
+        internal Record(T1 t1)
         {
             Item1 = t1;
         }
@@ -40,13 +40,13 @@ namespace Funk
     /// </summary>
     public struct Record<T1, T2>
     {
-        public Record(T1 t1, T2 t2)
+        internal Record(T1 t1, T2 t2)
         {
             Item1 = t1;
             Item2 = t2;
         }
 
-        public Record((T1 t1, T2 t2) tuple)
+        internal Record((T1 t1, T2 t2) tuple)
         {
             Item1 = tuple.t1;
             Item2 = tuple.t2;
@@ -81,14 +81,14 @@ namespace Funk
     /// </summary>
     public struct Record<T1, T2, T3>
     {
-        public Record(T1 t1, T2 t2, T3 t3)
+        internal Record(T1 t1, T2 t2, T3 t3)
         {
             Item1 = t1;
             Item2 = t2;
             Item3 = t3;
         }
 
-        public Record((T1 t1, T2 t2, T3 t3) tuple)
+        internal Record((T1 t1, T2 t2, T3 t3) tuple)
         {
             Item1 = tuple.t1;
             Item2 = tuple.t2;
@@ -125,7 +125,7 @@ namespace Funk
     /// </summary>
     public struct Record<T1, T2, T3, T4>
     {
-        public Record(T1 t1, T2 t2, T3 t3, T4 t4)
+        internal Record(T1 t1, T2 t2, T3 t3, T4 t4)
         {
             Item1 = t1;
             Item2 = t2;
@@ -133,7 +133,7 @@ namespace Funk
             Item4 = t4;
         }
 
-        public Record((T1 t1, T2 t2, T3 t3, T4 t4) tuple)
+        internal Record((T1 t1, T2 t2, T3 t3, T4 t4) tuple)
         {
             Item1 = tuple.t1;
             Item2 = tuple.t2;
@@ -172,7 +172,7 @@ namespace Funk
     /// </summary>
     public struct Record<T1, T2, T3, T4, T5>
     {
-        public Record(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
+        internal Record(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
         {
             Item1 = t1;
             Item2 = t2;
@@ -181,7 +181,7 @@ namespace Funk
             Item5 = t5;
         }
 
-        public Record((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple)
+        internal Record((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple)
         {
             Item1 = tuple.t1;
             Item2 = tuple.t2;
