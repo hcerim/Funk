@@ -98,7 +98,14 @@ namespace Funk
         /// Structure-preserving map.
         /// Binds not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
         /// </summary>
-        public async Task<Maybe<R>> FlatMap<R>(Func<T, Task<Maybe<R>>> selector) => await Match(_ => Task.Run(() => new Maybe<R>()), selector);
+        public async Task<Maybe<R>> FlatMap<R>(Func<T, Task<Maybe<R>>> selector)
+        {
+            if (Discriminator.SafeEquals(1))
+            {
+                return await selector((T)Value);
+            }
+            return empty;
+        }
 
         /// <summary>
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
