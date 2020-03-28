@@ -100,11 +100,11 @@ namespace Funk
         /// </summary>
         public async Task<Maybe<R>> FlatMap<R>(Func<T, Task<Maybe<R>>> selector)
         {
-            if (Discriminator.SafeEquals(1))
+            switch (Discriminator)
             {
-                return await selector((T)Value);
+                case 1: return await selector((T)Value);
+                default: return empty;
             }
-            return empty;
         }
 
         /// <summary>
