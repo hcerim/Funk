@@ -148,7 +148,7 @@ namespace Funk.Exceptions
         /// <summary>
         /// Ignores null value.
         /// </summary>
-        [Obsolete("Use MapWith instead.")]
+        [Obsolete("Use MapWith or Bind instead.")]
         public IImmutableList<E> Add(E value)
         {
             return MapWithMany(_ => value.ToImmutableList());
@@ -157,7 +157,7 @@ namespace Funk.Exceptions
         /// <summary>
         /// Handled null enumerable and ignores null value.
         /// </summary>
-        [Obsolete("Use MapWithMany instead.")]
+        [Obsolete("Use MapWithMany or BindRange instead.")]
         public IImmutableList<E> AddRange(IEnumerable<E> items)
         {
             return MapWithMany(_ => items);
@@ -174,13 +174,13 @@ namespace Funk.Exceptions
             return nested.IndexOf(item, index, count, equalityComparer);
         }
 
-        [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWith instead.")]
+        [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWith or Bind instead.")]
         public IImmutableList<E> Insert(int index, E element)
         {
             return new EnumerableException<E>(Message, nested.Insert(index, element));
         }
 
-        [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWithMany instead.")]
+        [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWithMany or BindRange instead.")]
         public IImmutableList<E> InsertRange(int index, IEnumerable<E> items)
         {
             return new EnumerableException<E>(Message, nested.InsertRange(index, items));
