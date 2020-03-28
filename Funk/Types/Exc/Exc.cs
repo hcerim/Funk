@@ -13,7 +13,8 @@ namespace Funk
     public static class Exc
     {
         /// <summary>
-        /// Returns Exceptional of possible result and exception. Indicates that the operation can throw specified exception.
+        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
+        /// It will fail on unhandled exceptions.
         /// </summary>
         public static Exc<T, E> Create<T, E>(Func<Unit, T> operation) where E : Exception
         {
@@ -28,8 +29,9 @@ namespace Funk
         }
 
         /// <summary>
-        /// Preferably use Create with an explicit exception type definition.
-        /// Returns Exceptional of possible result and exception. Indicates that the operation can throw any exception.
+        /// Preferably use Create with an explicit exception handling.
+        /// Using this method you are handling all exceptions which you should not do.
+        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
         public static Exc<T, Exception> Create<T>(Func<Unit, T> operation)
         {
@@ -44,7 +46,8 @@ namespace Funk
         }
 
         /// <summary>
-        /// Returns Task of Exceptional of possible result and exception. Indicates that the operation can throw specified exception.
+        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
+        /// It will fail on unhandled exceptions.
         /// </summary>
         public static async Task<Exc<T, E>> Create<T, E>(Func<Unit, Task<T>> operation) where E : Exception
         {
@@ -59,8 +62,9 @@ namespace Funk
         }
 
         /// <summary>
-        /// Preferably use Create with an explicit exception type definition.
-        /// Returns Task of Exceptional of possible result and exception. Indicates that the operation can throw any exception.
+        /// Preferably use Create with an explicit exception handling.
+        /// Using this method you are handling all exceptions which you should not do.
+        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
         public static async Task<Exc<T, Exception>> Create<T>(Func<Unit, Task<T>> operation)
         {
