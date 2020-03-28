@@ -122,6 +122,48 @@ namespace Funk.Tests.TypesTests
             );
         }
 
+        [Fact]
+        public void Create_Exceptional_Throws_Recover_On_Empty()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return fun(() =>
+                    {
+                        var result = Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
+                        return result.RecoverOnFailure(e => GetNullString()).RecoverOnEmpty(_ => GetNameById("Funk123"));
+                    });
+                },
+                f =>
+                {
+                    var result = f.Invoke();
+                    Assert.Equal("Harun", result.UnsafeGetFirst());
+                }
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Throws_Recover_On_Empty_Nothing()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return fun(() =>
+                    {
+                        var result = Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
+                        return result.RecoverOnFailure(e => GetNameById("Funk12")).RecoverOnEmpty(_ => GetNameById("Funk123"));
+                    });
+                },
+                f =>
+                {
+                    var result = f.Invoke();
+                    Assert.IsType<EnumerableException<ArgumentException>>(result.Failure.UnsafeGet());
+                }
+            );
+        }
+
         private static string GetNameById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -133,6 +175,11 @@ namespace Funk.Tests.TypesTests
                 return "Harun";
             }
             throw new ArgumentException("Invalid id");
+        }
+
+        private static string GetNullString()
+        {
+            return null;
         }
 
         private static async Task<string> GetNameByIdAsync(string id)
