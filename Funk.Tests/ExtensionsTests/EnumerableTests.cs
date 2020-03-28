@@ -202,7 +202,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>(),
-                l => l.LastOrDefault(),
+                l => l.AsLastOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
         }
@@ -212,7 +212,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new List<string>{null, "Funk"},
-                l => l.FirstOrDefault(),
+                l => l.AsFirstOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
         }
@@ -304,7 +304,7 @@ namespace Funk.Tests
                 r =>
                 {
                     Assert.Equal(4, r.Count);
-                    Assert.True(r.FirstOrDefault(record => record.Item2.Contains("Funky")).NotEmpty);
+                    Assert.True(r.AsFirstOrDefault(record => record.Item2.Contains("Funky")).NotEmpty);
                 }
             );
         }

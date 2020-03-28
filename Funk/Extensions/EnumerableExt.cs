@@ -89,7 +89,7 @@ namespace Funk
         /// <summary>
         /// Returns a Maybe of the first element in the enumerable that satisfies the condition or returns an empty Maybe. Handles null enumerable.
         /// </summary>
-        public static Maybe<T> FirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
+        public static Maybe<T> AsFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
         {
             return enumerable.WhereOrDefault(predicate).Map(c => c.First());
         }
@@ -105,7 +105,7 @@ namespace Funk
         /// <summary>
         /// Returns a Maybe of the last element in the enumerable that satisfies the condition or returns an empty Maybe. Handles null enumerable.
         /// </summary>
-        public static Maybe<T> LastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.Map().Reverse().FirstOrDefault(predicate);
+        public static Maybe<T> AsLastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.Map().Reverse().AsFirstOrDefault(predicate);
 
         /// <summary>
         /// Checks whether a given enumerable is empty. Handles null enumerable.
