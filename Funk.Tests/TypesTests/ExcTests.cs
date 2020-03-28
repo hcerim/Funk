@@ -4,7 +4,7 @@ using Funk.Exceptions;
 using Xunit;
 using static Funk.Prelude;
 
-namespace Funk.Tests.TypesTests
+namespace Funk.Tests
 {
     public class ExcTests : Test
     {
