@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Funk.Exceptions;
 using static Funk.Prelude;
 
-namespace Funk.Extensions
+namespace Funk
 {
     public static class ExcExt
     {

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Funk.Exceptions;
-using Funk.Extensions;
 using Xunit;
 using static Funk.Prelude;
 
-namespace Funk.Tests.TypesTests
+namespace Funk.Tests
 {
     public class ExcTests : Test
     {
