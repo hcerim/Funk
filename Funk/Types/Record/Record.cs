@@ -33,6 +33,8 @@ namespace Funk
         /// Executes operation provided with record item.
         /// </summary>
         public void Match(Action<T1> operation) => operation(Item1);
+
+        public static implicit operator Record<T1>(T1 t1) => new Record<T1>(t1);
     }
 
     /// <summary>
@@ -74,6 +76,8 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2> operation) => operation(Item1, Item2);
+
+        public static implicit operator Record<T1, T2>((T1 t1, T2 t2) tuple) => new Record<T1, T2>(tuple);
     }
 
     /// <summary>
@@ -118,6 +122,8 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2, T3> operation) => operation(Item1, Item2, Item3);
+
+        public static implicit operator Record<T1, T2, T3>((T1 t1, T2 t2, T3 t3) tuple) => new Record<T1, T2, T3>(tuple);
     }
 
     /// <summary>
@@ -165,6 +171,8 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2, T3, T4> operation) => operation(Item1, Item2, Item3, Item4);
+
+        public static implicit operator Record<T1, T2, T3, T4>((T1 t1, T2 t2, T3 t3, T4 t4) tuple) => new Record<T1, T2, T3, T4>(tuple);
     }
 
     /// <summary>
@@ -215,5 +223,7 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2, T3, T4, T5> operation) => operation(Item1, Item2, Item3, Item4, Item5);
+
+        public static implicit operator Record<T1, T2, T3, T4, T5>((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple) => new Record<T1,T2,T3,T4,T5>(tuple);
     }
 }

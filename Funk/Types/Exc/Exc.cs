@@ -129,5 +129,11 @@ namespace Funk
         public bool IsFailure => IsSecond;
 
         public static implicit operator Exc<T, E>(Unit unit) => new Exc<T, E>();
+
+        public static implicit operator Exc<T, E>(T result) => new Exc<T, E>(result);
+
+        public static implicit operator Exc<T, E>(E exception) => new Exc<T, E>(exception);
+
+        public static implicit operator Exc<T, E>(EnumerableException<E> exception) => new Exc<T, E>(exception);
     }
 }

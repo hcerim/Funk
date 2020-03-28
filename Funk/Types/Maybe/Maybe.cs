@@ -108,6 +108,8 @@ namespace Funk
 
         public static implicit operator Maybe<T>(Unit unit) => new Maybe<T>();
 
+        public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
+
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)
         {

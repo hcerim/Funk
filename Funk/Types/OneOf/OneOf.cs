@@ -156,6 +156,10 @@ namespace Funk
         }
 
         public static implicit operator OneOf<T1, T2>(Unit unit) => new OneOf<T1, T2>();
+
+        public static implicit operator OneOf<T1, T2>(T1 t1) => new OneOf<T1, T2>(t1);
+
+        public static implicit operator OneOf<T1, T2>(T2 t2) => new OneOf<T1, T2>(t2);
     }
 
     /// <summary>
@@ -304,6 +308,12 @@ namespace Funk
         }
 
         public static implicit operator OneOf<T1, T2, T3>(Unit unit) => new OneOf<T1, T2, T3>();
+
+        public static implicit operator OneOf<T1, T2, T3>(T1 t1) => new OneOf<T1, T2, T3>(t1);
+
+        public static implicit operator OneOf<T1, T2, T3>(T2 t2) => new OneOf<T1, T2, T3>(t2);
+
+        public static implicit operator OneOf<T1, T2, T3>(T3 t3) => new OneOf<T1, T2, T3>(t3);
     }
 
     /// <summary>
@@ -485,6 +495,14 @@ namespace Funk
         }
 
         public static implicit operator OneOf<T1, T2, T3, T4>(Unit unit) => new OneOf<T1, T2, T3, T4>();
+
+        public static implicit operator OneOf<T1, T2, T3, T4>(T1 t1) => new OneOf<T1, T2, T3, T4>(t1);
+
+        public static implicit operator OneOf<T1, T2, T3, T4>(T2 t2) => new OneOf<T1, T2, T3, T4>(t2);
+
+        public static implicit operator OneOf<T1, T2, T3, T4>(T3 t3) => new OneOf<T1, T2, T3, T4>(t3);
+
+        public static implicit operator OneOf<T1, T2, T3, T4>(T4 t4) => new OneOf<T1, T2, T3, T4>(t4);
     }
 
     /// <summary>
@@ -699,5 +717,15 @@ namespace Funk
         }
 
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(Unit unit) => new OneOf<T1, T2, T3, T4, T5>();
+
+        public static implicit operator OneOf<T1, T2, T3, T4, T5>(T1 t1) => new OneOf<T1, T2, T3, T4, T5>(t1);
+
+        public static implicit operator OneOf<T1, T2, T3, T4, T5>(T2 t2) => new OneOf<T1, T2, T3, T4, T5>(t2);
+
+        public static implicit operator OneOf<T1, T2, T3, T4, T5>(T3 t3) => new OneOf<T1, T2, T3, T4, T5>(t3);
+
+        public static implicit operator OneOf<T1, T2, T3, T4, T5>(T4 t4) => new OneOf<T1, T2, T3, T4, T5>(t4);
+
+        public static implicit operator OneOf<T1, T2, T3, T4, T5>(T5 t5) => new OneOf<T1, T2, T3, T4, T5>(t5);
     }
 }
