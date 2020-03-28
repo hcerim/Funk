@@ -2,9 +2,15 @@
 
 namespace Funk.Exceptions
 {
-    public abstract class FunkException : Exception
+    public class FunkException : Exception
     {
-        protected FunkException(FunkExceptionType type, string message)
+        public FunkException(string message)
+            : base(message)
+        {
+            Type = FunkExceptionType.Undefined;
+        }
+
+        public FunkException(FunkExceptionType type, string message)
             : base(message)
         {
             Type = type;

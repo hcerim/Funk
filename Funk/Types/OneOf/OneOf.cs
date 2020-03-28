@@ -10,6 +10,12 @@ namespace Funk
     /// </summary>
     public abstract class OneOf
     {
+        /// <summary>
+        /// Creates empty OneOf.
+        /// </summary>
+        [Pure]
+        public static Unit Empty => empty;
+
         protected OneOf(object item, int discriminator)
         {
             if (item.IsNull())

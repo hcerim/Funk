@@ -54,10 +54,10 @@ namespace Funk.Exceptions
             nested = exception.ToImmutableList();
         }
 
-        public EnumerableException(string message, IEnumerable<E> nested)
+        public EnumerableException(string message, IEnumerable<E> exceptions)
             : base(FunkExceptionType.Enumerable, message)
         {
-            this.nested = nested.ExceptNulls();
+            nested = exceptions.ExceptNulls();
         }
 
         public Maybe<IImmutableList<E>> Nested => nested.AsNotEmptyList();
