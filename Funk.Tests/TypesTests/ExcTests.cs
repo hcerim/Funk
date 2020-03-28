@@ -39,7 +39,11 @@ namespace Funk.Tests.TypesTests
         {
             UnitTest(
                 _ => "Funk12",
-                s => Exc.Create<string, ArgumentException>(_ => GetNameById(s)).RecoverOnFailure(e => GetNameById("Funk123")),
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .RecoverOnFailure(e => GetNameById("Funk123"));
+                },
                 e =>
                 {
                     Assert.True(e.IsSuccess);
@@ -48,8 +52,64 @@ namespace Funk.Tests.TypesTests
             );
         }
 
+        [Fact]
+        public void Create_Exceptional_Throws_Recover_Chain()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .RecoverOnFailure(e => GetNameById("Funk1"))
+                        .RecoverOnFailure(e => GetNameById("Funk123"));
+                },
+                e =>
+                {
+                    Assert.True(e.IsSuccess);
+                    Assert.Equal("Harun", e.Success.UnsafeGet());
+                }
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Throws_Recover_Chain_First()
+        {
+            UnitTest(
+                _ => "Funk123",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .RecoverOnFailure(e => GetNameById("Funk1"))
+                        .RecoverOnFailure(e => GetNameById("Funk12"));
+                },
+                e =>
+                {
+                    Assert.True(e.IsSuccess);
+                    Assert.Equal("Harun", e.Success.UnsafeGet());
+                }
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Throws_Recover_Chain_Throws()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return act(() => Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .RecoverOnFailure(e => GetNameById(null)));
+                },
+                a => Assert.Throws<InvalidOperationException>(a)
+            );
+        }
+
         private static string GetNameById(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new InvalidOperationException("Id cannot be null.");
+            }
             if (id.SafeEquals("Funk123"))
             {
                 return "Harun";
