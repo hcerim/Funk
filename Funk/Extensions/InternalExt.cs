@@ -15,8 +15,11 @@ namespace Funk.Internal
             return otherwise.AsMaybe().Match(
                 _ =>
                 {
-                    otherwiseThrow.Throw(__ => UnhandledException);
-                    return default;
+                    if (otherwiseThrow.IsNotNull())
+                    {
+                        throw otherwiseThrow(Unit.Value);
+                    }
+                    throw UnhandledException;
                 },
                 o => o(Unit.Value)
             );
@@ -52,14 +55,6 @@ namespace Funk.Internal
             {
                 return new Exc<T, E>(e);
             }
-        }
-
-        private static void Throw(this Func<Unit, Exception> otherwiseThrow, Func<Unit, FunkException> exception)
-        {
-            otherwiseThrow.AsMaybe().Match(
-                _ => throw exception(_),
-                e => throw e(Unit.Value)
-            );
         }
     }
 }
