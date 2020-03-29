@@ -155,7 +155,7 @@ namespace Funk.Exceptions
         }
 
         /// <summary>
-        /// Handled null enumerable and ignores null value.
+        /// Handled null enumerable and ignores null values.
         /// </summary>
         [Obsolete("Use MapWithMany or BindRange instead.")]
         public IImmutableList<E> AddRange(IEnumerable<E> items)
