@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Funk.Exceptions;
+using Funk.Internal;
 
 namespace Funk
 {
@@ -18,14 +19,7 @@ namespace Funk
         /// </summary>
         public static Exc<T, E> Create<T, E>(Func<Unit, T> operation) where E : Exception
         {
-            try
-            {
-                return new Exc<T, E>(operation(Unit.Value));
-            }
-            catch (E e)
-            {
-                return new Exc<T, E>(e);
-            }
+            return operation.TryCatch<T, E>();
         }
 
         /// <summary>
@@ -35,14 +29,7 @@ namespace Funk
         /// </summary>
         public static Exc<T, Exception> Create<T>(Func<Unit, T> operation)
         {
-            try
-            {
-                return new Exc<T, Exception>(operation(Unit.Value));
-            }
-            catch (Exception e)
-            {
-                return new Exc<T, Exception>(e);
-            }
+            return operation.TryCatch<T, Exception>();
         }
 
         /// <summary>
@@ -51,14 +38,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<T, E>> Create<T, E>(Func<Unit, Task<T>> operation) where E : Exception
         {
-            try
-            {
-                return new Exc<T, E>(await operation(Unit.Value));
-            }
-            catch (E e)
-            {
-                return new Exc<T, E>(e);
-            }
+            return await operation.TryCatch<T, E>();
         }
 
         /// <summary>
@@ -68,14 +48,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<T, Exception>> Create<T>(Func<Unit, Task<T>> operation)
         {
-            try
-            {
-                return new Exc<T, Exception>(await operation(Unit.Value));
-            }
-            catch (Exception e)
-            {
-                return new Exc<T, Exception>(e);
-            }
+            return await operation.TryCatch<T, Exception>();
         }
     }
 
