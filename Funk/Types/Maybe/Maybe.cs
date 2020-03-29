@@ -49,6 +49,7 @@ namespace Funk
         /// <summary>
         /// Maps not empty value to the result of the selector or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T, R> ifNotEmpty, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
