@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Funk.Exceptions;
 using Xunit;
@@ -160,6 +161,35 @@ namespace Funk.Tests
                     var result = f.Invoke();
                     Assert.IsType<EnumerableException<ArgumentException>>(result.Failure.UnsafeGet());
                 }
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Continue()
+        {
+            UnitTest(
+                _ => "Funk123",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .ContinueOnSuccess(ss => ss.Concat(GetNameById(s)));
+                },
+                s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Continue_When_Failure()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync(s)))
+                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
+                },
+                e => Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond())
             );
         }
 
