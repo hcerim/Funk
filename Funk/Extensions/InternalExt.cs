@@ -10,7 +10,7 @@ namespace Funk.Internal
         [Pure] 
         private static UnhandledValueException UnhandledException => new UnhandledValueException("Expression did not cover all possible cases.");
 
-        internal static R Otherwise<R>(Func<Unit, R> otherwise = null, Func<Unit, Exception> otherwiseThrow = null)
+        internal static R Otherwise<R>(Func<Unit, R> otherwise, Func<Unit, Exception> otherwiseThrow)
         {
             return otherwise.AsMaybe().Match(
                 _ =>
