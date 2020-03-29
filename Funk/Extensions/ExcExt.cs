@@ -78,8 +78,8 @@ namespace Funk
         }
 
         /// <summary>
-        /// Recover in case of the empty exceptional.
-        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// Continue if previous operation was successful.
+        /// Note that continue does not work if the creation fails because of unhandled exception.
         /// </summary>
         public static Exc<R, E> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, R> continueOperation) where T : R where E : Exception
         {
@@ -91,8 +91,8 @@ namespace Funk
         }
 
         /// <summary>
-        /// Recover in case of the empty exceptional.
-        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// Continue if previous operation was successful.
+        /// Note that continue does not work if the creation fails because of unhandled exception.
         /// </summary>
         public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
         {
@@ -100,8 +100,8 @@ namespace Funk
         }
 
         /// <summary>
-        /// Recover in case of the empty exceptional.
-        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// Continue if previous operation was successful.
+        /// Note that continue does not work if the creation fails because of unhandled exception.
         /// </summary>
         public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
         {
