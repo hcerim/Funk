@@ -10,12 +10,6 @@ namespace Funk
     /// </summary>
     public abstract class OneOf
     {
-        /// <summary>
-        /// Creates empty OneOf.
-        /// </summary>
-        [Pure]
-        public static Unit Empty => empty;
-
         protected OneOf(object item, int discriminator)
         {
             if (item.IsNull())
@@ -48,6 +42,12 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2> : OneOf
     {
+        /// <summary>
+        /// Creates empty OneOf.
+        /// </summary>
+        [Pure]
+        public static OneOf<T1, T2> Empty => new OneOf<T1, T2>();
+
         protected OneOf()
             : base(default, 0)
         {
@@ -167,6 +167,12 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3> : OneOf
     {
+        /// <summary>
+        /// Creates empty OneOf.
+        /// </summary>
+        [Pure]
+        public static OneOf<T1, T2, T3> Empty => new OneOf<T1, T2, T3>();
+
         protected OneOf()
             : base(default, 0)
         {
@@ -321,6 +327,12 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4> : OneOf
     {
+        /// <summary>
+        /// Creates empty OneOf.
+        /// </summary>
+        [Pure]
+        public static OneOf<T1, T2, T3, T4> Empty => new OneOf<T1, T2, T3, T4>();
+
         protected OneOf()
             : base(default, 0)
         {
@@ -510,6 +522,12 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
+        /// <summary>
+        /// Creates empty OneOf.
+        /// </summary>
+        [Pure]
+        public static OneOf<T1, T2, T3, T4, T5> Empty => new OneOf<T1, T2, T3, T4, T5>();
+
         protected OneOf()
             : base(default, 0)
         {
