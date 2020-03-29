@@ -11,15 +11,7 @@ namespace Funk
         /// <summary>
         /// Creates a collection of item if not null. Otherwise returns empty collection.
         /// </summary>
-        public static IImmutableList<T> ToImmutableList<T>(this T item) where T : class
-        {
-            return item.AsMaybe().AsImmutableList();
-        }
-
-        /// <summary>
-        /// Creates a collection of item if not null. Otherwise returns empty collection.
-        /// </summary>
-        public static IImmutableList<T> ToImmutableList<T>(this T? item) where T : struct
+        public static IImmutableList<T> ToImmutableList<T>(this T item)
         {
             return item.AsMaybe().AsImmutableList();
         }

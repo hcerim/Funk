@@ -95,7 +95,7 @@ namespace Funk
         }
 
         internal Exc(E exception)
-            : base(exception.ToException())
+            : base(exception.ToEnumerableException())
         {
         }
 
@@ -123,9 +123,12 @@ namespace Funk
         public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
         [Pure]
+        public Maybe<E> RootFailure => Failure.FlatMap(e => e.Root);
+
+        [Pure]
         public bool IsSuccess => IsFirst;
 
-        [Pure] 
+        [Pure]
         public bool IsFailure => IsSecond;
 
         public static implicit operator Exc<T, E>(Unit unit) => new Exc<T, E>();
