@@ -76,5 +76,40 @@ namespace Funk
             }
             return operationResult.IsSuccess ? new Exc<R, E>(operationResult.UnsafeGetFirst()) : new Exc<R, E>(operationResult.UnsafeGetSecond());
         }
+
+        /// <summary>
+        /// Continue if previous operation was successful.
+        /// Note that continue does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Exc<R, E> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, R> continueOperation) where T : R where E : Exception
+        {
+            return operationResult.Match(
+                _ => empty,
+                v => Exc.Create<R, E>(_ => continueOperation(v)),
+                e => new Exc<R, E>(e)
+            );
+        }
+
+        /// <summary>
+        /// Continue if previous operation was successful.
+        /// Note that continue does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
+        {
+            return await ContinueOnSuccess(await operationResult, continueOperation);
+        }
+
+        /// <summary>
+        /// Continue if previous operation was successful.
+        /// Note that continue does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
+        {
+            if (operationResult.IsEmpty)
+            {
+                return empty;
+            }
+            return operationResult.IsSuccess ? await Exc.Create<R, E>(_ => continueOperation(operationResult.UnsafeGetFirst())) : new Exc<R, E>(operationResult.UnsafeGetSecond());
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Funk.Exceptions;
 using Xunit;
@@ -163,6 +164,51 @@ namespace Funk.Tests
             );
         }
 
+        [Fact]
+        public void Create_Exceptional_Continue()
+        {
+            UnitTest(
+                _ => "Funk123",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .ContinueOnSuccess(ss => ss.Concat(GetNameById(s)));
+                },
+                s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Continue_When_Failure()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync(s)))
+                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
+                },
+                e => Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond())
+            );
+        }
+
+        [Fact]
+        public void Create_Exceptional_Recover_Continue_Empty()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .RecoverOnFailure(e => GetNullStringAsync())
+                        .RecoverOnEmpty(_ => GetNameByIdAsync("Funk123"))
+                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync("Funk123"))).GetAwaiter().GetResult();
+                },
+                s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
+            );
+        }
+
         private static string GetNameById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -179,6 +225,11 @@ namespace Funk.Tests
         private static string GetNullString()
         {
             return null;
+        }
+
+        private static async Task<string> GetNullStringAsync()
+        {
+            return await Task.Run(() => default(string));
         }
 
         private static async Task<string> GetNameByIdAsync(string id)
