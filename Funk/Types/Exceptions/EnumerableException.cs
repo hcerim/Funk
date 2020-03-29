@@ -145,6 +145,17 @@ namespace Funk.Exceptions
 
         public E this[int index] => nested[index];
 
+        public int IndexOf(E item, int index, int count, IEqualityComparer<E> equalityComparer)
+        {
+            return nested.IndexOf(item, index, count, equalityComparer);
+        }
+
+        public int LastIndexOf(E item, int index, int count, IEqualityComparer<E> equalityComparer)
+        {
+            return nested.LastIndexOf(item, index, count, equalityComparer);
+        }
+
+        #region Obsolete methods
         /// <summary>
         /// Ignores null value.
         /// </summary>
@@ -163,74 +174,68 @@ namespace Funk.Exceptions
             return MapWithMany(_ => items);
         }
 
+        /// <summary>
+        /// Creates empty EnumerableException.
+        /// </summary>
         [Obsolete("Resetting can cause unexpected issues.")]
         public IImmutableList<E> Clear()
         {
-            return new EnumerableException<E>(null, nested.Clear());
-        }
-
-        public int IndexOf(E item, int index, int count, IEqualityComparer<E> equalityComparer)
-        {
-            return nested.IndexOf(item, index, count, equalityComparer);
+            return EnumerableException.Create<E>(message: null);
         }
 
         [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWith or Bind instead.")]
         public IImmutableList<E> Insert(int index, E element)
         {
-            return new EnumerableException<E>(Message, nested.Insert(index, element));
+            return EnumerableException.Create(Message, nested.Insert(index, element));
         }
 
         [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWithMany or BindRange instead.")]
         public IImmutableList<E> InsertRange(int index, IEnumerable<E> items)
         {
-            return new EnumerableException<E>(Message, nested.InsertRange(index, items));
-        }
-
-        public int LastIndexOf(E item, int index, int count, IEqualityComparer<E> equalityComparer)
-        {
-            return nested.LastIndexOf(item, index, count, equalityComparer);
+            return EnumerableException.Create(Message, nested.InsertRange(index, items));
         }
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
         public IImmutableList<E> Remove(E value, IEqualityComparer<E> equalityComparer)
         {
-            return new EnumerableException<E>(Message, nested.Remove(value, equalityComparer));
+            return EnumerableException.Create(Message, nested.Remove(value, equalityComparer));
         }
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
         public IImmutableList<E> RemoveAll(Predicate<E> match)
         {
-            return new EnumerableException<E>(Message, nested.RemoveAll(match));
+            return EnumerableException.Create(Message, nested.RemoveAll(match));
         }
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
         public IImmutableList<E> RemoveAt(int index)
         {
-            return new EnumerableException<E>(Message, nested.RemoveAt(index));
+            return EnumerableException.Create(Message, nested.RemoveAt(index));
         }
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
         public IImmutableList<E> RemoveRange(IEnumerable<E> items, IEqualityComparer<E> equalityComparer)
         {
-            return new EnumerableException<E>(Message, nested.RemoveRange(items, equalityComparer));
+            return EnumerableException.Create(Message, nested.RemoveRange(items, equalityComparer));
         }
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
         public IImmutableList<E> RemoveRange(int index, int count)
         {
-            return new EnumerableException<E>(Message, nested.RemoveRange(index, count));
+            return EnumerableException.Create(Message, nested.RemoveRange(index, count));
         }
 
         [Obsolete("Modifying exceptions can cause unexpected issues.")]
         public IImmutableList<E> Replace(E oldValue, E newValue, IEqualityComparer<E> equalityComparer)
         {
-            return new EnumerableException<E>(Message, nested.Replace(oldValue, newValue, equalityComparer));
+            return EnumerableException.Create(Message, nested.Replace(oldValue, newValue, equalityComparer));
         }
 
         [Obsolete("Modifying exceptions can cause unexpected issues.")]
         public IImmutableList<E> SetItem(int index, E value)
         {
-            return new EnumerableException<E>(Message, nested.SetItem(index, value));
+            return EnumerableException.Create(Message, nested.SetItem(index, value));
         }
+        #endregion
     }
 }
