@@ -49,6 +49,7 @@ namespace Funk
         /// <summary>
         /// Maps not empty value to the result of the selector or throws EmptyValueException (unless specified explicitly).
         /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T, R> ifNotEmpty, Func<Unit, Exception> otherwiseThrow = null)
         {
             switch (Discriminator)
@@ -113,7 +114,7 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null) => Match(_ => throw GetException(otherwiseThrow), v => v);
 
-        public static implicit operator Maybe<T>(Unit unit) => new Maybe<T>();
+        public static implicit operator Maybe<T>(Unit unit) => Maybe.Empty<T>();
 
         public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
 

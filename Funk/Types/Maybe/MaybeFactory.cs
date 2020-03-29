@@ -25,6 +25,6 @@ namespace Funk
         /// Creates empty Maybe.
         /// </summary>
         [Pure]
-        public static Unit Empty => empty;
+        public static Maybe<T> Empty<T>() => new Maybe<T>();
     }
 }
