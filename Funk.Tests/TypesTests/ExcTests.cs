@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Funk.Exceptions;
@@ -209,6 +211,33 @@ namespace Funk.Tests
             );
         }
 
+        [Fact]
+        public void Create_Exceptional_Recover_Continue_Empty_Custom_Type()
+        {
+            UnitTest(
+                _ => new InformationSource(new FirstSource("Third")), 
+                s =>
+                {
+                    return Exc.Create<IImmutableList<string>, ArgumentException>(_ => s.UnsafeGetFirst().GetInformation())
+                        .RecoverOnFailure(e =>
+                        {
+                            var information = new InformationSource(new SecondSource("First"));
+                            return information.UnsafeGetSecond().GetInformation();
+                        })
+                        .RecoverOnFailure(e => default(IImmutableList<string>))
+                        .RecoverOnEmpty(_ =>
+                        {
+                            var information = new InformationSource(new FirstSource("First"));
+                            return information.UnsafeGetFirst().GetInformation();
+                        });
+                },
+                s =>
+                {
+                    Assert.Equal(new List<string> { "1", "2", "3" }.Map(), s.UnsafeGetFirst());
+                }
+            );
+        }
+
         private static string GetNameById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -243,6 +272,67 @@ namespace Funk.Tests
                 return await Task.Run(() => "Harun");
             }
             throw new ArgumentException("Invalid id");
+        }
+    }
+
+    public class InformationSource : OneOf<FirstSource, SecondSource>
+    {
+        private InformationSource()
+        {
+        }
+
+        public InformationSource(FirstSource first)
+            : base(first)
+        {
+        }
+
+        public InformationSource(SecondSource second)
+            : base(second)
+        {
+        }
+
+        public static implicit operator InformationSource(Unit unit) => new InformationSource();
+    }
+
+    public class FirstSource
+    {
+        public FirstSource(string sourceName)
+        {
+            SourceName = sourceName;
+        }
+
+        private string SourceName { get; }
+
+        private static IImmutableList<string> List => new List<string> {"1", "2", "3"}.Map();
+
+        public IImmutableList<string> GetInformation()
+        {
+            if (SourceName.SafeEquals("First"))
+            {
+                return List;
+            }
+            throw new ArgumentException();
+        }
+    }
+
+    public class SecondSource
+    {
+        public SecondSource(string sourceName)
+        {
+            SourceName = sourceName;
+        }
+
+        private string SourceName { get; }
+
+        private static IImmutableList<string> List => new List<string> {"4", "5", "6"}.Map();
+
+        public IImmutableList<string> GetInformation()
+        {
+            if (SourceName.SafeEquals("Second"))
+            {
+                return List;
+            }
+            throw new ArgumentException();
         }
     }
 }
