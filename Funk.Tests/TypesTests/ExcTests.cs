@@ -193,6 +193,22 @@ namespace Funk.Tests
             );
         }
 
+        [Fact]
+        public void Create_Exceptional_Recover_Continue_Empty()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .RecoverOnFailure(e => GetNullStringAsync())
+                        .RecoverOnEmpty(_ => GetNameByIdAsync("Funk123"))
+                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync("Funk123"))).GetAwaiter().GetResult();
+                },
+                s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
+            );
+        }
+
         private static string GetNameById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -209,6 +225,11 @@ namespace Funk.Tests
         private static string GetNullString()
         {
             return null;
+        }
+
+        private static async Task<string> GetNullStringAsync()
+        {
+            return await Task.Run(() => default(string));
         }
 
         private static async Task<string> GetNameByIdAsync(string id)
