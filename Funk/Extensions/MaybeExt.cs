@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 
 namespace Funk
 {
@@ -51,17 +49,6 @@ namespace Funk
         /// </summary>
         [Pure]
         public static Maybe<T> Map<T>(this Maybe<T?> maybe) where T : struct => maybe.FlatMap(v => v.AsMaybe());
-
-        /// <summary>
-        /// Returns enumerable if Maybe is not empty. Otherwise it returns either specified enumerable by the selector or an empty enumerable.
-        /// </summary>
-        public static IEnumerable<T> GetOr<T>(this Maybe<IEnumerable<T>> maybe, Func<Unit, IEnumerable<T>> otherwise = null)
-        {
-            return maybe.GetOrElse(_ => otherwise.AsMaybe().Match(
-                __ => Enumerable.Empty<T>(), 
-                f => f(Unit.Value))
-            );
-        }
 
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
