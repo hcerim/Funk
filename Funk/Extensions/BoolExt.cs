@@ -34,9 +34,6 @@ namespace Funk
         /// <summary>
         /// If false or null, Maybe will be empty.
         /// </summary>
-        public static Maybe<bool> IsTrue(this bool? item)
-        {
-            return item is null ? empty : IsTrue(item.Value);
-        }
+        public static Maybe<bool> IsTrue(this bool? item) => item.IsNull() ? empty : IsTrue(item.Value);
     }
 }
