@@ -357,6 +357,20 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Enumerable_Fold()
+        {
+            UnitTest(
+                _ => new List<Maybe<string>> { "Funk", "Funky", null, null },
+                l => l.Map().Reverse().Fold((a, b) => $"{a} {b}"),
+                m =>
+                {
+                    Assert.True(m.NotEmpty);
+                    Assert.Equal("Funky Funk", m.UnsafeGet());
+                }
+            );
+        }
+
+        [Fact]
         public void Enumerable_MapReduce_Empty()
         {
             UnitTest(
