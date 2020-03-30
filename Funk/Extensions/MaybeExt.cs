@@ -24,13 +24,6 @@ namespace Funk
 
         /// <summary>
         /// Preferably use GetOrElse.
-        /// Gets Maybe value if not empty. Otherwise, returns null.
-        /// </summary>
-        [Pure]
-        public static T GetOrNull<T>(this Maybe<T> maybe) where T : class => maybe.Match(_ => null, v => v);
-
-        /// <summary>
-        /// Preferably use GetOrElse.
         /// Gets Maybe value if not empty. Otherwise, returns default value.
         /// </summary>
         [Pure]

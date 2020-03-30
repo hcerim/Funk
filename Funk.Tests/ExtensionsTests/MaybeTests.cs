@@ -20,7 +20,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => may(default(object)),
-                m => m.GetOrNull(),
+                m => m.GetOrDefault(),
                 Assert.Null
             );
         }
