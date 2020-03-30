@@ -22,11 +22,11 @@ namespace Funk
         /// <summary>
         /// If false, Maybe will be empty.
         /// </summary>
-        public static Maybe<bool> IsTrue(this bool item) => item ? Maybe.Create(true) : empty;
+        public static Maybe<bool> AsTrue(this bool item) => item ? Maybe.Create(true) : empty;
 
         /// <summary>
         /// If false or null, Maybe will be empty.
         /// </summary>
-        public static Maybe<bool> IsTrue(this bool? item) => item.IsNull() ? empty : IsTrue(item.Value);
+        public static Maybe<bool> AsTrue(this bool? item) => item.IsNull() ? empty : AsTrue(item.Value);
     }
 }
