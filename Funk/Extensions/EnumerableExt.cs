@@ -165,8 +165,15 @@ namespace Funk
         /// </summary>
         public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer)
         {
-            // TODO: Consolidate with Exceptional.
             return enumerable.AsNotEmptyList().Map(e => e.Aggregate(reducer));
+        }
+
+        /// <summary>
+        /// Aggregates enumerable of not empty Maybes to the specified result as Maybe. Handles null enumerable.
+        /// </summary>
+        public static Maybe<T> Fold<T>(this IEnumerable<Maybe<T>> enumerable, Func<T, T, T> reducer)
+        {
+            return enumerable.Flatten().Reduce(reducer);
         }
 
         /// <summary>
@@ -174,7 +181,6 @@ namespace Funk
         /// </summary>
         public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer)
         {
-            // TODO: Consolidate with Exceptional.
             return enumerable.Map(mapper).Reduce(reducer);
         }
 
@@ -183,7 +189,6 @@ namespace Funk
         /// </summary>
         public static Maybe<R> FlatMapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer)
         {
-            // TODO: Consolidate with Exceptional.
             return enumerable.FlatMap(mapper).Reduce(reducer);
         }
     }
