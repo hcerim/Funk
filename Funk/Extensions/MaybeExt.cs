@@ -20,14 +20,7 @@ namespace Funk
         /// <summary>
         /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
         /// </summary>
-        public static R GetOrElse<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
-
-        /// <summary>
-        /// Preferably use GetOrElse.
-        /// Gets Maybe value if not empty. Otherwise, returns null.
-        /// </summary>
-        [Pure]
-        public static T GetOrNull<T>(this Maybe<T> maybe) where T : class => maybe.Match(_ => null, v => v);
+        public static R GetOr<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
 
         /// <summary>
         /// Preferably use GetOrElse.
@@ -54,5 +47,10 @@ namespace Funk
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
         public static Maybe<R> Or<T, R>(this Maybe<T> maybe, Func<Unit, Maybe<R>> ifEmpty) where T : R => maybe.Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v));
+
+        /// <summary>
+        /// Returns either not empty Maybe or a Maybe specified by the selector.
+        /// </summary>
+        public static Maybe<T> Or<T>(this Maybe<T?> maybe, Func<Unit, Maybe<T>> ifEmpty) where T : struct => maybe.Match(_ => ifEmpty(Unit.Value), Maybe.Create);
     }
 }
