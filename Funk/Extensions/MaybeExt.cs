@@ -23,7 +23,7 @@ namespace Funk
         public static R GetOr<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
 
         /// <summary>
-        /// Preferably use GetOrElse.
+        /// Preferably use GetOr.
         /// Gets Maybe value if not empty. Otherwise, returns default value.
         /// </summary>
         [Pure]
