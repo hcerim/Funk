@@ -10,7 +10,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => may(default(string)),
-                m => m.GetOrElse(_ => "Funk"),
+                m => m.GetOr(_ => "Funk"),
                 s => Assert.Equal("Funk", s)
             );
         }
@@ -55,7 +55,7 @@ namespace Funk.Tests
             UnitTest(
                 _ => new Maybe<int?>(), 
                 m => m.Or(_ => new Maybe<int?>()).Or(_ => may((int?)2)).Or(_ => may((int?)1)),
-                s => Assert.Equal(2, s.GetOrElse(_ => 1))
+                s => Assert.Equal(2, s.GetOr(_ => 1))
             );
         }
         [Fact]

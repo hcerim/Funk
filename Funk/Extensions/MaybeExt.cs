@@ -20,7 +20,7 @@ namespace Funk
         /// <summary>
         /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
         /// </summary>
-        public static R GetOrElse<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
+        public static R GetOr<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
 
         /// <summary>
         /// Preferably use GetOrElse.

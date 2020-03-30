@@ -109,8 +109,8 @@ namespace Funk.Exceptions
         public EnumerableException<E> Bind(EnumerableException<E> exception)
         {
             var list = new List<E>();
-            list.AddRange(Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map()));
-            list.AddRange(exception?.Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map()));
+            list.AddRange(Nested.GetOr(_ => ImmutableList<E>.Empty.Map()));
+            list.AddRange(exception?.Nested.GetOr(_ => ImmutableList<E>.Empty.Map()));
             return EnumerableException.Create(Message, list);
         }
 
@@ -121,8 +121,8 @@ namespace Funk.Exceptions
         public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions)
         {
             var list = new List<E>();
-            list.AddRange(Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map()));
-            list.AddRange(exceptions.FlatMap(e => e.Nested.GetOrElse(_ => ImmutableList<E>.Empty.Map())));
+            list.AddRange(Nested.GetOr(_ => ImmutableList<E>.Empty.Map()));
+            list.AddRange(exceptions.FlatMap(e => e.Nested.GetOr(_ => ImmutableList<E>.Empty.Map())));
             return EnumerableException.Create(Message, list);
         }
 
