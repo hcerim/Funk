@@ -91,7 +91,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        public async Task<Record<R1, R2>> MapAsync<R1, R2>(Func<T1, T2, Task<(R1, R2)>> selector) => await MapAsync(async (v1, v2) => (await selector(v1, v2)).ToRecord()).ConfigureAwait(false);
+        public async Task<Record<R1, R2>> MapAsync<R1, R2>(Func<T1, T2, Task<(R1, R2)>> selector) => Record.Create(await selector(Item1, Item2).ConfigureAwait(false));
 
         /// <summary>
         /// Executes operation provided with record items.
@@ -147,7 +147,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        public async Task<Record<R1, R2, R3>> MapAsync<R1, R2, R3>(Func<T1, T2, T3, Task<(R1, R2, R3)>> selector) => await MapAsync(async (v1, v2, v3) => (await selector(v1, v2, v3)).ToRecord()).ConfigureAwait(false);
+        public async Task<Record<R1, R2, R3>> MapAsync<R1, R2, R3>(Func<T1, T2, T3, Task<(R1, R2, R3)>> selector) => Record.Create(await selector(Item1, Item2, Item3).ConfigureAwait(false));
 
         /// <summary>
         /// Executes operation provided with record items.
@@ -206,7 +206,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        public async Task<Record<R1, R2, R3, R4>> MapAsync<R1, R2, R3, R4>(Func<T1, T2, T3, T4, Task<(R1, R2, R3, R4)>> selector) => await MapAsync(async (v1, v2, v3, v4) => (await selector(v1, v2, v3, v4)).ToRecord()).ConfigureAwait(false);
+        public async Task<Record<R1, R2, R3, R4>> MapAsync<R1, R2, R3, R4>(Func<T1, T2, T3, T4, Task<(R1, R2, R3, R4)>> selector) => Record.Create(await selector(Item1, Item2, Item3, Item4).ConfigureAwait(false));
 
         /// <summary>
         /// Executes operation provided with record items.
@@ -268,7 +268,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        public async Task<Record<R1, R2, R3, R4, R5>> MapAsync<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, Task<(R1, R2, R3, R4, R5)>> selector) => await MapAsync(async (v1, v2, v3, v4, v5) => (await selector(v1, v2, v3, v4, v5)).ToRecord()).ConfigureAwait(false);
+        public async Task<Record<R1, R2, R3, R4, R5>> MapAsync<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, Task<(R1, R2, R3, R4, R5)>> selector) => Record.Create(await selector(Item1, Item2, Item3, Item4, Item5).ConfigureAwait(false));
 
         /// <summary>
         /// Executes operation provided with record items.
