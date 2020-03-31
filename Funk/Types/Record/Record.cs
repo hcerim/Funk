@@ -38,7 +38,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        public async Task<Record<R1>> MapAsync<R1>(Func<T1, Task<R1>> selector) => await MapAsync(async v => (await selector(v)).ToRecord()).ConfigureAwait(false);
+        public async Task<Record<R1>> MapAsync<R1>(Func<T1, Task<R1>> selector) => Record.Create(await selector(Item1).ConfigureAwait(false));
 
         /// <summary>
         /// Executes operation provided with record item.
