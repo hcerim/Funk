@@ -65,7 +65,7 @@ namespace Funk.Exceptions
         {
             var list = exceptions.ExceptNulls();
             nested = list;
-            Root = list.FirstOrDefault().AsMaybe();
+            Root = list.AsFirstOrDefault(i => i.IsNotNull());
         }
 
         /// <summary>

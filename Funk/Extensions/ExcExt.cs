@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Funk.Exceptions;
-using static Funk.Prelude;
 
 namespace Funk
 {
@@ -14,8 +13,8 @@ namespace Funk
         public static Exc<R, E> RecoverOnFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, R> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
-                _ => empty,
-                v => new Exc<R, E>(v),
+                _ => Exc.Empty<R, E>(),
+                v => Exc.Success<R, E>(_ => v),
                 e => Exc.Create<R, E>(_ => recoverOperation(e))
             );
         }
@@ -37,9 +36,9 @@ namespace Funk
         {
             if (operationResult.IsEmpty)
             {
-                return empty;
+                return Exc.Empty<R, E>();
             }
-            return operationResult.IsSuccess ? new Exc<R, E>(operationResult.UnsafeGetFirst()) : await Exc.Create<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond()));
+            return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : await Exc.Create<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond()));
         }
 
         /// <summary>
@@ -50,8 +49,8 @@ namespace Funk
         {
             return operationResult.Match(
                 _ => Exc.Create<R, E>(__ => recoverOperation(Unit.Value)),
-                v => new Exc<R, E>(v),
-                e => new Exc<R, E>(e)
+                v => Exc.Success<R, E>(_ => v),
+                e => Exc.Failure<R, E>(_ => e)
             );
         }
 
@@ -74,7 +73,7 @@ namespace Funk
             {
                 return await Exc.Create<R, E>(_ => recoverOperation(Unit.Value));
             }
-            return operationResult.IsSuccess ? new Exc<R, E>(operationResult.UnsafeGetFirst()) : new Exc<R, E>(operationResult.UnsafeGetSecond());
+            return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : Exc.Failure<R, E>(_ => operationResult.UnsafeGetSecond());
         }
 
         /// <summary>
@@ -83,11 +82,7 @@ namespace Funk
         /// </summary>
         public static Exc<R, E> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, R> continueOperation) where T : R where E : Exception
         {
-            return operationResult.Match(
-                _ => empty,
-                v => Exc.Create<R, E>(_ => continueOperation(v)),
-                e => new Exc<R, E>(e)
-            );
+            return operationResult.Map(continueOperation);
         }
 
         /// <summary>
@@ -105,11 +100,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
         {
-            if (operationResult.IsEmpty)
-            {
-                return empty;
-            }
-            return operationResult.IsSuccess ? await Exc.Create<R, E>(_ => continueOperation(operationResult.UnsafeGetFirst())) : new Exc<R, E>(operationResult.UnsafeGetSecond());
+            return await operationResult.Map(continueOperation);
         }
     }
 }

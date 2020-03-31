@@ -50,6 +50,38 @@ namespace Funk
         {
             return await operation.TryCatch<T, Exception>();
         }
+
+        /// <summary>
+        /// Creates failed Exc.
+        /// </summary>
+        public static Exc<T, E> Failure<T, E>(Func<Unit, EnumerableException<E>> exception) where E : Exception
+        {
+            return new Exc<T, E>(exception(Unit.Value));
+        }
+
+        /// <summary>
+        /// Creates failed Exc.
+        /// </summary>
+        public static Exc<T, E> Failure<T, E>(Func<Unit, E> exception) where E : Exception
+        {
+            return Failure<T, E>(_ => exception(Unit.Value).ToEnumerableException());
+        }
+
+        /// <summary>
+        /// Creates successful Exc.
+        /// </summary>
+        public static Exc<T, E> Success<T, E>(Func<Unit, T> result) where E : Exception
+        {
+            return new Exc<T, E>(result(Unit.Value));
+        }
+
+        /// <summary>
+        /// Creates empty Exc.
+        /// </summary>
+        public static Exc<T, E> Empty<T, E>() where E : Exception
+        {
+            return new Exc<T, E>();
+        }
     }
 
     /// <summary>
@@ -58,7 +90,7 @@ namespace Funk
     /// </summary>
     public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>> where E : Exception
     {
-        private Exc()
+        internal Exc()
         {
         }
 
@@ -95,6 +127,40 @@ namespace Funk
         [Pure]
         public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// Use FlatMap if you have nested Exc. 
+        /// </summary>
+        public Exc<R, E> Map<R>(Func<T, R> selector) => FlatMap(v => Exc.Create<R, E>(_ => selector(v)));
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// Use FlatMap if you have nested Exc. 
+        /// </summary>
+        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(v => Exc.Create<R, E>(_ => selector(v)));
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// </summary>
+        public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => Exc.Empty<R, E>(), selector, e => Exc.Failure<R, E>(_ => e));
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// </summary>
+        public async Task<Exc<R, E>> FlatMap<R>(Func<T, Task<Exc<R, E>>> selector)
+        {
+            switch (Discriminator)
+            {
+                case 1: return await selector((T)Value);
+                case 2: return Exc.Failure<R, E>(_ => (EnumerableException<E>)Value);
+                default: return Exc.Empty<R, E>();
+            }
+        }
+
         [Pure]
         public Maybe<E> RootFailure => Failure.FlatMap(e => e.Root);
 
@@ -104,7 +170,7 @@ namespace Funk
         [Pure]
         public bool IsFailure => IsSecond;
 
-        public static implicit operator Exc<T, E>(Unit unit) => new Exc<T, E>();
+        public static implicit operator Exc<T, E>(Unit unit) => Exc.Empty<T, E>();
 
         public static implicit operator Exc<T, E>(T result) => new Exc<T, E>(result);
 
