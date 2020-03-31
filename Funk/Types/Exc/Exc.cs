@@ -36,9 +36,9 @@ namespace Funk
         /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// It will fail on unhandled exceptions.
         /// </summary>
-        public static async Task<Exc<T, E>> Create<T, E>(Func<Unit, Task<T>> operation) where E : Exception
+        public static async Task<Exc<T, E>> CreateAsync<T, E>(Func<Unit, Task<T>> operation) where E : Exception
         {
-            return await operation.TryCatch<T, E>();
+            return await operation.TryCatchAsync<T, E>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -46,9 +46,9 @@ namespace Funk
         /// Using this method you are handling all exceptions which you should not do.
         /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
-        public static async Task<Exc<T, Exception>> Create<T>(Func<Unit, Task<T>> operation)
+        public static async Task<Exc<T, Exception>> CreateAsync<T>(Func<Unit, Task<T>> operation)
         {
-            return await operation.TryCatch<T, Exception>();
+            return await operation.TryCatchAsync<T, Exception>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Funk
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
-        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(v => Exc.Create<R, E>(_ => selector(v)));
+        public async Task<Exc<R, E>> MapAsync<R>(Func<T, Task<R>> selector) => await FlatMapAsync(v => Exc.CreateAsync<R, E>(_ => selector(v))).ConfigureAwait(false);
 
         /// <summary>
         /// Structure-preserving map.
@@ -151,11 +151,11 @@ namespace Funk
         /// Structure-preserving map.
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
-        public async Task<Exc<R, E>> FlatMap<R>(Func<T, Task<Exc<R, E>>> selector)
+        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector)
         {
             switch (Discriminator)
             {
-                case 1: return await selector((T)Value);
+                case 1: return await selector((T)Value).ConfigureAwait(false);
                 case 2: return Exc.Failure<R, E>(_ => (EnumerableException<E>)Value);
                 default: return Exc.Empty<R, E>();
             }

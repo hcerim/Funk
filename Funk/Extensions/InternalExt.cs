@@ -45,11 +45,11 @@ namespace Funk.Internal
             }
         }
 
-        internal static async Task<Exc<T, E>> TryCatch<T, E>(this Func<Unit, Task<T>> operation) where E : Exception
+        internal static async Task<Exc<T, E>> TryCatchAsync<T, E>(this Func<Unit, Task<T>> operation) where E : Exception
         {
             try
             {
-                return new Exc<T, E>(await operation(Unit.Value));
+                return new Exc<T, E>(await operation(Unit.Value).ConfigureAwait(false));
             }
             catch (E e)
             {

@@ -116,8 +116,8 @@ namespace Funk.Tests
                 {
                     return act(() =>
                     {
-                        var result = Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s));
-                        result.RecoverOnFailure(e => GetNameByIdAsync(null)).GetAwaiter().GetResult();
+                        var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s));
+                        result.RecoverOnFailureAsync(e => GetNameByIdAsync(null)).GetAwaiter().GetResult();
                     });
                 },
                 a => Assert.Throws<InvalidOperationException>(a)
@@ -133,7 +133,7 @@ namespace Funk.Tests
                 {
                     return fun(() =>
                     {
-                        var result = Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
+                        var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
                         return result.RecoverOnFailure(e => GetNullString()).RecoverOnEmpty(_ => GetNameById("Funk123"));
                     });
                 },
@@ -154,7 +154,7 @@ namespace Funk.Tests
                 {
                     return fun(() =>
                     {
-                        var result = Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
+                        var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
                         return result.RecoverOnFailure(e => GetNameById("Funk12")).RecoverOnEmpty(_ => GetNameById("Funk123"));
                     });
                 },
@@ -187,9 +187,9 @@ namespace Funk.Tests
                 _ => "Funk12",
                 s =>
                 {
-                    return Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s))
-                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync(s)))
-                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
+                    return Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .ContinueOnSuccessAsync(async ss => ss.Concat(await GetNameByIdAsync(s)))
+                        .ContinueOnSuccessAsync(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
                 },
                 e => Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond())
             );
@@ -202,10 +202,10 @@ namespace Funk.Tests
                 _ => "Funk12",
                 s =>
                 {
-                    return Exc.Create<string, ArgumentException>(_ => GetNameByIdAsync(s))
-                        .RecoverOnFailure(e => GetNullStringAsync())
-                        .RecoverOnEmpty(_ => GetNameByIdAsync("Funk123"))
-                        .ContinueOnSuccess(async ss => ss.Concat(await GetNameByIdAsync("Funk123"))).GetAwaiter().GetResult();
+                    return Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .RecoverOnFailureAsync(e => GetNullStringAsync())
+                        .RecoverOnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
+                        .ContinueOnSuccessAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123"))).GetAwaiter().GetResult();
                 },
                 s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
             );
