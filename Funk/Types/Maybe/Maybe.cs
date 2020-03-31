@@ -87,7 +87,7 @@ namespace Funk
         /// Maps not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
         /// Use FlatMap if you have nested Maybes.
         /// </summary>
-        public async Task<Maybe<R>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(async v => (await selector(v)).AsMaybe()).ConfigureAwait(false);
+        public async Task<Maybe<R>> MapAsync<R>(Func<T, Task<R>> selector) => await FlatMapAsync(async v => (await selector(v)).AsMaybe()).ConfigureAwait(false);
 
         /// <summary>
         /// Structure-preserving map.
@@ -99,7 +99,7 @@ namespace Funk
         /// Structure-preserving map.
         /// Binds not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
         /// </summary>
-        public async Task<Maybe<R>> FlatMap<R>(Func<T, Task<Maybe<R>>> selector)
+        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector)
         {
             switch (Discriminator)
             {
