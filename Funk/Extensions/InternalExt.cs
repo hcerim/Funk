@@ -49,7 +49,7 @@ namespace Funk.Internal
         {
             try
             {
-                return new Exc<T, E>(await operation(Unit.Value));
+                return new Exc<T, E>(await operation(Unit.Value).ConfigureAwait(false));
             }
             catch (E e)
             {

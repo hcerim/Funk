@@ -38,7 +38,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<T, E>> Create<T, E>(Func<Unit, Task<T>> operation) where E : Exception
         {
-            return await operation.TryCatch<T, E>();
+            return await operation.TryCatch<T, E>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<T, Exception>> Create<T>(Func<Unit, Task<T>> operation)
         {
-            return await operation.TryCatch<T, Exception>();
+            return await operation.TryCatch<T, Exception>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Funk
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
-        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(v => Exc.Create<R, E>(_ => selector(v)));
+        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(v => Exc.Create<R, E>(_ => selector(v))).ConfigureAwait(false);
 
         /// <summary>
         /// Structure-preserving map.
@@ -155,7 +155,7 @@ namespace Funk
         {
             switch (Discriminator)
             {
-                case 1: return await selector((T)Value);
+                case 1: return await selector((T)Value).ConfigureAwait(false);
                 case 2: return Exc.Failure<R, E>(_ => (EnumerableException<E>)Value);
                 default: return Exc.Empty<R, E>();
             }

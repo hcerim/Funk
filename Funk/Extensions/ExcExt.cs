@@ -25,7 +25,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> RecoverOnFailure<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
         {
-            return await RecoverOnFailure(await operationResult, recoverOperation);
+            return await RecoverOnFailure(await operationResult, recoverOperation).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Funk
             {
                 return Exc.Empty<R, E>();
             }
-            return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : await Exc.Create<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond()));
+            return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : await Exc.Create<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond())).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> RecoverOnEmpty<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
         {
-            return await RecoverOnEmpty(await operationResult, recoverOperation);
+            return await RecoverOnEmpty(await operationResult, recoverOperation).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Funk
         {
             if (operationResult.IsEmpty)
             {
-                return await Exc.Create<R, E>(_ => recoverOperation(Unit.Value));
+                return await Exc.Create<R, E>(_ => recoverOperation(Unit.Value)).ConfigureAwait(false);
             }
             return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : Exc.Failure<R, E>(_ => operationResult.UnsafeGetSecond());
         }
@@ -91,7 +91,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
         {
-            return await ContinueOnSuccess(await operationResult, continueOperation);
+            return await ContinueOnSuccess(await operationResult, continueOperation).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
         {
-            return await operationResult.Map(continueOperation);
+            return await operationResult.Map(continueOperation).ConfigureAwait(false);
         }
     }
 }
