@@ -140,7 +140,7 @@ namespace Funk
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
-        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(async v => await Exc.Create<R, E>(async _ => await selector(v)));
+        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(v => Exc.Create<R, E>(_ => selector(v)));
 
         /// <summary>
         /// Structure-preserving map.
