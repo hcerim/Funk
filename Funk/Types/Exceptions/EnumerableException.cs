@@ -13,7 +13,7 @@ namespace Funk.Exceptions
         /// Creates a new EnumerableException with no nested exceptions.
         /// </summary>
         [Pure]
-        public static EnumerableException<E> Create<E>(string message) where E : Exception => new EnumerableException<E>(message);
+        internal static EnumerableException<E> Create<E>(string message) where E : Exception => new EnumerableException<E>(message);
 
         /// <summary>
         /// Creates a new EnumerableException from existing exception with no nested exceptions.
@@ -39,10 +39,11 @@ namespace Funk.Exceptions
     /// </summary>
     public sealed class EnumerableException<E> : FunkException, IImmutableList<E> where E : Exception
     {
-        public EnumerableException(string message)
+        internal EnumerableException(string message)
             : base(FunkExceptionType.Enumerable, message)
         {
             nested = ImmutableList<E>.Empty;
+            Root = Maybe.Empty<E>();
         }
 
         public EnumerableException(E exception)
