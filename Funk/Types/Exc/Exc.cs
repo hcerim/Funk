@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Funk.Exceptions;
 using Funk.Internal;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -50,6 +51,38 @@ namespace Funk
         {
             return await operation.TryCatch<T, Exception>();
         }
+
+        /// <summary>
+        /// Creates failed Exc.
+        /// </summary>
+        public static Exc<T, E> Failure<T, E>(Func<Unit, EnumerableException<E>> exception) where E : Exception
+        {
+            return new Exc<T, E>(exception(Unit.Value));
+        }
+
+        /// <summary>
+        /// Creates failed Exc.
+        /// </summary>
+        public static Exc<T, E> Failure<T, E>(Func<Unit, E> exception) where E : Exception
+        {
+            return Failure<T, E>(_ => exception(Unit.Value).ToEnumerableException());
+        }
+
+        /// <summary>
+        /// Creates successful Exc.
+        /// </summary>
+        public static Exc<T, E> Success<T, E>(Func<Unit, T> result) where E : Exception
+        {
+            return new Exc<T, E>(result(Unit.Value));
+        }
+
+        /// <summary>
+        /// Creates empty Exc.
+        /// </summary>
+        public static Exc<T, E> Empty<T, E>() where E : Exception
+        {
+            return empty;
+        }
     }
 
     /// <summary>
@@ -94,6 +127,40 @@ namespace Funk
         /// </summary>
         [Pure]
         public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// Use FlatMap if you have nested Exc. 
+        /// </summary>
+        public Exc<R, E> Map<R>(Func<T, R> selector) => FlatMap(v => Exc.Create<R, E>(_ => selector(v)));
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// Use FlatMap if you have nested Exc. 
+        /// </summary>
+        public async Task<Exc<R, E>> Map<R>(Func<T, Task<R>> selector) => await FlatMap(async v => await Exc.Create<R, E>(async _ => await selector(v)));
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// </summary>
+        public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => empty, selector, e => Exc.Failure<R, E>(_ => e));
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// </summary>
+        public async Task<Exc<R, E>> FlatMap<R>(Func<T, Task<Exc<R, E>>> selector)
+        {
+            switch (Discriminator)
+            {
+                case 1: return await selector((T)Value);
+                case 2: return Exc.Failure<R, E>(_ => (EnumerableException<E>)Value);
+                default: return empty;
+            }
+        }
 
         [Pure]
         public Maybe<E> RootFailure => Failure.FlatMap(e => e.Root);
