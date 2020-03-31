@@ -4,7 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Funk.Exceptions;
 using Funk.Internal;
-using static Funk.Prelude;
 
 namespace Funk
 {
@@ -81,7 +80,7 @@ namespace Funk
         /// </summary>
         public static Exc<T, E> Empty<T, E>() where E : Exception
         {
-            return empty;
+            return new Exc<T, E>();
         }
     }
 
@@ -91,7 +90,7 @@ namespace Funk
     /// </summary>
     public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>> where E : Exception
     {
-        private Exc()
+        internal Exc()
         {
         }
 
@@ -146,7 +145,7 @@ namespace Funk
         /// Structure-preserving map.
         /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
-        public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => empty, selector, e => Exc.Failure<R, E>(_ => e));
+        public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => Exc.Empty<R, E>(), selector, e => Exc.Failure<R, E>(_ => e));
 
         /// <summary>
         /// Structure-preserving map.
@@ -158,7 +157,7 @@ namespace Funk
             {
                 case 1: return await selector((T)Value);
                 case 2: return Exc.Failure<R, E>(_ => (EnumerableException<E>)Value);
-                default: return empty;
+                default: return Exc.Empty<R, E>();
             }
         }
 
@@ -171,7 +170,7 @@ namespace Funk
         [Pure]
         public bool IsFailure => IsSecond;
 
-        public static implicit operator Exc<T, E>(Unit unit) => new Exc<T, E>();
+        public static implicit operator Exc<T, E>(Unit unit) => Exc.Empty<T, E>();
 
         public static implicit operator Exc<T, E>(T result) => new Exc<T, E>(result);
 
