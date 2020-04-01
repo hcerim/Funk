@@ -143,6 +143,24 @@ namespace Funk
         }
 
         /// <summary>
+        /// Concatenates 2 collections with null removal. Handles null enumerables.
+        /// </summary>
+        /// <returns></returns>
+        public static IImmutableList<T> SafeConcat<T>(this IEnumerable<T> first, IEnumerable<T> second) where T : class
+        {
+            return first.ExceptNulls().Concat(second.ExceptNulls()).Map();
+        }
+
+        /// <summary>
+        /// Concatenates 2 collections with null removal. Handles null enumerables.
+        /// </summary>
+        /// <returns></returns>
+        public static IImmutableList<T> SafeConcat<T>(this IEnumerable<T?> first, IEnumerable<T?> second) where T : struct
+        {
+            return first.ExceptNulls().Concat(second.ExceptNulls()).Map();
+        }
+
+        /// <summary>
         /// Structure-preserving map.
         /// Maps the specified enumerable to a new enumerable of specified type. Handles null enumerable.
         /// </summary>

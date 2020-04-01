@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
-using System.Linq;
 
 namespace Funk.Exceptions
 {
@@ -99,7 +98,7 @@ namespace Funk.Exceptions
             var exceptions = selector(Unit.Value).Map();
             return EnumerableException.Create(Message, Nested.Match(
                 _ => exceptions,
-                c => c.Concat(exceptions)
+                c => c.SafeConcat(exceptions)
             ));
         }
 
