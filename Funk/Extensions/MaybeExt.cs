@@ -46,7 +46,7 @@ namespace Funk
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
-        public static Maybe<R> Or<T, R>(this Maybe<T> maybe, Func<Unit, Maybe<R>> ifEmpty) where T : R => maybe.Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v));
+        public static Maybe<T> Or<T>(this Maybe<T> maybe, Func<Unit, Maybe<T>> ifEmpty) => maybe.Match(_ => ifEmpty(Unit.Value), Maybe.Create);
 
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
