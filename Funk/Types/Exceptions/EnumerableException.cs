@@ -109,10 +109,7 @@ namespace Funk.Exceptions
         /// </summary>
         public EnumerableException<E> Bind(EnumerableException<E> exception)
         {
-            var list = new List<E>();
-            list.AddRange(Nested.GetOr(_ => ImmutableList<E>.Empty.Map()));
-            list.AddRange(exception?.Nested.GetOr(_ => ImmutableList<E>.Empty.Map()));
-            return EnumerableException.Create(Message, list);
+            return BindRange(exception.ToImmutableList());
         }
 
         /// <summary>
