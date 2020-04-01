@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using Funk.Exceptions;
 
 namespace Funk
@@ -26,7 +25,7 @@ namespace Funk
         [Pure]
         public static EnumerableException<E> MergeRange<E>(this E exc, IEnumerable<E> exceptions) where E : Exception
         {
-            return EnumerableException.Create(exc?.Message, exc.ToImmutableList().Concat(exceptions.Map()));
+            return EnumerableException.Create(exc?.Message, exc.ToImmutableList().SafeConcat(exceptions));
         }
     }
 }
