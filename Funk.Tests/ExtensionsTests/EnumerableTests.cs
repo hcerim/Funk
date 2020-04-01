@@ -211,7 +211,7 @@ namespace Funk.Tests
         public void Create_Maybe_Of_First_Item_In_Enumerable()
         {
             UnitTest(
-                _ => new List<string>{null, "Funk"},
+                _ => lst(null, "Funk"),
                 l => l.AsFirstOrDefault(),
                 s => Assert.True(s.IsEmpty)
             );
