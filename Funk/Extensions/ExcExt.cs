@@ -129,7 +129,7 @@ namespace Funk
             var split2 = split1.Item2.ConditionalSplit(i => i.IsFailure);
             if (split2.Item1.NotEmpty())
             {
-                return Exc.Failure<IImmutableList<T>, E>(_ => split2.Item1.FlatMap(i => i.NestedFailures.UnsafeGet()).ToEnumerableException(errorMessage));
+                return Exc.Failure<IImmutableList<T>, E>(_ => split2.Item1.FlatMap(i => i.NestedFailures.GetOr(__ => ImmutableList<E>.Empty.Map())).ToEnumerableException(errorMessage));
             }
             return Exc.Empty<IImmutableList<T>, E>();
         }
