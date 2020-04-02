@@ -111,14 +111,14 @@ namespace Funk
         /// </summary>
         public static Exc<IImmutableList<T>, E> Merge<T, E>(this Exc<T, E> first, Exc<T, E> second, string errorMessage = null) where E : Exception
         {
-            return Merge(first, second.ToImmutableList(), errorMessage);
+            return MergeRange(first, second.ToImmutableList(), errorMessage);
         }
 
         /// <summary>
         /// Aggregates Exc with collection of Exc. If all are success the result will be Success of Collection of results.
         /// If there is any non-successful, Exc will be failure if any failures or will be empty if all are empty.
         /// </summary>
-        public static Exc<IImmutableList<T>, E> Merge<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
+        public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
             var list = item.ToImmutableList().SafeConcat(items);
             var split1 = list.ConditionalSplit(e => e.IsSuccess);
