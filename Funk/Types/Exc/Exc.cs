@@ -60,14 +60,6 @@ namespace Funk
         }
 
         /// <summary>
-        /// Creates failed Exc.
-        /// </summary>
-        public static Exc<T, E> Failure<T, E>(E exception, string message = null) where E : Exception
-        {
-            return Failure<T, E>(exception.ToEnumerableException(message));
-        }
-
-        /// <summary>
         /// Creates successful Exc.
         /// </summary>
         public static Exc<T, E> Success<T, E>(T result) where E : Exception
