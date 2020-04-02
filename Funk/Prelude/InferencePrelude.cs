@@ -10,37 +10,37 @@ namespace Funk
         /// Higher-order function that helps infer Func without explicitly using the type.
         /// </summary>
         [Pure]
-        public static Func<R> fun<R>(Func<R> func) => func;
+        public static Func<R> func<R>(Func<R> func) => func;
 
         /// <summary>
         /// Higher-order function that helps infer Func without explicitly using the type.
         /// </summary>
         [Pure]
-        public static Func<T1, R> fun<T1, R>(Func<T1, R> func) => func;
+        public static Func<T1, R> func<T1, R>(Func<T1, R> func) => func;
 
         /// <summary>
         /// Higher-order function that helps infer Func without explicitly using the type.
         /// </summary>
         [Pure]
-        public static Func<T1, T2, R> fun<T1, T2, R>(Func<T1, T2, R> func) => func;
+        public static Func<T1, T2, R> func<T1, T2, R>(Func<T1, T2, R> func) => func;
 
         /// <summary>
         /// Higher-order function that helps infer Func without explicitly using the type.
         /// </summary>
         [Pure]
-        public static Func<T1, T2, T3, R> fun<T1, T2, T3, R>(Func<T1, T2, T3, R> func) => func;
+        public static Func<T1, T2, T3, R> func<T1, T2, T3, R>(Func<T1, T2, T3, R> func) => func;
 
         /// <summary>
         /// Higher-order function that helps infer Func without explicitly using the type.
         /// </summary>
         [Pure]
-        public static Func<T1, T2, T3, T4, R> fun<T1, T2, T3, T4, R>(Func<T1, T2, T3, T4, R> func) => func;
+        public static Func<T1, T2, T3, T4, R> func<T1, T2, T3, T4, R>(Func<T1, T2, T3, T4, R> func) => func;
 
         /// <summary>
         /// Higher-order function that helps infer Func without explicitly using the type.
         /// </summary>
         [Pure]
-        public static Func<T1, T2, T3, T4, T5, R> fun<T1, T2, T3, T4, T5, R>(Func<T1, T2, T3, T4, T5, R> func) => func;
+        public static Func<T1, T2, T3, T4, T5, R> func<T1, T2, T3, T4, T5, R>(Func<T1, T2, T3, T4, T5, R> func) => func;
 
         /// <summary>
         /// Higher-order function that helps infer Action without explicitly using the type.

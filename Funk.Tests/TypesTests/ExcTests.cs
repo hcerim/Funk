@@ -131,7 +131,7 @@ namespace Funk.Tests
                 _ => "Funk12",
                 s =>
                 {
-                    return fun(() =>
+                    return func(() =>
                     {
                         var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
                         return result.RecoverOnFailure(e => GetNullString()).RecoverOnEmpty(_ => GetNameById("Funk123"));
@@ -152,7 +152,7 @@ namespace Funk.Tests
                 _ => "Funk12",
                 s =>
                 {
-                    return fun(() =>
+                    return func(() =>
                     {
                         var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
                         return result.RecoverOnFailure(e => GetNameById("Funk12")).RecoverOnEmpty(_ => GetNameById("Funk123"));
@@ -258,7 +258,7 @@ namespace Funk.Tests
 
         private static async Task<string> GetNullStringAsync()
         {
-            return await Task.Run(() => default(string));
+            return await Task.FromResult(GetNullString());
         }
 
         private static async Task<string> GetNameByIdAsync(string id)
@@ -269,7 +269,7 @@ namespace Funk.Tests
             }
             if (id.SafeEquals("Funk123"))
             {
-                return await Task.Run(() => "Harun");
+                return await Task.FromResult("Harun");
             }
             throw new ArgumentException("Invalid id");
         }
