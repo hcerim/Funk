@@ -64,7 +64,7 @@ namespace Funk
         /// </summary>
         public static Exc<T, E> Failure<T, E>(E exception) where E : Exception
         {
-            return Failure<T, E>(exception.ToEnumerableException(exception.Message));
+            return Failure<T, E>(exception.ToEnumerableException(exception?.Message));
         }
 
         /// <summary>
