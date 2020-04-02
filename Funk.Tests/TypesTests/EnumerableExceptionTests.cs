@@ -28,7 +28,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => act(() => throw e.ToEnumerableException()),
+                e => act(() => throw e.ToEnumerableException(e.Message)),
                 a =>
                 {
                     var exception = Assert.Throws<EnumerableException<FunkException>>(a);
