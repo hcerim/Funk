@@ -54,25 +54,25 @@ namespace Funk
         /// <summary>
         /// Creates failed Exc.
         /// </summary>
-        public static Exc<T, E> Failure<T, E>(Func<Unit, EnumerableException<E>> exception) where E : Exception
+        public static Exc<T, E> Failure<T, E>(EnumerableException<E> exception) where E : Exception
         {
-            return new Exc<T, E>(exception(Unit.Value));
+            return new Exc<T, E>(exception);
         }
 
         /// <summary>
         /// Creates failed Exc.
         /// </summary>
-        public static Exc<T, E> Failure<T, E>(Func<Unit, E> exception) where E : Exception
+        public static Exc<T, E> Failure<T, E>(E exception) where E : Exception
         {
-            return Failure<T, E>(_ => exception(Unit.Value).ToEnumerableException());
+            return Failure<T, E>(exception.ToEnumerableException());
         }
 
         /// <summary>
         /// Creates successful Exc.
         /// </summary>
-        public static Exc<T, E> Success<T, E>(Func<Unit, T> result) where E : Exception
+        public static Exc<T, E> Success<T, E>(T result) where E : Exception
         {
-            return new Exc<T, E>(result(Unit.Value));
+            return new Exc<T, E>(result);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Funk
         /// Structure-preserving map.
         /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
-        public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => Exc.Empty<R, E>(), selector, e => Exc.Failure<R, E>(_ => e));
+        public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => Exc.Empty<R, E>(), selector, Exc.Failure<R, E>);
 
         /// <summary>
         /// Structure-preserving map.
@@ -156,7 +156,7 @@ namespace Funk
             switch (Discriminator)
             {
                 case 1: return await selector((T)Value).ConfigureAwait(false);
-                case 2: return Exc.Failure<R, E>(_ => (EnumerableException<E>)Value);
+                case 2: return Exc.Failure<R, E>((EnumerableException<E>)Value);
                 default: return Exc.Empty<R, E>();
             }
         }

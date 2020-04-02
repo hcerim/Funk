@@ -16,7 +16,7 @@ namespace Funk
         {
             return operationResult.Match(
                 _ => Exc.Empty<R, E>(),
-                v => Exc.Success<R, E>(_ => v),
+                v => Exc.Success<R, E>(v),
                 e => Exc.Create<R, E>(_ => recoverOperation(e))
             );
         }
@@ -40,7 +40,7 @@ namespace Funk
             {
                 return Exc.Empty<R, E>();
             }
-            return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : await Exc.CreateAsync<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond())).ConfigureAwait(false);
+            return operationResult.IsSuccess ? Exc.Success<R, E>(operationResult.UnsafeGetFirst()) : await Exc.CreateAsync<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond())).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace Funk
         {
             return operationResult.Match(
                 _ => Exc.Create<R, E>(__ => recoverOperation(Unit.Value)),
-                v => Exc.Success<R, E>(_ => v),
-                e => Exc.Failure<R, E>(_ => e)
+                v => Exc.Success<R, E>(v),
+                Exc.Failure<R, E>
             );
         }
 
@@ -75,7 +75,7 @@ namespace Funk
             {
                 return await Exc.CreateAsync<R, E>(_ => recoverOperation(Unit.Value)).ConfigureAwait(false);
             }
-            return operationResult.IsSuccess ? Exc.Success<R, E>(_ => operationResult.UnsafeGetFirst()) : Exc.Failure<R, E>(_ => operationResult.UnsafeGetSecond());
+            return operationResult.IsSuccess ? Exc.Success<R, E>(operationResult.UnsafeGetFirst()) : Exc.Failure<R, E>(operationResult.UnsafeGetSecond());
         }
 
         /// <summary>
@@ -109,27 +109,27 @@ namespace Funk
         /// Aggregates Exc with another Exc. If both are success the result will be Success of Collection of results.
         /// If there is any non-successful, Exc will be failure if any failures or will be empty if all are empty.
         /// </summary>
-        public static Exc<IImmutableList<T>, E> Aggregate<T, E>(this Exc<T, E> first, Exc<T, E> second, string errorMessage = null) where E : Exception
+        public static Exc<IImmutableList<T>, E> Merge<T, E>(this Exc<T, E> first, Exc<T, E> second, string errorMessage = null) where E : Exception
         {
-            return Aggregate(first, second.ToImmutableList(), errorMessage);
+            return MergeRange(first, second.ToImmutableList(), errorMessage);
         }
 
         /// <summary>
         /// Aggregates Exc with collection of Exc. If all are success the result will be Success of Collection of results.
         /// If there is any non-successful, Exc will be failure if any failures or will be empty if all are empty.
         /// </summary>
-        public static Exc<IImmutableList<T>, E> Aggregate<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
+        public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
             var list = item.ToImmutableList().SafeConcat(items);
             var split1 = list.ConditionalSplit(e => e.IsSuccess);
             if (split1.Item2.IsEmpty())
             {
-                return Exc.Success<IImmutableList<T>, E>(_ => split1.Item1.Map(i => i.Success.UnsafeGet()));
+                return Exc.Success<IImmutableList<T>, E>(split1.Item1.Map(i => i.Success.UnsafeGet()));
             }
             var split2 = split1.Item2.ConditionalSplit(i => i.IsFailure);
             if (split2.Item1.NotEmpty())
             {
-                return Exc.Failure<IImmutableList<T>, E>(_ => split2.Item1.FlatMap(i => i.NestedFailures.UnsafeGet()).ToEnumerableException(errorMessage));
+                return Exc.Failure<IImmutableList<T>, E>(split2.Item1.FlatMap(i => i.NestedFailures.GetOr(__ => ImmutableList<E>.Empty.Map())).ToEnumerableException(errorMessage));
             }
             return Exc.Empty<IImmutableList<T>, E>();
         }
