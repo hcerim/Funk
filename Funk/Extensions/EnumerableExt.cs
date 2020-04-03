@@ -27,7 +27,7 @@ namespace Funk
         /// </summary>
         public static IImmutableList<T> Map<T>(this IEnumerable<T> enumerable)
         {
-            return ImmutableList.CreateRange(enumerable ?? ImmutableList.Create<T>());
+            return ImmutableList.CreateRange(enumerable ?? ImmutableList<T>.Empty);
         }
 
         /// <summary>
