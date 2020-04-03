@@ -72,7 +72,7 @@ namespace Funk
         public static async Task<Exc<R, E>> RecoverOnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
         {
             return await operationResult.Match(
-                _ => Exc.CreateAsync<R, E>(__ => recoverOperation(Unit.Value)),
+                _ => Exc.CreateAsync<R, E>(__ => recoverOperation(_)),
                 v => Task.FromResult(Exc.Success<R, E>(v)),
                 e => Task.FromResult(Exc.Failure<R, E>(e))
             ).ConfigureAwait(false);
