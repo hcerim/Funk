@@ -210,7 +210,7 @@ namespace Funk
         }
 
         /// <summary>
-        /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return empty. Handles null enumerable
+        /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return failure. Handles null enumerable
         /// </summary>
         public static Exc<Unit, E> ForEach<T, E>(this IEnumerable<T> enumerable, Action<T> operation) where E : Exception
         {
@@ -222,7 +222,7 @@ namespace Funk
         }
 
         /// <summary>
-        /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return empty. Handles null enumerable
+        /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return failure. Handles null enumerable
         /// </summary>
         public static async Task<Exc<Unit, E>> ForEachAsync<T, E>(this IEnumerable<T> enumerable, Func<T, Task> operation) where E : Exception
         {
