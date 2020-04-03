@@ -7,7 +7,8 @@ namespace Funk.Tests
         [Fact]
         public void Bool_To_Maybe()
         {
-            UnitTest(_ => true,
+            UnitTest(
+                _ => true,
                 b => b.AsTrue(),
                 m =>
                 {
@@ -20,7 +21,8 @@ namespace Funk.Tests
         [Fact]
         public void Bool_Nullable_Empty_To_Maybe()
         {
-            UnitTest(_ => default(bool?),
+            UnitTest(
+                _ => default(bool?),
                 b => b.AsTrue(),
                 m => Assert.True(m.IsEmpty)
             );
@@ -29,7 +31,8 @@ namespace Funk.Tests
         [Fact]
         public void Bool_Nullable_To_Maybe()
         {
-            UnitTest(_ => (bool?)true,
+            UnitTest(
+                _ => (bool?)true,
                 b => b.AsTrue(),
                 m =>
                 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using static Funk.Prelude;
 
 namespace Funk
@@ -206,6 +207,33 @@ namespace Funk
         public static Maybe<R> FlatMapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer)
         {
             return enumerable.FlatMap(mapper).Reduce(reducer);
+        }
+
+        /// <summary>
+        /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return empty. Handles null enumerable
+        /// </summary>
+        public static Exc<Unit, E> ForEach<T, E>(this IEnumerable<T> enumerable, Action<T> operation) where E : Exception
+        {
+            return Exc.Create<Unit, E>(_ =>
+            {
+                enumerable.Map().ToList().ForEach(operation);
+                return Unit.Value;
+            });
+        }
+
+        /// <summary>
+        /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return empty. Handles null enumerable
+        /// </summary>
+        public static async Task<Exc<Unit, E>> ForEachAsync<T, E>(this IEnumerable<T> enumerable, Func<T, Task> operation) where E : Exception
+        {
+            return await Exc.CreateAsync<Unit, E>(async _ =>
+            {
+                foreach (var item in enumerable)
+                {
+                    await operation(item);
+                }
+                return Unit.Value;
+            }).ConfigureAwait(false);
         }
     }
 }

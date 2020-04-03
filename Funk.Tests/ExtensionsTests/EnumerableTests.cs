@@ -1,12 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Funk.Exceptions;
 using Xunit;
+using Xunit.Abstractions;
 using static Funk.Prelude;
 
 namespace Funk.Tests
 {
     public class EnumerableTests : Test
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public EnumerableTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void Create_ReadOnlyCollection_From_Not_Empty_List()
         {
@@ -388,6 +398,26 @@ namespace Funk.Tests
                     }
                 ),
                 o => Assert.True(o.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public void ForEach_Enumerable_Failure()
+        {
+            UnitTest(
+                _ => list("Harun", "Funk", "Funky"),
+                l => l.ForEach<string, FunkException>(i => throw new FunkException(i)),
+                e => Assert.True(e.IsFailure)
+            );
+        }
+
+        [Fact]
+        public void ForEach_Enumerable_Success()
+        {
+            UnitTest(
+                _ => list("Harun", "Funk", "Funky"),
+                l => l.ForEachAsync<string, FunkException>(i => Task.Run(act(() => _testOutputHelper.WriteLine(i)))).GetAwaiter().GetResult(),
+                e => Assert.True(e.IsSuccess)
             );
         }
     }
