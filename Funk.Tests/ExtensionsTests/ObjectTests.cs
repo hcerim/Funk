@@ -7,6 +7,26 @@ namespace Funk.Tests
     public class ObjectTests : Test
     {
         [Fact]
+        public void SafeCast_False()
+        {
+            UnitTest(
+                _ => ("Harun", 24),
+                r => r.SafeCast<Record<string, int>>(),
+                m => Assert.True(m.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public void SafeCast_True()
+        {
+            UnitTest(
+                _ => (object)rec("Harun", 24),
+                r => r.SafeCast<Record<string, int>>(),
+                m => Assert.True(m.NotEmpty)
+            );
+        }
+
+        [Fact]
         public void Match_On_Int_For_Result()
         {
             UnitTest(

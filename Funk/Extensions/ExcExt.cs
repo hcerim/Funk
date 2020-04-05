@@ -36,11 +36,11 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> RecoverOnFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
         {
-            if (operationResult.IsEmpty)
-            {
-                return Exc.Empty<R, E>();
-            }
-            return operationResult.IsSuccess ? Exc.Success<R, E>(operationResult.UnsafeGetFirst()) : await Exc.CreateAsync<R, E>(_ => recoverOperation(operationResult.UnsafeGetSecond())).ConfigureAwait(false);
+            return await operationResult.Match(
+                _ => Task.FromResult(Exc.Empty<R, E>()),
+                v => Task.FromResult(Exc.Success<R, E>(v)),
+                e => Exc.CreateAsync<R, E>(_ => recoverOperation(e))
+            ).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -71,11 +71,11 @@ namespace Funk
         /// </summary>
         public static async Task<Exc<R, E>> RecoverOnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
         {
-            if (operationResult.IsEmpty)
-            {
-                return await Exc.CreateAsync<R, E>(_ => recoverOperation(Unit.Value)).ConfigureAwait(false);
-            }
-            return operationResult.IsSuccess ? Exc.Success<R, E>(operationResult.UnsafeGetFirst()) : Exc.Failure<R, E>(operationResult.UnsafeGetSecond());
+            return await operationResult.Match(
+                _ => Exc.CreateAsync<R, E>(__ => recoverOperation(_)),
+                v => Task.FromResult(Exc.Success<R, E>(v)),
+                e => Task.FromResult(Exc.Failure<R, E>(e))
+            ).ConfigureAwait(false);
         }
 
         /// <summary>

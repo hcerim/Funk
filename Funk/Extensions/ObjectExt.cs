@@ -6,6 +6,15 @@ namespace Funk
 {
     public static class ObjectExt
     {
+        public static Maybe<R> SafeCast<R>(this object item)
+        {
+            if (item is R valid)
+            {
+                return Maybe.Create(valid);
+            }
+            return Maybe.Empty<R>();
+        }
+
         public static R Match<T, R>(
             this T obj,
             T case1, Func<T, R> selector1,
