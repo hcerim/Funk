@@ -17,10 +17,7 @@ namespace Funk.Tests.ExtensionsTests
                     c.DisposeAfter(cl => cl.CancelPendingRequests());
                     return c;
                 },
-                c =>
-                {
-                    Assert.Throws<ObjectDisposedException>(act(c.CancelPendingRequests));
-                }
+                c => Assert.Throws<ObjectDisposedException>(act(c.CancelPendingRequests))
             );
         }
     }
