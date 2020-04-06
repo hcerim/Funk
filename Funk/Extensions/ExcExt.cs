@@ -12,7 +12,7 @@ namespace Funk
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static Exc<R, E> RecoverOnFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, R> recoverOperation) where T : R where E : Exception
+        public static Exc<R, E> OnFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, R> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
                 _ => Exc.Empty<R, E>(),
@@ -25,16 +25,16 @@ namespace Funk
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static async Task<Exc<R, E>> RecoverOnFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
         {
-            return await RecoverOnFailureAsync(await operationResult, recoverOperation).ConfigureAwait(false);
+            return await OnFailureAsync(await operationResult, recoverOperation).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static async Task<Exc<R, E>> RecoverOnFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
         {
             return await operationResult.Match(
                 _ => Task.FromResult(Exc.Empty<R, E>()),
@@ -47,7 +47,7 @@ namespace Funk
         /// Recover in case of the empty exceptional.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static Exc<R, E> RecoverOnEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, R> recoverOperation) where T : R where E : Exception
+        public static Exc<R, E> OnEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, R> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
                 _ => Exc.Create<R, E>(__ => recoverOperation(Unit.Value)),
@@ -60,16 +60,16 @@ namespace Funk
         /// Recover in case of the empty exceptional.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static async Task<Exc<R, E>> RecoverOnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
         {
-            return await RecoverOnEmptyAsync(await operationResult, recoverOperation).ConfigureAwait(false);
+            return await OnEmptyAsync(await operationResult, recoverOperation).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Recover in case of the empty exceptional.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static async Task<Exc<R, E>> RecoverOnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
         {
             return await operationResult.Match(
                 _ => Exc.CreateAsync<R, E>(__ => recoverOperation(_)),
@@ -79,30 +79,14 @@ namespace Funk
         }
 
         /// <summary>
-        /// Continue if previous operation was successful.
-        /// Note that continue does not work if the creation fails because of unhandled exception.
+        /// Structure-preserving map.
+        /// Continuation on successful result.
+        /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// Use FlatMap if you have nested Exc. 
         /// </summary>
-        public static Exc<R, E> ContinueOnSuccess<T, E, R>(this Exc<T, E> operationResult, Func<T, R> continueOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> MapAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
         {
-            return operationResult.Map(continueOperation);
-        }
-
-        /// <summary>
-        /// Continue if previous operation was successful.
-        /// Note that continue does not work if the creation fails because of unhandled exception.
-        /// </summary>
-        public static async Task<Exc<R, E>> ContinueOnSuccessAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
-        {
-            return await ContinueOnSuccessAsync(await operationResult, continueOperation).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Continue if previous operation was successful.
-        /// Note that continue does not work if the creation fails because of unhandled exception.
-        /// </summary>
-        public static async Task<Exc<R, E>> ContinueOnSuccessAsync<T, E, R>(this Exc<T, E> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
-        {
-            return await operationResult.MapAsync(continueOperation).ConfigureAwait(false);
+            return await (await operationResult).MapAsync(continueOperation).ConfigureAwait(false);
         }
 
         /// <summary>

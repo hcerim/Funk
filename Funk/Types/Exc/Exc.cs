@@ -121,6 +121,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map.
+        /// Continuation on successful result.
         /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
@@ -128,6 +129,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map.
+        /// Continuation on successful result.
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
@@ -135,12 +137,14 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map.
+        /// Continuation on successful result.
         /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
         public Exc<R, E> FlatMap<R>(Func<T, Exc<R, E>> selector) => Match(_ => Exc.Empty<R, E>(), selector, Exc.Failure<R, E>);
 
         /// <summary>
         /// Structure-preserving map.
+        /// Continuation on successful result.
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
         public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector)
