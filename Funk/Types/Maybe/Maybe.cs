@@ -10,7 +10,7 @@ namespace Funk
     /// Maybe monad.
     /// Type that represents the possible absence of data with appropriate handling.
     /// </summary>
-    public struct Maybe<T>
+    public struct Maybe<T> : IEquatable<Maybe<T>>
     {
         internal Maybe(T item)
         {
@@ -117,6 +117,18 @@ namespace Funk
         public static implicit operator Maybe<T>(Unit unit) => Maybe.Empty<T>();
 
         public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
+
+        public static bool operator ==(Maybe<T> maybe, Maybe<T> other) => maybe.Equals(other);
+
+        public static bool operator !=(Maybe<T> maybe, Maybe<T> other) => !(maybe == other);
+
+        public override string ToString() => Match(_ => _.ToString(), v => v.ToString());
+
+        public bool Equals(Maybe<T> other) => Match(_ => other.IsEmpty, v => other.Match(_ => false, v2 => v.SafeEquals(v2)));
+
+        public override bool Equals(object obj) => Equals(obj.SafeCast<Maybe<T>>().Flatten());
+
+        public override int GetHashCode() => Map(v => v.GetHashCode()).GetOr(_ => 0);
 
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)

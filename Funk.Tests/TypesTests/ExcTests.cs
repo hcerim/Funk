@@ -45,7 +45,7 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
-                        .RecoverOnFailure(e => GetNameById("Funk123"));
+                        .OnFailure(e => GetNameById("Funk123"));
                 },
                 e =>
                 {
@@ -63,8 +63,8 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
-                        .RecoverOnFailure(e => GetNameById("Funk1"))
-                        .RecoverOnFailure(e => GetNameById("Funk123"));
+                        .OnFailure(e => GetNameById("Funk1"))
+                        .OnFailure(e => GetNameById("Funk123"));
                 },
                 e =>
                 {
@@ -82,8 +82,8 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
-                        .RecoverOnFailure(e => GetNameById("Funk1"))
-                        .RecoverOnFailure(e => GetNameById("Funk12"));
+                        .OnFailure(e => GetNameById("Funk1"))
+                        .OnFailure(e => GetNameById("Funk12"));
                 },
                 e =>
                 {
@@ -101,7 +101,7 @@ namespace Funk.Tests
                 s =>
                 {
                     return act(() => Exc.Create<string, ArgumentException>(_ => GetNameById(s))
-                        .RecoverOnFailure(e => GetNameById(null)));
+                        .OnFailure(e => GetNameById(null)));
                 },
                 a => Assert.Throws<InvalidOperationException>(a)
             );
@@ -117,7 +117,7 @@ namespace Funk.Tests
                     return act(() =>
                     {
                         var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s));
-                        result.RecoverOnFailureAsync(e => GetNameByIdAsync(null)).GetAwaiter().GetResult();
+                        result.OnFailureAsync(e => GetNameByIdAsync(null)).GetAwaiter().GetResult();
                     });
                 },
                 a => Assert.Throws<InvalidOperationException>(a)
@@ -134,7 +134,7 @@ namespace Funk.Tests
                     return func(() =>
                     {
                         var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
-                        return result.RecoverOnFailure(e => GetNullString()).RecoverOnEmpty(_ => GetNameById("Funk123"));
+                        return result.OnFailure(e => GetNullString()).OnEmpty(_ => GetNameById("Funk123"));
                     });
                 },
                 f =>
@@ -155,7 +155,7 @@ namespace Funk.Tests
                     return func(() =>
                     {
                         var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
-                        return result.RecoverOnFailure(e => GetNameById("Funk12")).RecoverOnEmpty(_ => GetNameById("Funk123"));
+                        return result.OnFailure(e => GetNameById("Funk12")).OnEmpty(_ => GetNameById("Funk123"));
                     });
                 },
                 f =>
@@ -174,7 +174,7 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
-                        .ContinueOnSuccess(ss => ss.Concat(GetNameById(s)));
+                        .Map(ss => ss.Concat(GetNameById(s)));
                 },
                 s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
             );
@@ -188,8 +188,8 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
-                        .ContinueOnSuccessAsync(async ss => ss.Concat(await GetNameByIdAsync(s)))
-                        .ContinueOnSuccessAsync(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync(s)))
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
                 },
                 e => Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond())
             );
@@ -203,9 +203,9 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
-                        .RecoverOnFailureAsync(e => GetNullStringAsync())
-                        .RecoverOnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
-                        .ContinueOnSuccessAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123"))).GetAwaiter().GetResult();
+                        .OnFailureAsync(e => GetNullStringAsync())
+                        .OnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123"))).GetAwaiter().GetResult();
                 },
                 s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
             );
@@ -219,13 +219,13 @@ namespace Funk.Tests
                 s =>
                 {
                     return Exc.Create<IImmutableList<string>, ArgumentException>(_ => s.UnsafeGetFirst().GetInformation())
-                        .RecoverOnFailure(e =>
+                        .OnFailure(e =>
                         {
                             var information = new InformationSource(new SecondSource("First"));
                             return information.UnsafeGetSecond().GetInformation();
                         })
-                        .RecoverOnFailure(e => default(IImmutableList<string>))
-                        .RecoverOnEmpty(_ =>
+                        .OnFailure(e => default(IImmutableList<string>))
+                        .OnEmpty(_ =>
                         {
                             var information = new InformationSource(new FirstSource("First"));
                             return information.UnsafeGetFirst().GetInformation();
