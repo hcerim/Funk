@@ -90,6 +90,17 @@ namespace Funk
         }
 
         /// <summary>
+        /// Structure-preserving map.
+        /// Continuation on successful result.
+        /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
+        /// Use FlatMap if you have nested Exc. 
+        /// </summary>
+        public static async Task<Exc<R, E>> FlatMapAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<Exc<R, E>>> continueOperation) where T : R where E : Exception
+        {
+            return await (await operationResult).FlatMapAsync(continueOperation).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Aggregates Exc with another Exc. If both are success the result will be Success of Collection of results.
         /// If there is any non-successful, Exc will be failure if any failures or will be empty if all are empty.
         /// </summary>
