@@ -1,5 +1,4 @@
 ﻿using System;
-using Funk.Exceptions;
 
 namespace Funk
 {

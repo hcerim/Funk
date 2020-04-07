@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Funk.Exceptions;
 using Xunit;
 using static Funk.Prelude;
 
 namespace Funk.Tests
 {
-    public partial class EnumerableExceptionTests : Test
+    public class EnumerableExceptionTests : Test
     {
         [Fact]
         public void Create_From_Exception()

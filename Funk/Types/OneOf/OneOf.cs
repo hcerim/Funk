@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Funk.Exceptions;
 using static Funk.Prelude;
 
 namespace Funk

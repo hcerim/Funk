@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using Funk.Exceptions;
 using Funk.Internal;
 
 namespace Funk

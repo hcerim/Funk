@@ -4,8 +4,58 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 
-namespace Funk.Exceptions
+namespace Funk
 {
+    public enum FunkExceptionType
+    {
+        Undefined = 0,
+        EmptyValue = 1,
+        UnhandledValue = 2,
+        Enumerable = 3
+    }
+
+    /// <summary>
+    /// Base Funk exception.
+    /// </summary>
+    public class FunkException : Exception
+    {
+        public FunkException(string message)
+            : base(message)
+        {
+            Type = FunkExceptionType.Undefined;
+        }
+
+        public FunkException(FunkExceptionType type, string message)
+            : base(message)
+        {
+            Type = type;
+        }
+
+        public FunkExceptionType Type { get; }
+    }
+
+    /// <summary>
+    /// Indicates empty value error upon retrieval.
+    /// </summary>
+    public sealed class EmptyValueException : FunkException
+    {
+        public EmptyValueException(string message)
+            : base(FunkExceptionType.EmptyValue, message)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Indicates unhandled value upon pattern matching.
+    /// </summary>
+    public sealed class UnhandledValueException : FunkException
+    {
+        public UnhandledValueException(string message)
+            : base(FunkExceptionType.UnhandledValue, message)
+        {
+        }
+    }
+
     public static class EnumerableException
     {
         /// <summary>
