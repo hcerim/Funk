@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using static Funk.Prelude;
 
 namespace Funk
 {
@@ -21,7 +20,7 @@ namespace Funk
         /// Creates a Maybe of nullable item.
         /// </summary>
         [Pure]
-        public static Maybe<T> Create<T>(T? item) where T : struct => item.IsNotNull() ? new Maybe<T>((T)item) : empty;
+        public static Maybe<T> Create<T>(T? item) where T : struct => item.IsNotNull() ? new Maybe<T>((T)item) : Empty<T>();
 
         /// <summary>
         /// Creates empty Maybe.
@@ -117,20 +116,13 @@ namespace Funk
         /// Structure-preserving map.
         /// Binds not empty Maybe to the new Maybe of the selector. Otherwise, returns empty Maybe of the selector.
         /// </summary>
-        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => empty, selector);
+        public Maybe<R> FlatMap<R>(Func<T, Maybe<R>> selector) => Match(_ => Maybe.Empty<R>(), selector);
 
         /// <summary>
         /// Structure-preserving map.
         /// Binds not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
         /// </summary>
-        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector)
-        {
-            switch (Discriminator)
-            {
-                case 1: return await selector((T)Value).ConfigureAwait(false);
-                default: return empty;
-            }
-        }
+        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector) => await Match(_ => Task.FromResult(Maybe.Empty<R>()), selector).ConfigureAwait(false);
 
         /// <summary>
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
