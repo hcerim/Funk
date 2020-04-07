@@ -53,11 +53,7 @@ namespace Funk
             {
                 return selector1(obj);
             }
-            if (obj.SafeEquals(case2))
-            {
-                return selector2(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case2) ? selector2(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -98,11 +94,7 @@ namespace Funk
             {
                 return selector2(obj);
             }
-            if (obj.SafeEquals(case3))
-            {
-                return selector3(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case3) ? selector3(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -153,11 +145,7 @@ namespace Funk
             {
                 return selector3(obj);
             }
-            if (obj.SafeEquals(case4))
-            {
-                return selector4(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case4) ? selector4(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -218,11 +206,7 @@ namespace Funk
             {
                 return selector4(obj);
             }
-            if (obj.SafeEquals(case5))
-            {
-                return selector5(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case5) ? selector5(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -293,11 +277,7 @@ namespace Funk
             {
                 return selector5(obj);
             }
-            if (obj.SafeEquals(case6))
-            {
-                return selector6(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case6) ? selector6(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -378,11 +358,7 @@ namespace Funk
             {
                 return selector6(obj);
             }
-            if (obj.SafeEquals(case7))
-            {
-                return selector7(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case7) ? selector7(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -473,11 +449,7 @@ namespace Funk
             {
                 return selector7(obj);
             }
-            if (obj.SafeEquals(case8))
-            {
-                return selector8(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case8) ? selector8(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -578,11 +550,7 @@ namespace Funk
             {
                 return selector8(obj);
             }
-            if (obj.SafeEquals(case9))
-            {
-                return selector9(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case9) ? selector9(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
@@ -693,11 +661,7 @@ namespace Funk
             {
                 return selector9(obj);
             }
-            if (obj.SafeEquals(case10))
-            {
-                return selector10(obj);
-            }
-            return Otherwise(otherwise, otherwiseThrow);
+            return obj.SafeEquals(case10) ? selector10(obj) : Otherwise(otherwise, otherwiseThrow);
         }
 
         public static void Match<T>(
