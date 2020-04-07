@@ -133,6 +133,8 @@ namespace Funk.Exceptions
             return nested.LastIndexOf(item, index, count, equalityComparer);
         }
 
+        public override string ToString() => Nested.FlatMap(n => n.MapReduce(e => e.ToString(), (a, b) => $"{a}, {b}")).GetOr(_ => "EnumerableException is empty.");
+
         #region Obsolete methods
         /// <summary>
         /// Ignores null value.

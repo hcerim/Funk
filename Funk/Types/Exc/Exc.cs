@@ -173,5 +173,7 @@ namespace Funk
         public static implicit operator Exc<T, E>(E exception) => new Exc<T, E>(exception);
 
         public static implicit operator Exc<T, E>(EnumerableException<E> exception) => new Exc<T, E>(exception);
+
+        public override string ToString() => Match(_ => _.ToString(), v => v.ToString(), e => e.ToString());
     }
 }
