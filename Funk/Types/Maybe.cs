@@ -62,11 +62,11 @@ namespace Funk
         /// </summary>
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T, R> ifNotEmpty)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifNotEmpty((T)Value);
-                default: return ifEmpty(Unit.Value);
-            }
+            var value = Value;
+            return Discriminator.Match(
+                0, _ => ifEmpty(Unit.Value),
+                1, _ => ifNotEmpty((T)value)
+            );
         }
 
         /// <summary>
@@ -75,11 +75,11 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T, R> ifNotEmpty, Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifNotEmpty((T)Value);
-                default: throw GetException(otherwiseThrow);
-            }
+            var value = Value;
+            return Discriminator.Match(
+                1, _ => ifNotEmpty((T)value),
+                otherwiseThrow: _ => GetException(otherwiseThrow)
+            );
         }
 
         /// <summary>
@@ -87,15 +87,11 @@ namespace Funk
         /// </summary>
         public void Match(Action<Unit> ifEmpty = null, Action<T> ifNotEmpty = null)
         {
-            switch (Discriminator)
-            {
-                case 1:
-                    ifNotEmpty?.Invoke((T)Value);
-                    break;
-                default:
-                    ifEmpty?.Invoke(Unit.Value);
-                    break;
-            }
+            var value = Value;
+            Discriminator.Match(
+                0, _ => ifEmpty?.Invoke(Unit.Value),
+                1, _ => ifNotEmpty?.Invoke((T)value)
+            );
         }
 
         /// <summary>
@@ -144,7 +140,7 @@ namespace Funk
 
         public override bool Equals(object obj) => Equals(obj.SafeCast<Maybe<T>>().Flatten());
 
-        public override int GetHashCode() => Map(v => v.GetHashCode()).GetOr(_ => 0);
+        public override int GetHashCode() => Map(v => v.GetHashCode()).GetOr(_ => _.GetHashCode());
 
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)

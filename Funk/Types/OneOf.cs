@@ -85,12 +85,11 @@ namespace Funk
         /// </summary>
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                default: return ifEmpty(Unit.Value);
-            }
+            return Discriminator.Match(
+                0, _ => ifEmpty(Unit.Value),
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value)
+            );
         }
 
         /// <summary>
@@ -99,12 +98,11 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                default: throw GetException("Every", otherwiseThrow);
-            }
+            return Discriminator.Match(
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                otherwiseThrow: _ => GetException("Every", otherwiseThrow)
+            );
         }
 
         /// <summary>
@@ -112,18 +110,11 @@ namespace Funk
         /// </summary>
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null)
         {
-            switch (Discriminator)
-            {
-                case 1:
-                    ifFirst?.Invoke((T1)Value);
-                    break;
-                case 2:
-                    ifSecond?.Invoke((T2)Value);
-                    break;
-                default:
-                    ifEmpty?.Invoke(Unit.Value);
-                    break;
-            }
+            Discriminator.Match(
+                0, _ => ifEmpty?.Invoke(Unit.Value),
+                1, _ => ifFirst?.Invoke((T1)Value),
+                2, _ => ifSecond?.Invoke((T2)Value)
+            );
         }
 
         /// <summary>
@@ -226,13 +217,12 @@ namespace Funk
         /// </summary>
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                case 3: return ifThird((T3)Value);
-                default: return ifEmpty(Unit.Value);
-            }
+            return Discriminator.Match(
+                0, _ => ifEmpty(Unit.Value),
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                3, _ => ifThird((T3)Value)
+            );
         }
 
         /// <summary>
@@ -241,13 +231,12 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                case 3: return ifThird((T3)Value);
-                default: throw GetException("Every", otherwiseThrow);
-            }
+            return Discriminator.Match(
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                3, _ => ifThird((T3)Value),
+                otherwiseThrow: _ => GetException("Every", otherwiseThrow)
+            );
         }
 
         /// <summary>
@@ -255,21 +244,12 @@ namespace Funk
         /// </summary>
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null)
         {
-            switch (Discriminator)
-            {
-                case 1:
-                    ifFirst?.Invoke((T1)Value);
-                    break;
-                case 2:
-                    ifSecond?.Invoke((T2)Value);
-                    break;
-                case 3:
-                    ifThird?.Invoke((T3)Value);
-                    break;
-                default:
-                    ifEmpty?.Invoke(Unit.Value);
-                    break;
-            }
+            Discriminator.Match(
+                0, _ => ifEmpty?.Invoke(Unit.Value),
+                1, _ => ifFirst?.Invoke((T1)Value),
+                2, _ => ifSecond?.Invoke((T2)Value),
+                3, _ => ifThird?.Invoke((T3)Value)
+            );
         }
 
         /// <summary>
@@ -402,14 +382,13 @@ namespace Funk
         /// </summary>
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                case 3: return ifThird((T3)Value);
-                case 4: return ifFourth((T4)Value);
-                default: return ifEmpty(Unit.Value);
-            }
+            return Discriminator.Match(
+                0, _ => ifEmpty(Unit.Value),
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                3, _ => ifThird((T3)Value),
+                4, _ => ifFourth((T4)Value)
+            );
         }
 
         /// <summary>
@@ -418,14 +397,13 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                case 3: return ifThird((T3)Value);
-                case 4: return ifFourth((T4)Value);
-                default: throw GetException("Every", otherwiseThrow);
-            }
+            return Discriminator.Match(
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                3, _ => ifThird((T3)Value),
+                4, _ => ifFourth((T4)Value),
+                otherwiseThrow: _ => GetException("Every", otherwiseThrow)
+            );
         }
 
         /// <summary>
@@ -433,24 +411,13 @@ namespace Funk
         /// </summary>
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null)
         {
-            switch (Discriminator)
-            {
-                case 1:
-                    ifFirst?.Invoke((T1)Value);
-                    break;
-                case 2:
-                    ifSecond?.Invoke((T2)Value);
-                    break;
-                case 3:
-                    ifThird?.Invoke((T3)Value);
-                    break;
-                case 4:
-                    ifFourth?.Invoke((T4)Value);
-                    break;
-                default:
-                    ifEmpty?.Invoke(Unit.Value);
-                    break;
-            }
+            Discriminator.Match(
+                0, _ => ifEmpty?.Invoke(Unit.Value),
+                1, _ => ifFirst?.Invoke((T1)Value),
+                2, _ => ifSecond?.Invoke((T2)Value),
+                3, _ => ifThird?.Invoke((T3)Value),
+                4, _ => ifFourth?.Invoke((T4)Value)
+            );
         }
 
         /// <summary>
@@ -613,15 +580,14 @@ namespace Funk
         /// </summary>
         public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                case 3: return ifThird((T3)Value);
-                case 4: return ifFourth((T4)Value);
-                case 5: return ifFifth((T5)Value);
-                default: return ifEmpty(Unit.Value);
-            }
+            return Discriminator.Match(
+                0, _ => ifEmpty(Unit.Value),
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                3, _ => ifThird((T3)Value),
+                4, _ => ifFourth((T4)Value),
+                5, _ => ifFifth((T5)Value)
+            );
         }
 
         /// <summary>
@@ -630,15 +596,14 @@ namespace Funk
         /// <exception cref="EmptyValueException"></exception>
         public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth, Func<Unit, Exception> otherwiseThrow = null)
         {
-            switch (Discriminator)
-            {
-                case 1: return ifFirst((T1)Value);
-                case 2: return ifSecond((T2)Value);
-                case 3: return ifThird((T3)Value);
-                case 4: return ifFourth((T4)Value);
-                case 5: return ifFifth((T5)Value);
-                default: throw GetException("Every", otherwiseThrow);
-            }
+            return Discriminator.Match(
+                1, _ => ifFirst((T1)Value),
+                2, _ => ifSecond((T2)Value),
+                3, _ => ifThird((T3)Value),
+                4, _ => ifFourth((T4)Value),
+                5, _ => ifFifth((T5)Value),
+                otherwiseThrow: _ => GetException("Every", otherwiseThrow)
+            );
         }
 
         /// <summary>
@@ -646,27 +611,14 @@ namespace Funk
         /// </summary>
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null, Action<T5> ifFifth = null)
         {
-            switch (Discriminator)
-            {
-                case 1:
-                    ifFirst?.Invoke((T1)Value);
-                    break;
-                case 2:
-                    ifSecond?.Invoke((T2)Value);
-                    break;
-                case 3:
-                    ifThird?.Invoke((T3)Value);
-                    break;
-                case 4:
-                    ifFourth?.Invoke((T4)Value);
-                    break;
-                case 5:
-                    ifFifth?.Invoke((T5)Value);
-                    break;
-                default:
-                    ifEmpty?.Invoke(Unit.Value);
-                    break;
-            }
+            Discriminator.Match(
+                0, _ => ifEmpty?.Invoke(Unit.Value),
+                1, _ => ifFirst?.Invoke((T1)Value),
+                2, _ => ifSecond?.Invoke((T2)Value),
+                3, _ => ifThird?.Invoke((T3)Value),
+                4, _ => ifFourth?.Invoke((T4)Value),
+                5, _ => ifFifth?.Invoke((T5)Value)
+            );
         }
 
         /// <summary>
