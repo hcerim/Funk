@@ -63,6 +63,7 @@ namespace Funk.Exceptions
 
         /// <summary>
         /// Structure-preserving map.
+        /// Use Bind if you are binding with another EnumerableException.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
         /// </summary>
         public EnumerableException<E> MapWith(Func<Unit, E> selector)
@@ -72,6 +73,7 @@ namespace Funk.Exceptions
 
         /// <summary>
         /// Structure-preserving map.
+        /// Use BindRange if you are binding with other EnumerableExceptions.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
         /// </summary>
         public EnumerableException<E> MapWithMany(Func<Unit, IEnumerable<E>> selector)
@@ -105,7 +107,8 @@ namespace Funk.Exceptions
         }
 
         /// <summary>
-        /// Returns an immutable dictionary of key as a discriminator and collection of corresponding exceptions.
+        /// Returns a Maybe of an immutable dictionary of key as a discriminator and collection of corresponding exceptions if there are any nested exception.
+        /// Handles duplicate key.
         /// </summary>
         public Maybe<IImmutableDictionary<TKey, IImmutableList<E>>> ToDictionary<TKey>(Func<E, TKey> keySelector) => Nested.Map(c => c.ToDictionary(keySelector));
 
