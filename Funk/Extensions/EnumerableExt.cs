@@ -160,6 +160,7 @@ namespace Funk
 
         /// <summary>
         /// Aggregates sequence to the specified result as Maybe. Handles null sequence.
+        /// Use Fold if you have sequence of Maybes.
         /// </summary>
         public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer) => enumerable.AsNotEmptyList().Map(e => e.Aggregate(reducer));
 
