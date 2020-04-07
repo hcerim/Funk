@@ -12,10 +12,7 @@ namespace Funk
         /// <summary>
         /// Creates an immutable sequence of item if not null. Otherwise returns empty immutable sequence.
         /// </summary>
-        public static IImmutableList<T> ToImmutableList<T>(this T item)
-        {
-            return item.AsMaybe().AsImmutableList();
-        }
+        public static IImmutableList<T> ToImmutableList<T>(this T item) => item.AsMaybe().AsImmutableList();
 
         /// <summary>
         /// Creates an immutable sequence out of Maybe value if not empty. Otherwise, it returns empty immutable sequence.
@@ -25,10 +22,7 @@ namespace Funk
         /// <summary>
         /// Creates an immutable sequence from sequence. Handles null sequence.
         /// </summary>
-        public static IImmutableList<T> Map<T>(this IEnumerable<T> enumerable)
-        {
-            return ImmutableList.CreateRange(enumerable ?? ImmutableList<T>.Empty);
-        }
+        public static IImmutableList<T> Map<T>(this IEnumerable<T> enumerable) => ImmutableList.CreateRange(enumerable ?? ImmutableList<T>.Empty);
 
         /// <summary>
         /// Returns an immutable sequence of not null values. Handles null sequence.
@@ -80,20 +74,19 @@ namespace Funk
         }
 
         /// <summary>
+        /// Returns not empty maybe, or empty immutable sequence.
+        /// </summary>
+        public static IImmutableList<T> GetOrEmpty<T>(this Maybe<IEnumerable<T>> maybe) => maybe.Match(_ => ImmutableList<T>.Empty, v => v).Map();
+
+        /// <summary>
         /// Returns a Maybe of the first element in the sequence that satisfies the condition or returns an empty Maybe. Handles null sequence.
         /// </summary>
-        public static Maybe<T> AsFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
-        {
-            return enumerable.WhereOrDefault(predicate).Map(c => c.First());
-        }
+        public static Maybe<T> AsFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.WhereOrDefault(predicate).Map(c => c.First());
 
         /// <summary>
         /// Returns a Maybe of an immutable sequence of items that satisfy the predicate or returns an empty Maybe. Handles null sequence.
         /// </summary>
-        public static Maybe<IImmutableList<T>> WhereOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null)
-        {
-            return enumerable.Map().Where(predicate ?? (i => true)).AsNotEmptyList();
-        }
+        public static Maybe<IImmutableList<T>> WhereOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.Map().Where(predicate ?? (i => true)).AsNotEmptyList();
 
         /// <summary>
         /// Returns a Maybe of the last element in the sequence that satisfies the condition or returns an empty Maybe. Handles null sequence.
@@ -147,67 +140,43 @@ namespace Funk
         /// Concatenates 2 sequences with null removal into an immutable sequence. Handles null sequences.
         /// </summary>
         /// <returns></returns>
-        public static IImmutableList<T> SafeConcat<T>(this IEnumerable<T> first, IEnumerable<T> second) where T : class
-        {
-            return first.ExceptNulls().Concat(second.ExceptNulls()).Map();
-        }
+        public static IImmutableList<T> SafeConcat<T>(this IEnumerable<T> first, IEnumerable<T> second) where T : class => first.ExceptNulls().Concat(second.ExceptNulls()).Map();
 
         /// <summary>
         /// Concatenates 2 sequences with null removal into an immutable sequence. Handles null sequences.
         /// </summary>
         /// <returns></returns>
-        public static IImmutableList<T> SafeConcat<T>(this IEnumerable<T?> first, IEnumerable<T?> second) where T : struct
-        {
-            return first.ExceptNulls().Concat(second.ExceptNulls()).Map();
-        }
+        public static IImmutableList<T> SafeConcat<T>(this IEnumerable<T?> first, IEnumerable<T?> second) where T : struct => first.ExceptNulls().Concat(second.ExceptNulls()).Map();
 
         /// <summary>
         /// Maps the specified sequence to an immutable sequence of specified type. Handles null sequence.
         /// </summary>
-        public static IImmutableList<R> Map<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper)
-        {
-            return enumerable.Map().Select(mapper).Map();
-        }
+        public static IImmutableList<R> Map<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper) => enumerable.Map().Select(mapper).Map();
 
         /// <summary>
         /// Maps the specified sequence to an immutable sequence of specified type. Handles null sequence.
         /// </summary>
-        public static IImmutableList<R> FlatMap<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper)
-        {
-            return enumerable.Map().SelectMany(mapper).Map();
-        }
+        public static IImmutableList<R> FlatMap<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper) => enumerable.Map().SelectMany(mapper).Map();
 
         /// <summary>
         /// Aggregates sequence to the specified result as Maybe. Handles null sequence.
         /// </summary>
-        public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer)
-        {
-            return enumerable.AsNotEmptyList().Map(e => e.Aggregate(reducer));
-        }
+        public static Maybe<T> Reduce<T>(this IEnumerable<T> enumerable, Func<T, T, T> reducer) => enumerable.AsNotEmptyList().Map(e => e.Aggregate(reducer));
 
         /// <summary>
         /// Aggregates sequence of not empty Maybes to the specified result as Maybe. Handles null sequence.
         /// </summary>
-        public static Maybe<T> Fold<T>(this IEnumerable<Maybe<T>> enumerable, Func<T, T, T> reducer)
-        {
-            return enumerable.Flatten().Reduce(reducer);
-        }
+        public static Maybe<T> Fold<T>(this IEnumerable<Maybe<T>> enumerable, Func<T, T, T> reducer) => enumerable.Flatten().Reduce(reducer);
 
         /// <summary>
         /// Maps the specified sequence to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
         /// </summary>
-        public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer)
-        {
-            return enumerable.Map(mapper).Reduce(reducer);
-        }
+        public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer) => enumerable.Map(mapper).Reduce(reducer);
 
         /// <summary>
         /// Maps the specified sequence to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
         /// </summary>
-        public static Maybe<R> FlatMapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer)
-        {
-            return enumerable.FlatMap(mapper).Reduce(reducer);
-        }
+        public static Maybe<R> FlatMapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer) => enumerable.FlatMap(mapper).Reduce(reducer);
 
         /// <summary>
         /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return failure. Handles null enumerable
