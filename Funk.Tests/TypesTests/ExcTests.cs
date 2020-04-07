@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using Funk.Exceptions;
 using Xunit;
 using static Funk.Prelude;
 

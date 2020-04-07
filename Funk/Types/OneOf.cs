@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Funk.Exceptions;
 using static Funk.Prelude;
 
 namespace Funk
@@ -160,6 +159,8 @@ namespace Funk
         public static implicit operator OneOf<T1, T2>(T1 t1) => new OneOf<T1, T2>(t1);
 
         public static implicit operator OneOf<T1, T2>(T2 t2) => new OneOf<T1, T2>(t2);
+
+        public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString());
     }
 
     /// <summary>
@@ -320,6 +321,8 @@ namespace Funk
         public static implicit operator OneOf<T1, T2, T3>(T2 t2) => new OneOf<T1, T2, T3>(t2);
 
         public static implicit operator OneOf<T1, T2, T3>(T3 t3) => new OneOf<T1, T2, T3>(t3);
+
+        public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString(), t => t.ToString());
     }
 
     /// <summary>
@@ -515,6 +518,8 @@ namespace Funk
         public static implicit operator OneOf<T1, T2, T3, T4>(T3 t3) => new OneOf<T1, T2, T3, T4>(t3);
 
         public static implicit operator OneOf<T1, T2, T3, T4>(T4 t4) => new OneOf<T1, T2, T3, T4>(t4);
+
+        public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString(), t => t.ToString(), f => f.ToString());
     }
 
     /// <summary>
@@ -745,5 +750,7 @@ namespace Funk
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T4 t4) => new OneOf<T1, T2, T3, T4, T5>(t4);
 
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T5 t5) => new OneOf<T1, T2, T3, T4, T5>(t5);
+
+        public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString(), t => t.ToString(), f => f.ToString(), f => f.ToString());
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Funk.Exceptions;
 using Xunit;
 using static Funk.Prelude;
 
 namespace Funk.Tests
 {
-    public partial class EnumerableExceptionTests : Test
+    public class EnumerableExceptionTests : Test
     {
         [Fact]
         public void Create_From_Exception()
@@ -68,7 +67,7 @@ namespace Funk.Tests
                 }),
                 e =>
                 {
-                    Assert.Equal(5, e.Count());
+                    Assert.Equal(5, e.Count);
                     Assert.Equal("Funk", e.Root.UnsafeGet().Message);
                     foreach (var rec in e.Select((exe, counter) => rec(exe, counter)))
                     {
@@ -85,6 +84,12 @@ namespace Funk.Tests
                             Assert.IsType<UnhandledValueException>(rec.Item1);
                         }
                     }
+                    var dict = e.ToDictionary(f => f.Type).UnsafeGet();
+                    Assert.IsType<FunkException>(dict[FunkExceptionType.Undefined].ElementAt(0));
+                    Assert.IsType<EmptyValueException>(dict[FunkExceptionType.EmptyValue].ElementAt(0));
+                    Assert.IsType<EmptyValueException>(dict[FunkExceptionType.EmptyValue].ElementAt(1));
+                    Assert.IsType<UnhandledValueException>(dict[FunkExceptionType.UnhandledValue].ElementAt(0));
+                    Assert.IsType<UnhandledValueException>(dict[FunkExceptionType.UnhandledValue].ElementAt(1));
                 }
             );
         }

@@ -4,8 +4,58 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 
-namespace Funk.Exceptions
+namespace Funk
 {
+    public enum FunkExceptionType
+    {
+        Undefined = 0,
+        EmptyValue = 1,
+        UnhandledValue = 2,
+        Enumerable = 3
+    }
+
+    /// <summary>
+    /// Base Funk exception.
+    /// </summary>
+    public class FunkException : Exception
+    {
+        public FunkException(string message)
+            : base(message)
+        {
+            Type = FunkExceptionType.Undefined;
+        }
+
+        public FunkException(FunkExceptionType type, string message)
+            : base(message)
+        {
+            Type = type;
+        }
+
+        public FunkExceptionType Type { get; }
+    }
+
+    /// <summary>
+    /// Indicates empty value error upon retrieval.
+    /// </summary>
+    public sealed class EmptyValueException : FunkException
+    {
+        public EmptyValueException(string message)
+            : base(FunkExceptionType.EmptyValue, message)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Indicates unhandled value upon pattern matching.
+    /// </summary>
+    public sealed class UnhandledValueException : FunkException
+    {
+        public UnhandledValueException(string message)
+            : base(FunkExceptionType.UnhandledValue, message)
+        {
+        }
+    }
+
     public static class EnumerableException
     {
         /// <summary>
@@ -63,6 +113,7 @@ namespace Funk.Exceptions
 
         /// <summary>
         /// Structure-preserving map.
+        /// Use Bind if you are binding with another EnumerableException.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
         /// </summary>
         public EnumerableException<E> MapWith(Func<Unit, E> selector)
@@ -72,6 +123,7 @@ namespace Funk.Exceptions
 
         /// <summary>
         /// Structure-preserving map.
+        /// Use BindRange if you are binding with other EnumerableExceptions.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
         /// </summary>
         public EnumerableException<E> MapWithMany(Func<Unit, IEnumerable<E>> selector)
@@ -105,7 +157,8 @@ namespace Funk.Exceptions
         }
 
         /// <summary>
-        /// Returns an immutable dictionary of key as a discriminator and collection of corresponding exceptions.
+        /// Returns a Maybe of an immutable dictionary of key as a discriminator and collection of corresponding exceptions if there are any nested exception.
+        /// Handles duplicate key.
         /// </summary>
         public Maybe<IImmutableDictionary<TKey, IImmutableList<E>>> ToDictionary<TKey>(Func<E, TKey> keySelector) => Nested.Map(c => c.ToDictionary(keySelector));
 
@@ -132,6 +185,8 @@ namespace Funk.Exceptions
         {
             return nested.LastIndexOf(item, index, count, equalityComparer);
         }
+
+        public override string ToString() => Nested.FlatMap(n => n.MapReduce(e => e.ToString(), (a, b) => $"{a}, {b}")).GetOr(_ => "EnumerableException is empty.");
 
         #region Obsolete methods
         /// <summary>

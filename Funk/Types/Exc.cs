@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using Funk.Exceptions;
 using Funk.Internal;
 
 namespace Funk
@@ -173,5 +172,7 @@ namespace Funk
         public static implicit operator Exc<T, E>(E exception) => new Exc<T, E>(exception);
 
         public static implicit operator Exc<T, E>(EnumerableException<E> exception) => new Exc<T, E>(exception);
+
+        public override string ToString() => Match(_ => _.ToString(), v => v.ToString(), e => e.ToString());
     }
 }

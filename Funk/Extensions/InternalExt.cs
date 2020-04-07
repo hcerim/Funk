@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using Funk.Exceptions;
 
 namespace Funk.Internal
 {
