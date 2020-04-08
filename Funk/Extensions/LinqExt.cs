@@ -34,6 +34,6 @@ namespace Funk
 
         public static Exc<R, E> SelectMany<T, E, R>(this Exc<T, E> exceptional, Func<T, Exc<R, E>> selector) where E : Exception => exceptional.FlatMap(selector);
 
-        public static Maybe<Exc<T, E>> Where<T, E>(this Exc<T, E> exceptional, Func<T, bool> predicate) where E : Exception => exceptional.AsSuccess().FlatMap(e => predicate(e.UnsafeGetFirst()).Match(f => Maybe.Empty<Exc<T, E>>(), t => Maybe.Create(e)));
+        public static Exc<T, E> Where<T, E>(this Exc<T, E> exceptional, Func<Maybe<T>, Maybe<EnumerableException<E>>, bool> predicate) where E : Exception => predicate(exceptional.Success, exceptional.Failure).Match(f => Exc.Empty<T, E>(), t => exceptional);
     }
 }

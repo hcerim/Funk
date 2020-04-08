@@ -145,6 +145,29 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Create_Exceptional_Throws_Recover_On_Empty_Ensure_Success()
+        {
+            UnitTest(
+                _ => "Funk12",
+                s =>
+                {
+                    return func(() =>
+                    {
+                        var result = Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s)).GetAwaiter().GetResult();
+                        return result.OnFailure(e => GetNullString()).OnEmpty(_ => GetNameById("Funk123"));
+                    });
+                },
+                f =>
+                {
+                    var result = f.Invoke();
+                    var maybe = result.AsSuccess();
+                    Assert.True(maybe.NotEmpty);
+                    Assert.Equal("Harun", maybe.UnsafeGet().UnsafeGetFirst());
+                }
+            );
+        }
+
+        [Fact]
         public void Create_Exceptional_Throws_Recover_On_Empty_Nothing()
         {
             UnitTest(
