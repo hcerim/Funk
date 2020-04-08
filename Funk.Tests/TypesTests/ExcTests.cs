@@ -190,8 +190,12 @@ namespace Funk.Tests
                         .MapAsync(async ss => ss.Concat(await GetNameByIdAsync(s)))
                         .MapAsync(async ss => ss.Concat(await GetNameByIdAsync(s))).GetAwaiter().GetResult();
                 },
-                e => Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond())
-            );
+                e =>
+                {
+                    var root = e.RootFailure.UnsafeGet();
+                    Assert.Equal("Invalid id", root.Message);
+                    Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond());
+                });
         }
 
         [Fact]
