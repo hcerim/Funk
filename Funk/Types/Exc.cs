@@ -112,11 +112,11 @@ namespace Funk
         [Pure]
         public Maybe<EnumerableException<E>> Failure => Second;
 
-        /// <summary>
-        /// If Failure, Maybe contains nested exceptions inside EnumerableException if there are any. Otherwise, Maybe will be empty.
-        /// </summary>
         [Pure]
-        public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
+        public bool IsSuccess => IsFirst;
+
+        [Pure]
+        public bool IsFailure => IsSecond;
 
         /// <summary>
         /// Structure-preserving map.
@@ -146,24 +146,19 @@ namespace Funk
         /// Continuation on successful result.
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
-        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector)
-        {
-            switch (Discriminator)
-            {
-                case 1: return await selector((T)Value).ConfigureAwait(false);
-                case 2: return Exc.Failure<R, E>((EnumerableException<E>)Value);
-                default: return Exc.Empty<R, E>();
-            }
-        }
+        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector) => await Match(_ => Task.FromResult(Exc.Empty<R, E>()), selector, e => Task.FromResult(Exc.Failure<R, E>(e))).ConfigureAwait(false);
 
+        /// <summary>
+        /// If Failure, Maybe contains the root exception inside EnumerableException if there is one. Otherwise, Maybe will be empty.
+        /// </summary>
         [Pure]
         public Maybe<E> RootFailure => Failure.FlatMap(e => e.Root);
 
+        /// <summary>
+        /// If Failure, Maybe contains nested exceptions inside EnumerableException if there are any. Otherwise, Maybe will be empty.
+        /// </summary>
         [Pure]
-        public bool IsSuccess => IsFirst;
-
-        [Pure]
-        public bool IsFailure => IsSecond;
+        public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
         public static implicit operator Exc<T, E>(Unit unit) => Exc.Empty<T, E>();
 

@@ -8,6 +8,11 @@ namespace Funk
     public static class ExcExt
     {
         /// <summary>
+        /// Checks whether Exc is successful and returns Maybe. If it is not, Maybe will be empty.
+        /// </summary>
+        public static Maybe<Exc<T, E>> AsSuccess<T, E>(this Exc<T, E> exceptional) where E : Exception => exceptional.IsSuccess ? Maybe.Create(exceptional) : Maybe.Empty<Exc<T, E>>();
+
+        /// <summary>
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
@@ -83,7 +88,7 @@ namespace Funk
         /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
-        public static async Task<Exc<R, E>> MapAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> MapAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<R>> continueOperation) where E : Exception
         {
             return await (await operationResult).MapAsync(continueOperation).ConfigureAwait(false);
         }
@@ -94,7 +99,7 @@ namespace Funk
         /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// Use FlatMap if you have nested Exc. 
         /// </summary>
-        public static async Task<Exc<R, E>> FlatMapAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<Exc<R, E>>> continueOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> FlatMapAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<T, Task<Exc<R, E>>> continueOperation) where E : Exception
         {
             return await (await operationResult).FlatMapAsync(continueOperation).ConfigureAwait(false);
         }
