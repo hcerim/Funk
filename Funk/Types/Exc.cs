@@ -79,7 +79,7 @@ namespace Funk
     /// Exceptional monad.
     /// Can represent successful result, error (in a form of EnumerableException of a specified exception type) or empty value.
     /// </summary>
-    public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>> where E : Exception
+    public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>>, IEquatable<Exc<T, E>> where E : Exception
     {
         internal Exc()
         {
@@ -167,6 +167,23 @@ namespace Funk
         public static implicit operator Exc<T, E>(E exception) => new Exc<T, E>(exception);
 
         public static implicit operator Exc<T, E>(EnumerableException<E> exception) => new Exc<T, E>(exception);
+
+        public static bool operator ==(Exc<T, E> exc, Exc<T, E> other) => exc.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
+
+        public static bool operator !=(Exc<T, E> exc, Exc<T, E> other) => !(exc == other);
+
+        public bool Equals(Exc<T, E> other)
+        {
+            return other.AsMaybe().Map(o => Match(
+                _ => o.IsEmpty,
+                v => o.Success.Map(s => v.SafeEquals(s)).GetOrDefault(),
+                e => o.Failure.Map(e.SafeEquals).GetOrDefault()
+            )).GetOrDefault();
+        }
+
+        public override bool Equals(object obj) => obj.SafeCast<Exc<T, E>>().Map(Equals).GetOrDefault();
+
+        public override int GetHashCode() => Match(_ => _.GetHashCode(), v => v.GetHashCode(), e => e.GetHashCode());
 
         public override string ToString() => Match(_ => _.ToString(), v => v.ToString(), e => e.ToString());
     }
