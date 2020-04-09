@@ -108,7 +108,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => rec("John", "Doe"),
-                r => r.Map((name, surname) => rec($"{name} {surname}", 30)),
+                r => r.FlatMap((name, surname) => rec($"{name} {surname}", 30)),
                 r =>
                 {
                     Assert.Equal("John Doe", r.Item1);
