@@ -140,7 +140,7 @@ namespace Funk
 
         public override bool Equals(object obj) => Equals(obj.SafeCast<Maybe<T>>().Flatten());
 
-        public override int GetHashCode() => Map(v => v.GetHashCode()).GetOr(_ => _.GetHashCode());
+        public override int GetHashCode() => Match(_ => _.GetHashCode(), v => v.GetHashCode());
 
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)

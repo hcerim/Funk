@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
@@ -55,5 +56,7 @@ namespace Funk.Internal
                 return new Exc<T, E>(e);
             }
         }
+
+        internal static IImmutableList<T> GetOrEmpty<T>(this Maybe<IImmutableList<T>> maybe) => maybe.GetOr(_ => ImmutableList<T>.Empty.Map());
     }
 }
