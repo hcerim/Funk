@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
+using Funk.Internal;
 
 namespace Funk
 {
@@ -128,7 +129,7 @@ namespace Funk
             var split2 = split1.Item2.ConditionalSplit(i => i.IsFailure);
             if (split2.Item1.NotEmpty())
             {
-                return Exc.Failure<IImmutableList<T>, E>(split2.Item1.FlatMap(i => i.NestedFailures.GetOr(__ => ImmutableList<E>.Empty.Map())).ToEnumerableException(errorMessage));
+                return Exc.Failure<IImmutableList<T>, E>(split2.Item1.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage));
             }
             return Exc.Empty<IImmutableList<T>, E>();
         }

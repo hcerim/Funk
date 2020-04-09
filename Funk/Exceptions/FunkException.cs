@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
+using Funk.Internal;
 
 namespace Funk
 {
@@ -74,7 +75,7 @@ namespace Funk
     /// <summary>
     /// Immutable exception collection.
     /// </summary>
-    public sealed class EnumerableException<E> : FunkException, IImmutableList<E> where E : Exception
+    public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, IEquatable<EnumerableException<E>> where E : Exception
     {
         private EnumerableException(string message)
             : base(FunkExceptionType.Enumerable, message)
@@ -103,7 +104,7 @@ namespace Funk
         /// </summary>
         public Maybe<IImmutableList<E>> Nested => nested.AsNotEmptyList();
 
-        private IImmutableList<E> nested { get; }
+        private readonly IImmutableList<E> nested;
 
         /// <summary>
         /// Root error cause.
@@ -151,8 +152,8 @@ namespace Funk
         public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions)
         {
             var list = new List<E>();
-            list.AddRange(Nested.GetOr(_ => ImmutableList<E>.Empty.Map()));
-            list.AddRange(exceptions.FlatMap(e => e.Nested.GetOr(_ => ImmutableList<E>.Empty.Map())));
+            list.AddRange(Nested.GetOrEmpty());
+            list.AddRange(exceptions.FlatMap(e => e.Nested.GetOrEmpty()));
             return EnumerableException.Create(list, Message);
         }
 
@@ -185,6 +186,16 @@ namespace Funk
         {
             return nested.LastIndexOf(item, index, count, equalityComparer);
         }
+
+        public static bool operator ==(EnumerableException<E> exception, EnumerableException<E> other) => exception.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
+
+        public static bool operator !=(EnumerableException<E> exception, EnumerableException<E> other) => !(exception == other);
+
+        public override int GetHashCode() => nested.GetHashCode();
+
+        public bool Equals(EnumerableException<E> other) => other.AsMaybe().Map(e => nested.SafeEquals(e.nested)).GetOrDefault();
+
+        public override bool Equals(object obj) => obj.SafeCast<EnumerableException<E>>().Map(Equals).GetOrDefault();
 
         public override string ToString() => Nested.FlatMap(n => n.MapReduce(e => e.ToString(), (a, b) => $"{a}, {b}")).GetOr(_ => "EnumerableException is empty.");
 
