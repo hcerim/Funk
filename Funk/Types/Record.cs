@@ -81,7 +81,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
         /// </summary>
-        public Record<R1> Map<R1>(Func<T1, Record<R1>> selector) => selector(Item1);
+        public Record<R1> FlatMap<R1>(Func<T1, Record<R1>> selector) => selector(Item1);
 
         /// <summary>
         /// Structure-preserving map. Maps corresponding record item to the new Record of 1.
@@ -150,7 +150,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 2.
         /// </summary>
-        public Record<R1, R2> Map<R1, R2>(Func<T1, T2, Record<R1, R2>> selector) => selector(Item1, Item2);
+        public Record<R1, R2> FlatMap<R1, R2>(Func<T1, T2, Record<R1, R2>> selector) => selector(Item1, Item2);
 
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 2.
@@ -222,7 +222,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 3.
         /// </summary>
-        public Record<R1, R2, R3> Map<R1, R2, R3>(Func<T1, T2, T3, Record<R1, R2, R3>> selector) => selector(Item1, Item2, Item3);
+        public Record<R1, R2, R3> FlatMap<R1, R2, R3>(Func<T1, T2, T3, Record<R1, R2, R3>> selector) => selector(Item1, Item2, Item3);
 
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 3.
@@ -297,7 +297,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 4.
         /// </summary>
-        public Record<R1, R2, R3, R4> Map<R1, R2, R3, R4>(Func<T1, T2, T3, T4, Record<R1, R2, R3, R4>> selector) => selector(Item1, Item2, Item3, Item4);
+        public Record<R1, R2, R3, R4> FlatMap<R1, R2, R3, R4>(Func<T1, T2, T3, T4, Record<R1, R2, R3, R4>> selector) => selector(Item1, Item2, Item3, Item4);
 
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 4.
@@ -375,7 +375,7 @@ namespace Funk
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 5.
         /// </summary>
-        public Record<R1, R2, R3, R4, R5> Map<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, Record<R1, R2, R3, R4, R5>> selector) => selector(Item1, Item2, Item3, Item4, Item5);
+        public Record<R1, R2, R3, R4, R5> FlatMap<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, Record<R1, R2, R3, R4, R5>> selector) => selector(Item1, Item2, Item3, Item4, Item5);
 
         /// <summary>
         /// Structure-preserving map. Maps corresponding record items to the new Record of 5.
