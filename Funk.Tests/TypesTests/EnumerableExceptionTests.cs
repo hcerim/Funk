@@ -23,6 +23,22 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Create_From_Exception_Clear()
+        {
+            UnitTest(
+                _ => new FunkException("Funk"),
+#pragma warning disable CS0618
+                e => e.ToEnumerableException().Clear().SafeCast<EnumerableException<FunkException>>().UnsafeGet(),
+#pragma warning restore CS0618
+                e =>
+                {
+                    Assert.Equal("EnumerableException is empty.", e.ToString());
+                    Assert.True(e.IsEmpty());
+                }
+            );
+        }
+
+        [Fact]
         public void Create_From_Exception_Throws()
         {
             UnitTest(
@@ -75,7 +91,7 @@ namespace Funk.Tests
                         {
                             Assert.IsType<FunkException>(rec.Item1);
                         }
-                        else if (rec.Item2.SafeEqualsToAny(1,2))
+                        else if (rec.Item2.SafeEqualsToAny(1, 2))
                         {
                             Assert.IsType<EmptyValueException>(rec.Item1);
                         }
