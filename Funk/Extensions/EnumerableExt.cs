@@ -74,11 +74,6 @@ namespace Funk
         }
 
         /// <summary>
-        /// Returns not empty maybe, or empty immutable sequence.
-        /// </summary>
-        public static IImmutableList<T> GetOrEmpty<T>(this Maybe<IEnumerable<T>> maybe) => maybe.Match(_ => ImmutableList<T>.Empty, v => v).Map();
-
-        /// <summary>
         /// Returns a Maybe of the first element in the sequence that satisfies the condition or returns an empty Maybe. Handles null sequence.
         /// </summary>
         public static Maybe<T> AsFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate = null) => enumerable.WhereOrDefault(predicate).Map(c => c.First());

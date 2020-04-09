@@ -116,7 +116,7 @@ namespace Funk
         public override bool Equals(object obj)
         {
             var @this = this;
-            return obj.SafeCast<Record<T1>>().Map(r => @this.Equals(r)).GetOr(_ => false);
+            return obj.SafeCast<Record<T1>>().Map(r => @this.Equals(r)).GetOrDefault();
         }
 
         public override int GetHashCode() => ValueTuple.Create(Item1).GetHashCode();
@@ -185,7 +185,7 @@ namespace Funk
         public override bool Equals(object obj)
         {
             var @this = this;
-            return obj.SafeCast<Record<T1, T2>>().Map(r => @this.Equals(r)).GetOr(_ => false);
+            return obj.SafeCast<Record<T1, T2>>().Map(r => @this.Equals(r)).GetOrDefault();
         }
 
         public override int GetHashCode() => ValueTuple.Create(Item1, Item2).GetHashCode();
@@ -257,7 +257,7 @@ namespace Funk
         public override bool Equals(object obj)
         {
             var @this = this;
-            return obj.SafeCast<Record<T1, T2, T3>>().Map(r => @this.Equals(r)).GetOr(_ => false);
+            return obj.SafeCast<Record<T1, T2, T3>>().Map(r => @this.Equals(r)).GetOrDefault();
         }
 
         public override int GetHashCode() => ValueTuple.Create(Item1, Item2, Item3).GetHashCode();
@@ -332,7 +332,7 @@ namespace Funk
         public override bool Equals(object obj)
         {
             var @this = this;
-            return obj.SafeCast<Record<T1, T2, T3, T4>>().Map(r => @this.Equals(r)).GetOr(_ => false);
+            return obj.SafeCast<Record<T1, T2, T3, T4>>().Map(r => @this.Equals(r)).GetOrDefault();
         }
 
         public override int GetHashCode() => ValueTuple.Create(Item1, Item2, Item3, Item4).GetHashCode();
@@ -410,7 +410,7 @@ namespace Funk
         public override bool Equals(object obj)
         {
             var @this = this;
-            return obj.SafeCast<Record<T1, T2, T3, T4, T5>>().Map(r => @this.Equals(r)).GetOr(_ => false);
+            return obj.SafeCast<Record<T1, T2, T3, T4, T5>>().Map(r => @this.Equals(r)).GetOrDefault();
         }
 
         public override int GetHashCode() => ValueTuple.Create(Item1, Item2, Item3, Item4, Item5).GetHashCode();
