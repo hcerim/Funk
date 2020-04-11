@@ -11,7 +11,7 @@ namespace Funk
         /// <summary>
         /// Checks whether Exc is successful and returns Maybe. If it is not, Maybe will be empty.
         /// </summary>
-        public static Maybe<Exc<T, E>> AsSuccess<T, E>(this Exc<T, E> exceptional) where E : Exception => exceptional.IsSuccess ? Maybe.Create(exceptional) : Maybe.Empty<Exc<T, E>>();
+        public static Maybe<T> AsSuccess<T, E>(this Exc<T, E> exceptional) where E : Exception => exceptional.Match(_ => Maybe.Empty<T>(), Maybe.Create, e => Maybe.Empty<T>());
 
         /// <summary>
         /// Recover in case of the error during creation.

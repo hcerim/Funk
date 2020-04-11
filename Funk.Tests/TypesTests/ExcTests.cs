@@ -162,7 +162,7 @@ namespace Funk.Tests
                     var result = f.Invoke();
                     var maybe = result.AsSuccess();
                     Assert.True(maybe.NotEmpty);
-                    Assert.Equal("Harun", maybe.UnsafeGet().UnsafeGetFirst());
+                    Assert.Equal("Harun", maybe.UnsafeGet());
                 }
             );
         }
