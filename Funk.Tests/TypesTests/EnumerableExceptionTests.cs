@@ -101,11 +101,10 @@ namespace Funk.Tests
                         }
                     }
                     var dict = e.ToDictionary(f => f.Type).UnsafeGet();
-                    Assert.IsType<FunkException>(dict[FunkExceptionType.Undefined].ElementAt(0));
-                    Assert.IsType<EmptyValueException>(dict[FunkExceptionType.EmptyValue].ElementAt(0));
-                    Assert.IsType<EmptyValueException>(dict[FunkExceptionType.EmptyValue].ElementAt(1));
-                    Assert.IsType<UnhandledValueException>(dict[FunkExceptionType.UnhandledValue].ElementAt(0));
-                    Assert.IsType<UnhandledValueException>(dict[FunkExceptionType.UnhandledValue].ElementAt(1));
+                    var res = dict.Values.Map(v => v.ForEach<FunkException, FunkException>(f => throw f));
+                    Assert.True(res.All(ex => ex.IsFailure));
+                    Assert.Equal(2, e.OfSafeType<FunkException, EmptyValueException>().UnsafeGet().Count);
+                    Assert.Equal(2, e.OfSafeType<FunkException, UnhandledValueException>().UnsafeGet().Count);
                 }
             );
         }

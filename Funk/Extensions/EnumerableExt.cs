@@ -10,6 +10,11 @@ namespace Funk
     public static class EnumerableExt
     {
         /// <summary>
+        /// Returns Maybe of immutable list of items that can be safely converted to the specified type.
+        /// </summary>
+        public static Maybe<IImmutableList<R>> OfSafeType<T, R>(this IEnumerable<T> enumerable) => enumerable.Map(i => i.SafeCast<R>()).Flatten().AsNotEmptyList();
+
+        /// <summary>
         /// Creates an immutable sequence of item if not null. Otherwise returns empty immutable sequence.
         /// </summary>
         public static IImmutableList<T> ToImmutableList<T>(this T item) => item.AsMaybe().AsImmutableList();
