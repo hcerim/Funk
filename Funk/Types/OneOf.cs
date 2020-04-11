@@ -41,17 +41,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2> : OneOf
     {
-        /// <summary>
-        /// Creates empty OneOf.
-        /// </summary>
-        [Pure]
-        public static OneOf<T1, T2> Empty => new OneOf<T1, T2>();
-
-        protected OneOf()
-            : base(default, 0)
-        {
-        }
-
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -145,8 +134,6 @@ namespace Funk
             return (T2)Value;
         }
 
-        public static implicit operator OneOf<T1, T2>(Unit unit) => Empty;
-
         public static implicit operator OneOf<T1, T2>(T1 t1) => new OneOf<T1, T2>(t1);
 
         public static implicit operator OneOf<T1, T2>(T2 t2) => new OneOf<T1, T2>(t2);
@@ -159,17 +146,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3> : OneOf
     {
-        /// <summary>
-        /// Creates empty OneOf.
-        /// </summary>
-        [Pure]
-        public static OneOf<T1, T2, T3> Empty => new OneOf<T1, T2, T3>();
-
-        protected OneOf()
-            : base(default, 0)
-        {
-        }
-
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -294,8 +270,6 @@ namespace Funk
             return (T3)Value;
         }
 
-        public static implicit operator OneOf<T1, T2, T3>(Unit unit) => Empty;
-
         public static implicit operator OneOf<T1, T2, T3>(T1 t1) => new OneOf<T1, T2, T3>(t1);
 
         public static implicit operator OneOf<T1, T2, T3>(T2 t2) => new OneOf<T1, T2, T3>(t2);
@@ -310,17 +284,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4> : OneOf
     {
-        /// <summary>
-        /// Creates empty OneOf.
-        /// </summary>
-        [Pure]
-        public static OneOf<T1, T2, T3, T4> Empty => new OneOf<T1, T2, T3, T4>();
-
-        protected OneOf()
-            : base(default, 0)
-        {
-        }
-
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -476,8 +439,6 @@ namespace Funk
             return (T4)Value;
         }
 
-        public static implicit operator OneOf<T1, T2, T3, T4>(Unit unit) => Empty;
-
         public static implicit operator OneOf<T1, T2, T3, T4>(T1 t1) => new OneOf<T1, T2, T3, T4>(t1);
 
         public static implicit operator OneOf<T1, T2, T3, T4>(T2 t2) => new OneOf<T1, T2, T3, T4>(t2);
@@ -494,17 +455,6 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4, T5> : OneOf
     {
-        /// <summary>
-        /// Creates empty OneOf.
-        /// </summary>
-        [Pure]
-        public static OneOf<T1, T2, T3, T4, T5> Empty => new OneOf<T1, T2, T3, T4, T5>();
-
-        protected OneOf()
-            : base(default, 0)
-        {
-        }
-
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -690,8 +640,6 @@ namespace Funk
 
             return (T5)Value;
         }
-
-        public static implicit operator OneOf<T1, T2, T3, T4, T5>(Unit unit) => Empty;
 
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T1 t1) => new OneOf<T1, T2, T3, T4, T5>(t1);
 

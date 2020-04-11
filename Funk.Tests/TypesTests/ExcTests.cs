@@ -303,10 +303,6 @@ namespace Funk.Tests
 
     public class InformationSource : OneOf<FirstSource, SecondSource>
     {
-        private InformationSource()
-        {
-        }
-
         public InformationSource(FirstSource first)
             : base(first)
         {
@@ -316,8 +312,6 @@ namespace Funk.Tests
             : base(second)
         {
         }
-
-        public static implicit operator InformationSource(Unit unit) => new InformationSource();
     }
 
     public class FirstSource

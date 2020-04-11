@@ -59,6 +59,14 @@ namespace Funk
         }
 
         /// <summary>
+        /// Creates failed Exc.
+        /// </summary>
+        public static Exc<T, E> Failure<T, E>(E exception) where E : Exception
+        {
+            return new Exc<T, E>(exception);
+        }
+
+        /// <summary>
         /// Creates successful Exc.
         /// </summary>
         public static Exc<T, E> Success<T, E>(T result) where E : Exception
@@ -82,6 +90,7 @@ namespace Funk
     public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>>, IEquatable<Exc<T, E>> where E : Exception
     {
         internal Exc()
+            : base(null)
         {
         }
 
