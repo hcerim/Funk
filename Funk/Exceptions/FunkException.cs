@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
-using Funk.Internal;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -151,10 +151,7 @@ namespace Funk
         /// </summary>
         public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions)
         {
-            var list = new List<E>();
-            list.AddRange(Nested.GetOrEmpty());
-            list.AddRange(exceptions.FlatMap(e => e.Nested.GetOrEmpty()));
-            return EnumerableException.Create(list, Message);
+            return EnumerableException.Create(list<E>().AddRange(nested).AddRange(exceptions.FlatMap(e => e.nested)), Message);
         }
 
         /// <summary>
