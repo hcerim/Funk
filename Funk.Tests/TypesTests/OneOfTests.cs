@@ -241,21 +241,17 @@ namespace Funk.Tests
 
         private static OneOf<string, int> GetEmptyOneOf()
         {
-            return empty;
+            return new OneOf<string, int>(null);
         }
 
         private static User GetEmptyUser()
         {
-            return empty;
+            return new User(bio: null);
         }
     }
 
     public class User : OneOf<BasicInfo, Biography>
     {
-        private User()
-        {
-        }
-
         public User(BasicInfo info)
             : base(info)
         {
@@ -268,8 +264,6 @@ namespace Funk.Tests
 
         public Maybe<BasicInfo> Info => First;
         public Maybe<Biography> Bio => Second;
-
-        public static implicit operator User(Unit unit) => new User();
     }
 
     public class BasicInfo
