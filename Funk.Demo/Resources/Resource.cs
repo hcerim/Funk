@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Funk.Demo
 {
-    public sealed class Resource : OneOf<Info, Publication, Posts, Images>
+    public sealed class Resource : OneOf<Info, Publication>
     {
         public Resource(Info info)
             : base(info)
@@ -12,16 +12,6 @@ namespace Funk.Demo
 
         public Resource(Publication publication)
             : base(publication)
-        {
-        }
-
-        public Resource(Posts posts)
-            : base(posts)
-        {
-        }
-
-        public Resource(Images images)
-            : base(images)
         {
         }
     }
@@ -83,15 +73,5 @@ namespace Funk.Demo
         }
 
         public override string ToString() => JsonConvert.SerializeObject(Data.AsNotEmptyList().ToString(), Formatting.Indented);
-    }
-
-    public sealed class Posts
-    {
-        public override string ToString() => JsonConvert.SerializeObject(this, Formatting.Indented);
-    }
-
-    public sealed class Images
-    {
-        public override string ToString() => JsonConvert.SerializeObject(this, Formatting.Indented);
     }
 }
