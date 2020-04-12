@@ -230,6 +230,52 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public async Task Create_Exceptional_Merge_With_Another()
+        {
+            await UnitTestAsync(
+                _ => result("Funk12"),
+                async s =>
+                {
+                    var first = await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .OnFailureAsync(e => GetNullStringAsync())
+                        .OnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")).ToString());
+
+                    var second = Exc.Empty<string, ArgumentException>();
+                    return first.Merge(second);
+                },
+                r => Assert.True(r.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public async Task Create_Exceptional_Merge_With_More()
+        {
+            await UnitTestAsync(
+                _ => result("Funk12"),
+                async s =>
+                {
+                    var first = await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .OnFailureAsync(e => GetNullStringAsync())
+                        .OnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")).ToString());
+
+                    var second = failure<string, ArgumentException>(new ArgumentException("Error occured")).ToImmutableList()
+                        .SafeConcat(failure<string, ArgumentException>(new ArgumentException("Another occured")).ToImmutableList())
+                        .SafeConcat(Exc.Empty<string, ArgumentException>().ToImmutableList());
+                    return first.MergeRange(second);
+                },
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.IsType<EnumerableException<ArgumentException>>(r.Failure.UnsafeGet());
+                    Assert.Equal(2, r.Failure.UnsafeGet().Count);
+                    Assert.Equal("Error occured", r.RootFailure.UnsafeGet().Message);
+                }
+            );
+        }
+
+        [Fact]
         public void Create_Exceptional_Recover_Continue_Empty_Custom_Type()
         {
             UnitTest(
