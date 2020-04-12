@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -118,7 +119,7 @@ namespace Funk
         /// Structure-preserving map.
         /// Binds not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
         /// </summary>
-        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector) => await Match(_ => Task.FromResult(Maybe.Empty<R>()), selector).ConfigureAwait(false);
+        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector) => await Match(_ => result(Maybe.Empty<R>()), selector).ConfigureAwait(false);
 
         /// <summary>
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).

@@ -20,12 +20,12 @@ namespace Funk.Demo
             var info = await Get<Info>(new Uri($"{Medium.BaseUrl}{Medium.Info}"));
             return await type.Match(
                 ResourceType.Info, _ => info.Match(
-                    __ => Task.FromResult(Exc.Empty<Resource, Error>()),
-                    i => Task.FromResult(success<Resource, Error>(new Resource(i))),
-                    e => Task.FromResult(failure<Resource, Error>(e))
+                    __ => Exc.Empty<Resource, Error>().ToTask(),
+                    i => success<Resource, Error>(new Resource(i)).ToTask(),
+                    e => failure<Resource, Error>(e).ToTask()
                 ),
                 ResourceType.Publications, async _ => await info.Match(
-                    __ => Task.FromResult(Exc.Empty<Resource, Error>()),
+                    __ => Exc.Empty<Resource, Error>().ToTask(),
                     async i =>
                     {
                         var result = await Get<Publications>(new Uri($"{Medium.BaseUrl}{Medium.Users}/{i.Data.Id}/{Medium.Publications}"));
@@ -35,14 +35,14 @@ namespace Funk.Demo
                             failure<Resource, Error>
                         );
                     },
-                    e => Task.FromResult(failure<Resource, Error>(e))
+                    e => result(failure<Resource, Error>(e))
                 ),
                 ResourceType.Contributors, async _ => await info.Match(
-                    __ => Task.FromResult(Exc.Empty<Resource, Error>()),
+                    __ => Exc.Empty<Resource, Error>().ToTask(),
                     async i =>
                     {
                         return await publicationId.AsNotEmptyString().Match(
-                            __ => Task.FromResult(failure<Resource, Error>(new InvalidRequestError("Publication id cannot be empty."))),
+                            __ => failure<Resource, Error>(new InvalidRequestError("Publication id cannot be empty.")).ToTask(),
                             async id =>
                             {
                                 var result = await Get<Contributors>(new Uri($"{Medium.BaseUrl}{Medium.Publications}/{id}/{Medium.Contributors}"));
@@ -54,9 +54,9 @@ namespace Funk.Demo
                             }
                         );
                     },
-                    e => Task.FromResult(failure<Resource, Error>(e))
+                    e => failure<Resource, Error>(e).ToTask()
                 ),
-                _ => Task.FromResult(Exc.Empty<Resource, Error>())
+                _ => Exc.Empty<Resource, Error>().ToTask()
             );
         }
 
@@ -64,12 +64,12 @@ namespace Funk.Demo
         {
             return await _auth.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).Match(
                 token => Http.SendAsync(CreateGetRequest(uri, token)).GetContent().FlatMapAsync(r => 
-                    Task.FromResult(r.SafeDeserialize<T>().AsSuccess().Match(
+                    result(r.SafeDeserialize<T>().AsSuccess().Match(
                         _ => failure<T, Error>(new JsonError("Response could not be deserialized correctly.")),
                         success<T, Error>
                     ))
                 ),
-                e => Task.FromResult(failure<T, Error>(e))
+                e => result(failure<T, Error>(e))
             );
         }
 

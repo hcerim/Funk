@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Funk.Internal;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -155,7 +156,7 @@ namespace Funk
         /// Continuation on successful result.
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
-        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector) => await Match(_ => Task.FromResult(Exc.Empty<R, E>()), selector, e => Task.FromResult(Exc.Failure<R, E>(e))).ConfigureAwait(false);
+        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector) => await Match(_ => result(Exc.Empty<R, E>()), selector, e => Task.FromResult(Exc.Failure<R, E>(e))).ConfigureAwait(false);
 
         /// <summary>
         /// If Failure, Maybe contains the root exception inside EnumerableException if there is one. Otherwise, Maybe will be empty.
