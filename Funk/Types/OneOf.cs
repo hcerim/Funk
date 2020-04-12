@@ -26,7 +26,10 @@ namespace Funk
         [Pure]
         protected static Exception GetException(string itemName, Func<Unit, Exception> otherwiseThrow = null)
         {
-            return otherwiseThrow.IsNull() ? new EmptyValueException($"{itemName} item is empty.") : otherwiseThrow(Unit.Value);
+            return otherwiseThrow.AsMaybe().Match(
+                _ => new EmptyValueException($"{itemName} item is empty."),
+                o => o(Unit.Value)
+            );
         }
 
         [Pure]

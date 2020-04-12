@@ -20,7 +20,7 @@ namespace Funk
         /// Creates a Maybe of nullable item.
         /// </summary>
         [Pure]
-        public static Maybe<T> Create<T>(T? item) where T : struct => item.IsNotNull() ? new Maybe<T>((T)item) : Empty<T>();
+        public static Maybe<T> Create<T>(T? item) where T : struct => item.IsNull() ? Empty<T>() : new Maybe<T>(item.Value);
 
         /// <summary>
         /// Creates empty Maybe.
@@ -145,7 +145,10 @@ namespace Funk
         [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)
         {
-            return otherwiseThrow.IsNull() ? new EmptyValueException("Maybe value is empty.") : otherwiseThrow(Unit.Value);
+            return otherwiseThrow.AsMaybe().Match(
+                _ => new EmptyValueException("Maybe value is empty."),
+                o => o(Unit.Value)
+            );
         }
     }
 }

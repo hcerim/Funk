@@ -66,6 +66,7 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
@@ -108,10 +109,12 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
@@ -160,14 +163,17 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
@@ -222,18 +228,22 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
                 selector4(obj);
+                return;
             }
             if (obj.SafeEquals(case5))
             {
@@ -294,22 +304,27 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
                 selector4(obj);
+                return;
             }
             if (obj.SafeEquals(case5))
             {
                 selector5(obj);
+                return;
             }
             if (obj.SafeEquals(case6))
             {
@@ -376,26 +391,32 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
                 selector4(obj);
+                return;
             }
             if (obj.SafeEquals(case5))
             {
                 selector5(obj);
+                return;
             }
             if (obj.SafeEquals(case6))
             {
                 selector6(obj);
+                return;
             }
             if (obj.SafeEquals(case7))
             {
@@ -468,30 +489,37 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
                 selector4(obj);
+                return;
             }
             if (obj.SafeEquals(case5))
             {
                 selector5(obj);
+                return;
             }
             if (obj.SafeEquals(case6))
             {
                 selector6(obj);
+                return;
             }
             if (obj.SafeEquals(case7))
             {
                 selector7(obj);
+                return;
             }
             if (obj.SafeEquals(case8))
             {
@@ -570,34 +598,42 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
                 selector4(obj);
+                return;
             }
             if (obj.SafeEquals(case5))
             {
                 selector5(obj);
+                return;
             }
             if (obj.SafeEquals(case6))
             {
                 selector6(obj);
+                return;
             }
             if (obj.SafeEquals(case7))
             {
                 selector7(obj);
+                return;
             }
             if (obj.SafeEquals(case8))
             {
                 selector8(obj);
+                return;
             }
             if (obj.SafeEquals(case9))
             {
@@ -682,38 +718,47 @@ namespace Funk
             if (obj.SafeEquals(case1))
             {
                 selector1(obj);
+                return;
             }
             if (obj.SafeEquals(case2))
             {
                 selector2(obj);
+                return;
             }
             if (obj.SafeEquals(case3))
             {
                 selector3(obj);
+                return;
             }
             if (obj.SafeEquals(case4))
             {
                 selector4(obj);
+                return;
             }
             if (obj.SafeEquals(case5))
             {
                 selector5(obj);
+                return;
             }
             if (obj.SafeEquals(case6))
             {
                 selector6(obj);
+                return;
             }
             if (obj.SafeEquals(case7))
             {
                 selector7(obj);
+                return;
             }
             if (obj.SafeEquals(case8))
             {
                 selector8(obj);
+                return;
             }
             if (obj.SafeEquals(case9))
             {
                 selector9(obj);
+                return;
             }
             if (obj.SafeEquals(case10))
             {
