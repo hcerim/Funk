@@ -122,14 +122,14 @@ namespace Funk
         public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
             return item.ToImmutableList().SafeConcat(items).ConditionalSplit(e => e.IsSuccess).Match(
-                (success, failure) =>
+                (success, other) =>
                 {
-                    return failure.AsNotEmptyList().Match(
+                    return other.AsNotEmptyList().Match(
                         _ => Exc.Success<IImmutableList<T>, E>(success.Map(i => i.Success).Flatten()),
-                        f => f.ConditionalSplit(i => i.IsFailure).Match(
-                            (failed, _) => failed.AsNotEmptyList().Match(
+                        o => o.ConditionalSplit(i => i.IsFailure).Match(
+                            (failure, _) => failure.AsNotEmptyList().Match(
                                 __ => empty,
-                                l => Exc.Failure<IImmutableList<T>, E>(l.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage))
+                                f => Exc.Failure<IImmutableList<T>, E>(f.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage))
                             )
                         )
                     );
