@@ -24,7 +24,7 @@ namespace Funk.Demo
                     i => success<Resource, Error>(new Resource(i)).ToTask(),
                     e => failure<Resource, Error>(e).ToTask()
                 ),
-                ResourceType.Publications, async _ => await info.Match(
+                ResourceType.Publications, _ => info.Match(
                     __ => Exc.Empty<Resource, Error>().ToTask(),
                     async i =>
                     {
@@ -37,11 +37,11 @@ namespace Funk.Demo
                     },
                     e => result(failure<Resource, Error>(e))
                 ),
-                ResourceType.Contributors, async _ => await info.Match(
+                ResourceType.Contributors, _ => info.Match(
                     __ => Exc.Empty<Resource, Error>().ToTask(),
-                    async i =>
+                    i =>
                     {
-                        return await publicationId.AsNotEmptyString().Match(
+                        return publicationId.AsNotEmptyString().Match(
                             __ => failure<Resource, Error>(new InvalidRequestError("Publication id cannot be empty.")).ToTask(),
                             async id =>
                             {
