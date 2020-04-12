@@ -8,25 +8,25 @@ namespace Funk
         /// <summary>
         /// Creates a Task of Unit from Task.
         /// </summary>
-        public static Task<Unit> WithResult(this Task task)
+        public static async Task<Unit> WithResult(this Task task)
         {
-            return Task.Run(async () =>
+            return await Task.Run(async () =>
             {
                 await task.ConfigureAwait(false);
                 return Unit.Value;
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Creates a Task with result from Task.
         /// </summary>
-        public static Task<R> WithResult<R>(this Task task, Func<Unit, R> result)
+        public static async Task<R> WithResult<R>(this Task task, Func<Unit, R> result)
         {
-            return Task.Run(async () =>
+            return await Task.Run(async () =>
             {
                 await task.ConfigureAwait(false);
                 return result(Unit.Value);
-            });
+            }).ConfigureAwait(false);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Funk
 {
     public static partial class Prelude
     {
-        public static Task<T> result<T>(T item) => Task.FromResult(item);
+        public static async Task<T> result<T>(T item) => await Task.FromResult(item).ConfigureAwait(false);
 
         public static async Task run(Action action) => await Task.Run(action).ConfigureAwait(false);
 

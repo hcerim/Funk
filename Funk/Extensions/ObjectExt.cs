@@ -9,7 +9,7 @@ namespace Funk
 {
     public static class ObjectExt
     {
-        public static Task<T> ToTask<T>(this T item) => result(item);
+        public static async Task<T> ToTask<T>(this T item) => await result(item).ConfigureAwait(false);
 
         public static async Task InvokeAsync(this Action action) => await run(action).ConfigureAwait(false);
 
