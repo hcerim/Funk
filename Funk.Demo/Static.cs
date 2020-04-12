@@ -14,13 +14,11 @@ namespace Funk.Demo
         public const string Users = "users";
         public const string Publications = "publications";
         public const string Contributors = "contributors";
-        public const string Posts = "posts";
-        public const string Images = "images";
     }
 
     public static class Http
     {
-        public static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => await new HttpClient { Timeout = new TimeSpan(0, 0, minutes: 1, 0) }.DisposeAfterAsync(c => c.SendAsync(request));
+        public static Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => new HttpClient { Timeout = new TimeSpan(0, 0, minutes: 1, 0) }.DisposeAfterAsync(c => c.SendAsync(request));
 
         public static async Task<Exc<string, Error>> GetContent(this Task<HttpResponseMessage> message) => await GetContent(await message);
 
