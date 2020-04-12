@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -8,25 +10,43 @@ namespace Funk
         /// <summary>
         /// Creates a Task of Unit from Task.
         /// </summary>
-        public static async Task<Unit> WithResult(this Task task)
+        public static Task<Unit> WithResult(this Task task)
         {
-            return await Task.Run(async () =>
+            return Task.Run(async () =>
             {
-                await task.ConfigureAwait(false);
+                await task;
                 return Unit.Value;
-            }).ConfigureAwait(false);
+            });
         }
 
         /// <summary>
         /// Creates a Task with result from Task.
         /// </summary>
-        public static async Task<R> WithResult<R>(this Task task, Func<Unit, R> result)
+        public static Task<R> WithResult<R>(this Task task, Func<Unit, R> result)
         {
-            return await Task.Run(async () =>
+            return Task.Run(async () =>
             {
-                await task.ConfigureAwait(false);
+                await task;
                 return result(Unit.Value);
-            }).ConfigureAwait(false);
+            });
         }
+
+        public static Task<T> ToTask<T>(this T item) => result(item);
+
+        public static Task InvokeAsync(this Action action) => run(action);
+
+        public static Task InvokeAsync(this Action action, CancellationToken token) => run(action, token);
+
+        public static Task<T> InvokeAsync<T>(this Func<T> action) => run(action);
+
+        public static Task<T> InvokeAsync<T>(this Func<T> action, CancellationToken token) => run(action, token);
+
+        public static Task InvokeAsync(this Func<Task> action) => run(action);
+
+        public static Task InvokeAsync(this Func<Task> action, CancellationToken token) => run(action, token);
+
+        public static Task<T> InvokeAsync<T>(this Func<Task<T>> action) => run(action);
+
+        public static Task<T> InvokeAsync<T>(this Func<Task<T>> action, CancellationToken token) => run(action, token);
     }
 }

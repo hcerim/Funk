@@ -1,32 +1,11 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Internal.InternalExt;
-using static Funk.Prelude;
 
 namespace Funk
 {
     public static class ObjectExt
     {
-        public static async Task<T> ToTask<T>(this T item) => await result(item).ConfigureAwait(false);
-
-        public static async Task InvokeAsync(this Action action) => await run(action).ConfigureAwait(false);
-
-        public static async Task InvokeAsync(this Action action, CancellationToken token) => await run(action, token).ConfigureAwait(false);
-
-        public static async Task<T> InvokeAsync<T>(this Func<T> action) => await run(action).ConfigureAwait(false);
-
-        public static async Task<T> InvokeAsync<T>(this Func<T> action, CancellationToken token) => await run(action, token).ConfigureAwait(false);
-
-        public static async Task InvokeAsync(this Func<Task> action) => await run(action).ConfigureAwait(false);
-
-        public static async Task InvokeAsync(this Func<Task> action, CancellationToken token) => await run(action, token).ConfigureAwait(false);
-
-        public static async Task<T> InvokeAsync<T>(this Func<Task<T>> action) => await run(action).ConfigureAwait(false);
-
-        public static async Task<T> InvokeAsync<T>(this Func<Task<T>> action, CancellationToken token) => await run(action, token).ConfigureAwait(false);
-
         public static Maybe<R> SafeCast<R>(this object item)
         {
             if (item is R valid)
