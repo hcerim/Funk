@@ -282,12 +282,12 @@ namespace Funk.Tests
             return null;
         }
 
-        private static async Task<string> GetNullStringAsync()
+        private static Task<string> GetNullStringAsync()
         {
-            return await Task.FromResult(GetNullString());
+            return result(GetNullString());
         }
 
-        private static async Task<string> GetNameByIdAsync(string id)
+        private static Task<string> GetNameByIdAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -295,7 +295,7 @@ namespace Funk.Tests
             }
             if (id.SafeEquals("Funk123"))
             {
-                return await Task.FromResult("Harun");
+                return result("Harun");
             }
             throw new ArgumentException("Invalid id");
         }
