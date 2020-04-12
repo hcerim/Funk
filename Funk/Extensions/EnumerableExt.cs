@@ -194,16 +194,16 @@ namespace Funk
         /// <summary>
         /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return failure. Handles null enumerable
         /// </summary>
-        public static async Task<Exc<Unit, E>> ForEachAsync<T, E>(this IEnumerable<T> enumerable, Func<T, Task> operation) where E : Exception
+        public static Task<Exc<Unit, E>> ForEachAsync<T, E>(this IEnumerable<T> enumerable, Func<T, Task> operation) where E : Exception
         {
-            return await Exc.CreateAsync<Unit, E>(async _ =>
+            return Exc.CreateAsync<Unit, E>(async _ =>
             {
                 foreach (var item in enumerable)
                 {
                     await operation(item);
                 }
                 return Unit.Value;
-            }).ConfigureAwait(false);
+            });
         }
     }
 }

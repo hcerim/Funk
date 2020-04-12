@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -10,9 +11,15 @@ namespace Funk
             using (disposable) return operation(disposable);
         }
 
-        public static async Task<R> DisposeAfterAsync<D, R>(this D disposable, Func<D, Task<R>> operation) where D : IDisposable
+        public static Task<R> DisposeAfterAsync<D, R>(this D disposable, Func<D, Task<R>> operation) where D : IDisposable
         {
-            using (disposable) return await operation(disposable).ConfigureAwait(false);
+            return run(func(async () =>
+            {
+                using (disposable)
+                {
+                    return await operation(disposable);
+                }
+            }));
         }
 
         public static void DisposeAfter<D>(this D disposable, Action<D> operation) where D : IDisposable
@@ -20,9 +27,15 @@ namespace Funk
             using (disposable) operation(disposable);
         }
 
-        public static async Task DisposeAfterAsync<D>(this D disposable, Func<D, Task> operation) where D : IDisposable
+        public static Task DisposeAfterAsync<D>(this D disposable, Func<D, Task> operation) where D : IDisposable
         {
-            using (disposable) await operation(disposable).ConfigureAwait(false);
+            return run(act(async () =>
+            {
+                using (disposable)
+                {
+                    await operation(disposable);
+                }
+            }));
         }
     }
 }
