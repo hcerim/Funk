@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using static Funk.Prelude;
@@ -410,11 +411,11 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void ForEach_Enumerable_Success()
+        public async Task ForEach_Enumerable_Success()
         {
-            UnitTest(
-                _ => list("Harun", "Funk", "Funky"),
-                l => l.ForEachAsync<string, FunkException>(i => run(act(() => _testOutputHelper.WriteLine(i)))).GetAwaiter().GetResult(),
+            await UnitTestAsync(
+                _ => result(list("Harun", "Funk", "Funky")),
+                l => l.ForEachAsync<string, FunkException>(i => run(act(() => _testOutputHelper.WriteLine(i)))),
                 e => Assert.True(e.IsSuccess)
             );
         }
