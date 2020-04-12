@@ -57,7 +57,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToEnumerableException().MapWith(_ => new EmptyValueException("Empty :(")),
+                e => e.ToEnumerableException().Add(_ => new EmptyValueException("Empty :(")),
                 e =>
                 {
                     Assert.Equal(2, e.Count());
@@ -74,7 +74,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToEnumerableException().MapWithMany(_ => new List<FunkException>
+                e => e.ToEnumerableException().AddRange(_ => new List<FunkException>
                 {
                     new EmptyValueException("Empty :("),
                     new EmptyValueException("Empty again :/"),

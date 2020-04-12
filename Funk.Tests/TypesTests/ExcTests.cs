@@ -130,17 +130,13 @@ namespace Funk.Tests
                 _ => result("Funk12"),
                 s =>
                 {
-                    return result(func(async () =>
+                    return run(func(async () =>
                     {
                         var result = await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s));
                         return result.OnFailure(e => GetNullString()).OnEmpty(_ => GetNameById("Funk123"));
                     }));
                 },
-                async f =>
-                {
-                    var result = await f.Invoke();
-                    Assert.Equal("Harun", result.UnsafeGetFirst());
-                }
+                e => Assert.Equal("Harun", e.UnsafeGetFirst())
             );
         }
 
@@ -151,16 +147,15 @@ namespace Funk.Tests
                 _ => result("Funk12"),
                 s =>
                 {
-                    return result(func(async () =>
+                    return run(func(async () =>
                     {
                         var result = await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s));
                         return result.OnFailure(e => GetNullString()).OnEmpty(_ => GetNameById("Funk123"));
                     }));
                 },
-                async f =>
+                e =>
                 {
-                    var result = await f.Invoke();
-                    var maybe = result.AsSuccess();
+                    var maybe = e.AsSuccess();
                     Assert.True(maybe.NotEmpty);
                     Assert.Equal("Harun", maybe.UnsafeGet());
                 }
@@ -174,17 +169,13 @@ namespace Funk.Tests
                 _ => result("Funk12"),
                 s =>
                 {
-                    return result(func(async () =>
+                    return run(func(async () =>
                     {
                         var result = await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s));
                         return result.OnFailure(e => GetNameById("Funk12")).OnEmpty(_ => GetNameById("Funk123"));
                     }));
                 },
-                async f =>
-                {
-                    var result = await f.Invoke();
-                    Assert.IsType<EnumerableException<ArgumentException>>(result.Failure.UnsafeGet());
-                }
+                e => Assert.IsType<EnumerableException<ArgumentException>>(e.Failure.UnsafeGet())
             );
         }
 

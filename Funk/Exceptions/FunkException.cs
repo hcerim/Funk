@@ -117,17 +117,14 @@ namespace Funk
         /// Use Bind if you are binding with another EnumerableException.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
         /// </summary>
-        public EnumerableException<E> MapWith(Func<Unit, E> selector)
-        {
-            return MapWithMany(_ => selector(Unit.Value).ToImmutableList());
-        }
+        public EnumerableException<E> Add(Func<Unit, E> selector) => AddRange(_ => selector(Unit.Value).ToImmutableList());
 
         /// <summary>
         /// Structure-preserving map.
         /// Use BindRange if you are binding with other EnumerableExceptions.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
         /// </summary>
-        public EnumerableException<E> MapWithMany(Func<Unit, IEnumerable<E>> selector)
+        public EnumerableException<E> AddRange(Func<Unit, IEnumerable<E>> selector)
         {
             var exceptions = selector(Unit.Value).Map();
             return EnumerableException.Create(Nested.Match(
@@ -140,19 +137,13 @@ namespace Funk
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception and its nested ones.
         /// </summary>
-        public EnumerableException<E> Bind(EnumerableException<E> exception)
-        {
-            return BindRange(exception.ToImmutableList());
-        }
+        public EnumerableException<E> Bind(EnumerableException<E> exception) => BindRange(exception.ToImmutableList());
 
         /// <summary>
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions and their nested ones.
         /// </summary>
-        public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions)
-        {
-            return EnumerableException.Create(list<E>().AddRange(nested).AddRange(exceptions.FlatMap(e => e.nested)), Message);
-        }
+        public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions) => EnumerableException.Create(list<E>().AddRange(nested).AddRange(exceptions.FlatMap(e => e.nested)), Message);
 
         /// <summary>
         /// Returns a Maybe of an immutable dictionary of key as a discriminator and collection of corresponding exceptions if there are any nested exception.
@@ -197,86 +188,43 @@ namespace Funk
         public override string ToString() => Nested.FlatMap(n => n.MapReduce(e => e.ToString(), (a, b) => $"{a}, {b}")).GetOr(_ => "EnumerableException is empty.");
 
         #region Obsolete methods
-        /// <summary>
-        /// Ignores null value.
-        /// </summary>
-        [Obsolete("Use MapWith or Bind instead.")]
-        public IImmutableList<E> Add(E value)
-        {
-            return MapWithMany(_ => value.ToImmutableList());
-        }
 
-        /// <summary>
-        /// Handled null enumerable and ignores null values.
-        /// </summary>
-        [Obsolete("Use MapWithMany or BindRange instead.")]
-        public IImmutableList<E> AddRange(IEnumerable<E> items)
-        {
-            return MapWithMany(_ => items);
-        }
+        [Obsolete("Use overloaded Add with function instead.")]
+        public IImmutableList<E> Add(E value) => Add(_ => value);
 
-        /// <summary>
-        /// Creates empty EnumerableException.
-        /// </summary>
-        [Obsolete("Resetting can cause unexpected issues.")]
-        public IImmutableList<E> Clear()
-        {
-            return new EnumerableException<E>(null);
-        }
+        [Obsolete("Use overloaded AddRange with function instead.")]
+        public IImmutableList<E> AddRange(IEnumerable<E> items) => AddRange(_ => items);
 
-        [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWith or Bind instead.")]
-        public IImmutableList<E> Insert(int index, E element)
-        {
-            return EnumerableException.Create(nested.Insert(index, element), Message);
-        }
+        [Obsolete("Creates empty EnumerableException with no message. Resetting can cause unexpected issues.")]
+        public IImmutableList<E> Clear() => new EnumerableException<E>(null);
 
-        [Obsolete("Changing the order of exceptions can cause unexpected issues. Use MapWithMany or BindRange instead.")]
-        public IImmutableList<E> InsertRange(int index, IEnumerable<E> items)
-        {
-            return EnumerableException.Create(nested.InsertRange(index, items), Message);
-        }
+        [Obsolete("Changing the order of exceptions can cause unexpected issues.")]
+        public IImmutableList<E> Insert(int index, E element) => EnumerableException.Create(nested.Insert(index, element), Message);
+
+        [Obsolete("Changing the order of exceptions can cause unexpected issues.")]
+        public IImmutableList<E> InsertRange(int index, IEnumerable<E> items) => EnumerableException.Create(nested.InsertRange(index, items), Message);
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
-        public IImmutableList<E> Remove(E value, IEqualityComparer<E> equalityComparer)
-        {
-            return EnumerableException.Create(nested.Remove(value, equalityComparer), Message);
-        }
+        public IImmutableList<E> Remove(E value, IEqualityComparer<E> equalityComparer) => EnumerableException.Create(nested.Remove(value, equalityComparer), Message);
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
-        public IImmutableList<E> RemoveAll(Predicate<E> match)
-        {
-            return EnumerableException.Create(nested.RemoveAll(match), Message);
-        }
+        public IImmutableList<E> RemoveAll(Predicate<E> match) => EnumerableException.Create(nested.RemoveAll(match), Message);
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
-        public IImmutableList<E> RemoveAt(int index)
-        {
-            return EnumerableException.Create(nested.RemoveAt(index), Message);
-        }
+        public IImmutableList<E> RemoveAt(int index) => EnumerableException.Create(nested.RemoveAt(index), Message);
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
-        public IImmutableList<E> RemoveRange(IEnumerable<E> items, IEqualityComparer<E> equalityComparer)
-        {
-            return EnumerableException.Create(nested.RemoveRange(items, equalityComparer), Message);
-        }
+        public IImmutableList<E> RemoveRange(IEnumerable<E> items, IEqualityComparer<E> equalityComparer) => EnumerableException.Create(nested.RemoveRange(items, equalityComparer), Message);
 
         [Obsolete("Removing exceptions can cause unexpected issues.")]
-        public IImmutableList<E> RemoveRange(int index, int count)
-        {
-            return EnumerableException.Create(nested.RemoveRange(index, count), Message);
-        }
+        public IImmutableList<E> RemoveRange(int index, int count) => EnumerableException.Create(nested.RemoveRange(index, count), Message);
 
         [Obsolete("Modifying exceptions can cause unexpected issues.")]
-        public IImmutableList<E> Replace(E oldValue, E newValue, IEqualityComparer<E> equalityComparer)
-        {
-            return EnumerableException.Create(nested.Replace(oldValue, newValue, equalityComparer), Message);
-        }
+        public IImmutableList<E> Replace(E oldValue, E newValue, IEqualityComparer<E> equalityComparer) => EnumerableException.Create(nested.Replace(oldValue, newValue, equalityComparer), Message);
 
         [Obsolete("Modifying exceptions can cause unexpected issues.")]
-        public IImmutableList<E> SetItem(int index, E value)
-        {
-            return EnumerableException.Create(nested.SetItem(index, value), Message);
-        }
+        public IImmutableList<E> SetItem(int index, E value) => EnumerableException.Create(nested.SetItem(index, value), Message);
+
         #endregion
     }
 }

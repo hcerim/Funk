@@ -62,10 +62,5 @@ namespace Funk
         /// Creates Exc from Maybe with the specified Exception if Maybe is empty.
         /// </summary>
         public static Exc<T, Exception> ToExc<T>(this Maybe<T> maybe, Func<Unit, Exception> ifEmpty) => maybe.Match(_ => Exc.Failure<T, Exception>(ifEmpty(Unit.Value)), Exc.Success<T, Exception>);
-
-        /// <summary>
-        /// Creates Exc from Maybe with the specified Exception if Maybe is empty.
-        /// </summary>
-        public static Exc<T, E> ToExc<T, E>(this Maybe<T> maybe, Func<Unit, EnumerableException<E>> ifEmpty) where E : Exception => maybe.Match(_ => Exc.Failure<T, E>(ifEmpty(Unit.Value)), Exc.Success<T, E>);
     }
 }
