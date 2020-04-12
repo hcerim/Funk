@@ -12,7 +12,7 @@ namespace Funk
         /// </summary>
         public static Task<Unit> WithResult(this Task task)
         {
-            return Task.Run(async () =>
+            return run(async () =>
             {
                 await task;
                 return Unit.Value;
@@ -24,7 +24,7 @@ namespace Funk
         /// </summary>
         public static Task<R> WithResult<R>(this Task task, Func<Unit, R> result)
         {
-            return Task.Run(async () =>
+            return run(async () =>
             {
                 await task;
                 return result(Unit.Value);
