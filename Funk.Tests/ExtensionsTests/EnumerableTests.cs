@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using static Funk.Prelude;
@@ -415,7 +414,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => list("Harun", "Funk", "Funky"),
-                l => l.ForEachAsync<string, FunkException>(i => Task.Run(act(() => _testOutputHelper.WriteLine(i)))).GetAwaiter().GetResult(),
+                l => l.ForEachAsync<string, FunkException>(i => run(act(() => _testOutputHelper.WriteLine(i)))).GetAwaiter().GetResult(),
                 e => Assert.True(e.IsSuccess)
             );
         }
