@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -12,7 +14,7 @@ namespace Funk
         {
             return Task.Run(async () =>
             {
-                await task.ConfigureAwait(false);
+                await task;
                 return Unit.Value;
             });
         }
@@ -24,9 +26,27 @@ namespace Funk
         {
             return Task.Run(async () =>
             {
-                await task.ConfigureAwait(false);
+                await task;
                 return result(Unit.Value);
             });
         }
+
+        public static Task<T> ToTask<T>(this T item) => result(item);
+
+        public static Task InvokeAsync(this Action action) => run(action);
+
+        public static Task InvokeAsync(this Action action, CancellationToken token) => run(action, token);
+
+        public static Task<T> InvokeAsync<T>(this Func<T> action) => run(action);
+
+        public static Task<T> InvokeAsync<T>(this Func<T> action, CancellationToken token) => run(action, token);
+
+        public static Task InvokeAsync(this Func<Task> action) => run(action);
+
+        public static Task InvokeAsync(this Func<Task> action, CancellationToken token) => run(action, token);
+
+        public static Task<T> InvokeAsync<T>(this Func<Task<T>> action) => run(action);
+
+        public static Task<T> InvokeAsync<T>(this Func<Task<T>> action, CancellationToken token) => run(action, token);
     }
 }
