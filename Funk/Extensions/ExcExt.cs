@@ -121,18 +121,20 @@ namespace Funk
         /// </summary>
         public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
-            var list = item.ToImmutableList().SafeConcat(items);
-            var split1 = list.ConditionalSplit(e => e.IsSuccess);
-            if (split1.Item2.IsEmpty())
-            {
-                return Exc.Success<IImmutableList<T>, E>(split1.Item1.Map(i => i.Success.UnsafeGet()));
-            }
-            var split2 = split1.Item2.ConditionalSplit(i => i.IsFailure);
-            if (split2.Item1.NotEmpty())
-            {
-                return Exc.Failure<IImmutableList<T>, E>(split2.Item1.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage));
-            }
-            return Exc.Empty<IImmutableList<T>, E>();
+            return item.ToImmutableList().SafeConcat(items).ConditionalSplit(e => e.IsSuccess).Match(
+                (success, failure) =>
+                {
+                    return failure.AsNotEmptyList().Match(
+                        _ => Exc.Success<IImmutableList<T>, E>(success.Map(i => i.Success).Flatten()),
+                        f => f.ConditionalSplit(i => i.IsFailure).Match(
+                            (failed, _) => failed.AsNotEmptyList().Match(
+                                __ => empty,
+                                l => Exc.Failure<IImmutableList<T>, E>(l.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage))
+                            )
+                        )
+                    );
+                }
+            );
         }
     }
 }
