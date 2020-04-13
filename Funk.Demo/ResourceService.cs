@@ -62,14 +62,13 @@ namespace Funk.Demo
 
         private Task<Exc<T, Error>> Get<T>(Uri uri)
         {
-            return _auth.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).Match(
-                token => Http.SendAsync(CreateGetRequest(uri, token)).GetContent().FlatMapAsync(r => 
+            return _auth.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).FlatMapAsync(token =>
+                Http.SendAsync(CreateGetRequest(uri, token)).GetContent().FlatMapAsync(r => 
                     result(r.SafeDeserialize<T>().AsSuccess().Match(
                         _ => failure<T, Error>(new JsonError("Response could not be deserialized correctly.")),
                         success<T, Error>
                     ))
-                ),
-                e => result(failure<T, Error>(e))
+                )
             );
         }
 

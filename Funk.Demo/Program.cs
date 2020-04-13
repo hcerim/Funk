@@ -22,7 +22,7 @@ namespace Funk.Demo
                     f => default,
                     t =>
                     {
-                        Console.WriteLine("Enter publication id.");
+                        Console.WriteLine("Enter publication id:");
                         return Console.ReadLine();
                     }
                 )
