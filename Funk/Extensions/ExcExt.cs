@@ -22,12 +22,12 @@ namespace Funk
         /// <summary>
         /// Maps Exc Error type to the new type specified by the selector.
         /// </summary>
-        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await exceptional.Match(_ => result(Exc.Empty<T, E2>()), s => result(success<T, E2>(s)), async f => failure<T, E2>(await selector(f)));
+        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await exceptional.Match(_ => result(Exc.Empty<T, E2>()), s => result(success<T, E2>(s)), async f => failure<T, E2>(await selector(f))).ConfigureAwait(false);
 
         /// <summary>
         /// Maps Exc Error type to the new type specified by the selector.
         /// </summary>
-        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Task<Exc<T, E1>> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await (await exceptional).MapFailureAsync(selector);
+        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Task<Exc<T, E1>> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await (await exceptional).MapFailureAsync(selector).ConfigureAwait(false);
 
         /// <summary>
         /// Maps Exc Error type to the new type specified by the selector.
