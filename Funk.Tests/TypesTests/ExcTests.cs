@@ -310,13 +310,13 @@ namespace Funk.Tests
                         .OnFailureAsync(e => GetNullStringAsync())
                         .OnEmptyAsync(_ => GetNameByIdAsync(s))
                         .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")).ToString())
-                        .MapFailureAsync(e => new InvalidOperationException("New Exception type."));
+                        .MapFailureAsync(e => new InvalidOperationException(e.Root.UnsafeGet().Message));
                 },
                 r =>
                 {
                     Assert.True(r.IsFailure);
                     Assert.IsType<EnumerableException<InvalidOperationException>>(r.Failure.UnsafeGet());
-                    Assert.Equal("New Exception type.", r.RootFailure.UnsafeGet().Message);
+                    Assert.Equal("Invalid id", r.RootFailure.UnsafeGet().Message);
                 }
             );
         }
