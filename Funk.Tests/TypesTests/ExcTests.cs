@@ -249,6 +249,30 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public async Task Create_Exceptional_Merge_With_Another_Map_Failure()
+        {
+            await UnitTestAsync(
+                _ => result("Funk12"),
+                async s =>
+                {
+                    var first = await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .OnFailureAsync(e => GetNullStringAsync())
+                        .OnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")).ToString());
+
+                    return first.Merge(failure<string, ArgumentException>(new ArgumentException("Error occured")))
+                        .MapFailure(e => new InvalidOperationException("New Exception type."));
+                },
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.IsType<EnumerableException<InvalidOperationException>>(r.Failure.UnsafeGet());
+                    Assert.Equal("New Exception type.", r.RootFailure.UnsafeGet().Message);
+                }
+            );
+        }
+
+        [Fact]
         public async Task Create_Exceptional_Merge_With_More()
         {
             await UnitTestAsync(
@@ -271,6 +295,28 @@ namespace Funk.Tests
                     Assert.IsType<EnumerableException<ArgumentException>>(r.Failure.UnsafeGet());
                     Assert.Equal(2, r.Failure.UnsafeGet().Count);
                     Assert.Equal("Error occured", r.RootFailure.UnsafeGet().Message);
+                }
+            );
+        }
+
+        [Fact]
+        public async Task Create_Exceptional_MapFailureAsync()
+        {
+            await UnitTestAsync(
+                _ => result("Funk12"),
+                async s =>
+                {
+                    return await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
+                        .OnFailureAsync(e => GetNullStringAsync())
+                        .OnEmptyAsync(_ => GetNameByIdAsync(s))
+                        .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")).ToString())
+                        .MapFailureAsync(e => new InvalidOperationException("New Exception type."));
+                },
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.IsType<EnumerableException<InvalidOperationException>>(r.Failure.UnsafeGet());
+                    Assert.Equal("New Exception type.", r.RootFailure.UnsafeGet().Message);
                 }
             );
         }
