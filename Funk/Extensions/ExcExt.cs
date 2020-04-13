@@ -15,6 +15,26 @@ namespace Funk
         public static Maybe<T> AsSuccess<T, E>(this Exc<T, E> exceptional) where E : Exception => exceptional.Match(_ => Maybe.Empty<T>(), Maybe.Create, e => Maybe.Empty<T>());
 
         /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static Exc<T, E2> MapFailure<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, E2> selector) where E1 : Exception where E2 : Exception => exceptional.Match(_ => Exc.Empty<T, E2>(), success<T, E2>, f => failure<T, E2>(selector(f)));
+
+        /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await exceptional.Match(_ => result(Exc.Empty<T, E2>()), s => result(success<T, E2>(s)), async f => failure<T, E2>(await selector(f)));
+
+        /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Task<Exc<T, E1>> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await (await exceptional).MapFailureAsync(selector);
+
+        /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Task<Exc<T, E1>> exceptional, Func<EnumerableException<E1>, E2> selector) where E1 : Exception where E2 : Exception => exceptional.MapFailureAsync(e => result(selector(e)));
+
+        /// <summary>
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
