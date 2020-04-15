@@ -184,10 +184,10 @@ namespace Funk
 
         public bool Equals(Exc<T, E> other)
         {
-            return other.AsMaybe().Map(o => Match(
-                _ => o.IsEmpty,
-                v => o.Success.Map(s => v.SafeEquals(s)).GetOrDefault(),
-                e => o.Failure.Map(e.SafeEquals).GetOrDefault()
+            return other.AsMaybe().FlatMap(o => Match(
+                _ => o.IsEmpty.AsMaybe(),
+                v => o.Success.Map(s => v.SafeEquals(s)),
+                e => o.Failure.Map(e.SafeEquals)
             )).GetOrDefault();
         }
 

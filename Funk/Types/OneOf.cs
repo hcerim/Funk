@@ -147,10 +147,10 @@ namespace Funk
 
         public bool Equals(OneOf<T1, T2> other)
         {
-            return other.AsMaybe().Map(o => Match(
-                _ => o.IsEmpty,
-                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
-                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault()
+            return other.AsMaybe().FlatMap(o => Match(
+                _ => o.IsEmpty.AsMaybe(),
+                f => o.First.Map(t1 => f.SafeEquals(t1)),
+                s => o.Second.Map(t2 => s.SafeEquals(t2))
             )).GetOrDefault();
         }
 
@@ -302,11 +302,11 @@ namespace Funk
 
         public bool Equals(OneOf<T1, T2, T3> other)
         {
-            return other.AsMaybe().Map(o => Match(
-                _ => o.IsEmpty,
-                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
-                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault(),
-                t => o.Third.Map(t3 => t.SafeEquals(t3)).GetOrDefault()
+            return other.AsMaybe().FlatMap(o => Match(
+                _ => o.IsEmpty.AsMaybe(),
+                f => o.First.Map(t1 => f.SafeEquals(t1)),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)),
+                t => o.Third.Map(t3 => t.SafeEquals(t3))
             )).GetOrDefault();
         }
 
@@ -491,12 +491,12 @@ namespace Funk
 
         public bool Equals(OneOf<T1, T2, T3, T4> other)
         {
-            return other.AsMaybe().Map(o => Match(
-                _ => o.IsEmpty,
-                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
-                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault(),
-                t => o.Third.Map(t3 => t.SafeEquals(t3)).GetOrDefault(),
-                f => o.Fourth.Map(t4 => f.SafeEquals(t4)).GetOrDefault()
+            return other.AsMaybe().FlatMap(o => Match(
+                _ => o.IsEmpty.AsMaybe(),
+                f => o.First.Map(t1 => f.SafeEquals(t1)),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)),
+                t => o.Third.Map(t3 => t.SafeEquals(t3)),
+                f => o.Fourth.Map(t4 => f.SafeEquals(t4))
             )).GetOrDefault();
         }
 
@@ -714,13 +714,13 @@ namespace Funk
 
         public bool Equals(OneOf<T1, T2, T3, T4, T5> other)
         {
-            return other.AsMaybe().Map(o => Match(
-                _ => o.IsEmpty,
-                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
-                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault(),
-                t => o.Third.Map(t3 => t.SafeEquals(t3)).GetOrDefault(),
-                f => o.Fourth.Map(t4 => f.SafeEquals(t4)).GetOrDefault(),
-                f => o.Fifth.Map(t4 => f.SafeEquals(t4)).GetOrDefault()
+            return other.AsMaybe().FlatMap(o => Match(
+                _ => o.IsEmpty.AsMaybe(),
+                f => o.First.Map(t1 => f.SafeEquals(t1)),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)),
+                t => o.Third.Map(t3 => t.SafeEquals(t3)),
+                f => o.Fourth.Map(t4 => f.SafeEquals(t4)),
+                f => o.Fifth.Map(t5 => f.SafeEquals(t5))
             )).GetOrDefault();
         }
 
