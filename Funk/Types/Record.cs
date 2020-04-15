@@ -178,7 +178,7 @@ namespace Funk
 
         public static bool operator !=(Record<T1, T2> record, Record<T1, T2> other) => !(record == other);
 
-        public bool Equals(Record<T1, T2> other) => Item1.SafeEquals(other.Item1) && Item2.SafeEquals(other.Item2);
+        public bool Equals(Record<T1, T2> other) => ValueTuple.Create(Item1, Item2).SafeEquals(ValueTuple.Create(other.Item1, other.Item2));
 
         public override string ToString() => ValueTuple.Create(Item1, Item2).ToString();
 
@@ -250,7 +250,7 @@ namespace Funk
 
         public static bool operator !=(Record<T1, T2, T3> record, Record<T1, T2, T3> other) => !(record == other);
 
-        public bool Equals(Record<T1, T2, T3> other) => Item1.SafeEquals(other.Item1) && Item2.SafeEquals(other.Item2) && Item3.SafeEquals(other.Item3);
+        public bool Equals(Record<T1, T2, T3> other) => ValueTuple.Create(Item1, Item2, Item3).SafeEquals(ValueTuple.Create(other.Item1, other.Item2, other.Item3));
 
         public override string ToString() => ValueTuple.Create(Item1, Item2, Item3).ToString();
 
@@ -325,7 +325,7 @@ namespace Funk
 
         public static bool operator !=(Record<T1, T2, T3, T4> record, Record<T1, T2, T3, T4> other) => !(record == other);
 
-        public bool Equals(Record<T1, T2, T3, T4> other) => Item1.SafeEquals(other.Item1) && Item2.SafeEquals(other.Item2) && Item3.SafeEquals(other.Item3) && Item4.SafeEquals(other.Item4);
+        public bool Equals(Record<T1, T2, T3, T4> other) => ValueTuple.Create(Item1, Item2, Item3, Item4).SafeEquals(ValueTuple.Create(other.Item1, other.Item2, other.Item3, other.Item4));
 
         public override string ToString() => ValueTuple.Create(Item1, Item2, Item3, Item4).ToString();
 
@@ -403,7 +403,7 @@ namespace Funk
 
         public static bool operator !=(Record<T1, T2, T3, T4, T5> record, Record<T1, T2, T3, T4, T5> other) => !(record == other);
 
-        public bool Equals(Record<T1, T2, T3, T4, T5> other) => Item1.SafeEquals(other.Item1) && Item2.SafeEquals(other.Item2) && Item3.SafeEquals(other.Item3) && Item4.SafeEquals(other.Item4) && Item5.SafeEquals(other.Item5);
+        public bool Equals(Record<T1, T2, T3, T4, T5> other) => ValueTuple.Create(Item1, Item2, Item3, Item4, Item5).SafeEquals(ValueTuple.Create(other.Item1, other.Item2, other.Item3, other.Item4, other.Item5));
 
         public override string ToString() => ValueTuple.Create(Item1, Item2, Item3, Item4, Item5).ToString();
 
