@@ -33,12 +33,4 @@ namespace Funk.Demo
         {
         }
     }
-
-    public class JsonError : Error
-    {
-        public JsonError(string message)
-            : base(message)
-        {
-        }
-    }
 }

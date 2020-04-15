@@ -15,6 +15,26 @@ namespace Funk
         public static Maybe<T> AsSuccess<T, E>(this Exc<T, E> exceptional) where E : Exception => exceptional.Match(_ => Maybe.Empty<T>(), Maybe.Create, e => Maybe.Empty<T>());
 
         /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static Exc<T, E2> MapFailure<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, E2> selector) where E1 : Exception where E2 : Exception => exceptional.Match(_ => Exc.Empty<T, E2>(), success<T, E2>, f => failure<T, E2>(selector(f)));
+
+        /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await exceptional.Match(_ => result(Exc.Empty<T, E2>()), s => result(success<T, E2>(s)), async f => failure<T, E2>(await selector(f))).ConfigureAwait(false);
+
+        /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static async Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Task<Exc<T, E1>> exceptional, Func<EnumerableException<E1>, Task<E2>> selector) where E1 : Exception where E2 : Exception => await (await exceptional).MapFailureAsync(selector).ConfigureAwait(false);
+
+        /// <summary>
+        /// Maps Exc Error type to the new type specified by the selector.
+        /// </summary>
+        public static Task<Exc<T, E2>> MapFailureAsync<T, E1, E2>(this Task<Exc<T, E1>> exceptional, Func<EnumerableException<E1>, E2> selector) where E1 : Exception where E2 : Exception => exceptional.MapFailureAsync(e => result(selector(e)));
+
+        /// <summary>
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
@@ -121,18 +141,20 @@ namespace Funk
         /// </summary>
         public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
-            var list = item.ToImmutableList().SafeConcat(items);
-            var split1 = list.ConditionalSplit(e => e.IsSuccess);
-            if (split1.Item2.IsEmpty())
-            {
-                return Exc.Success<IImmutableList<T>, E>(split1.Item1.Map(i => i.Success.UnsafeGet()));
-            }
-            var split2 = split1.Item2.ConditionalSplit(i => i.IsFailure);
-            if (split2.Item1.NotEmpty())
-            {
-                return Exc.Failure<IImmutableList<T>, E>(split2.Item1.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage));
-            }
-            return Exc.Empty<IImmutableList<T>, E>();
+            return item.ToImmutableList().SafeConcat(items).ConditionalSplit(e => e.IsSuccess).Match(
+                (success, other) =>
+                {
+                    return other.AsNotEmptyList().Match(
+                        _ => Exc.Success<IImmutableList<T>, E>(success.Map(i => i.Success).Flatten()),
+                        o => o.ConditionalSplit(i => i.IsFailure).Match(
+                            (failure, _) => failure.AsNotEmptyList().Match(
+                                __ => empty,
+                                f => Exc.Failure<IImmutableList<T>, E>(f.FlatMap(i => i.NestedFailures.GetOrEmpty()).ToEnumerableException(errorMessage))
+                            )
+                        )
+                    );
+                }
+            );
         }
     }
 }

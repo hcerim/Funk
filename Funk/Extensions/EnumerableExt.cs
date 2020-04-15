@@ -22,12 +22,12 @@ namespace Funk
         /// <summary>
         /// Creates an immutable sequence out of Maybe value if not empty. Otherwise, it returns empty immutable sequence.
         /// </summary>
-        public static IImmutableList<T> AsImmutableList<T>(this Maybe<T> maybe) => maybe.Match(_ => ImmutableList<T>.Empty, ImmutableList.Create);
+        public static IImmutableList<T> AsImmutableList<T>(this Maybe<T> maybe) => maybe.Match(_ => list<T>(), ImmutableList.Create);
 
         /// <summary>
         /// Creates an immutable sequence from sequence. Handles null sequence.
         /// </summary>
-        public static IImmutableList<T> Map<T>(this IEnumerable<T> enumerable) => ImmutableList.CreateRange(enumerable ?? ImmutableList<T>.Empty);
+        public static IImmutableList<T> Map<T>(this IEnumerable<T> enumerable) => ImmutableList.CreateRange(enumerable ?? list<T>());
 
         /// <summary>
         /// Returns an immutable sequence of not null values. Handles null sequence.

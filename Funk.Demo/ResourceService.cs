@@ -24,7 +24,7 @@ namespace Funk.Demo
                     i => success<Resource, Error>(new Resource(i)).ToTask(),
                     e => failure<Resource, Error>(e).ToTask()
                 ),
-                ResourceType.Publications, async _ => await info.Match(
+                ResourceType.Publications, _ => info.Match(
                     __ => Exc.Empty<Resource, Error>().ToTask(),
                     async i =>
                     {
@@ -37,11 +37,11 @@ namespace Funk.Demo
                     },
                     e => result(failure<Resource, Error>(e))
                 ),
-                ResourceType.Contributors, async _ => await info.Match(
+                ResourceType.Contributors, _ => info.Match(
                     __ => Exc.Empty<Resource, Error>().ToTask(),
-                    async i =>
+                    i =>
                     {
-                        return await publicationId.AsNotEmptyString().Match(
+                        return publicationId.AsNotEmptyString().Match(
                             __ => failure<Resource, Error>(new InvalidRequestError("Publication id cannot be empty.")).ToTask(),
                             async id =>
                             {
@@ -60,16 +60,12 @@ namespace Funk.Demo
             );
         }
 
-        private async Task<Exc<T, Error>> Get<T>(Uri uri)
+        private Task<Exc<T, Error>> Get<T>(Uri uri)
         {
-            return await _auth.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).Match(
-                token => Http.SendAsync(CreateGetRequest(uri, token)).GetContent().FlatMapAsync(r => 
-                    result(r.SafeDeserialize<T>().AsSuccess().Match(
-                        _ => failure<T, Error>(new JsonError("Response could not be deserialized correctly.")),
-                        success<T, Error>
-                    ))
-                ),
-                e => result(failure<T, Error>(e))
+            return _auth.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).FlatMapAsync(token =>
+                Http.SendAsync(CreateGetRequest(uri, token)).GetContent().FlatMapAsync(r => result(r.SafeDeserialize<T>().MapFailure(e =>
+                    new Error(e.Root.Map(ex => ex.Message).GetOr(_ => "Unable to properly deserialize response returned by the server.")))
+                ))
             );
         }
 
@@ -88,8 +84,6 @@ namespace Funk.Demo
         Undefined,
         Info,
         Publications,
-        Contributors,
-        Posts,
-        Images
+        Contributors
     }
 }

@@ -1,5 +1,5 @@
 
-<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/funk.png" width="150"/> <img src="Files/vinyl.png" width="60"/></h1>
+<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/funk-logo.png" width="306"/></h1>
 
 [![Version](https://img.shields.io/nuget/vpre/Funk.svg)](https://www.nuget.org/packages/Funk)
 ![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
