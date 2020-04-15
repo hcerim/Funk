@@ -16,3 +16,6 @@ To help developers address these bugs and to make them trust their codebase with
 The following specific tasks should also be performed within the scope of this thesis project:
 - analyze and compare this library with existing functional libraries such as language-ext and FuncSharp.
 - analyze new features of the C# 8.0 language that include nullable reference types and pattern matching.
+
+## FP Concepts
+
