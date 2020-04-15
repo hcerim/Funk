@@ -42,7 +42,7 @@ namespace Funk
     /// <summary>
     /// Type that represents one of the 3 possible values (T1, T2 or Empty).
     /// </summary>
-    public class OneOf<T1, T2> : OneOf
+    public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     {
         public OneOf(T1 first)
             : base(first, 1)
@@ -141,13 +141,30 @@ namespace Funk
 
         public static implicit operator OneOf<T1, T2>(T2 t2) => new OneOf<T1, T2>(t2);
 
+        public static bool operator ==(OneOf<T1, T2> oneOf, OneOf<T1, T2> other) => oneOf.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
+
+        public static bool operator !=(OneOf<T1, T2> oneOf, OneOf<T1, T2> other) => !(oneOf == other);
+
+        public bool Equals(OneOf<T1, T2> other)
+        {
+            return other.AsMaybe().Map(o => Match(
+                _ => o.IsEmpty,
+                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault()
+            )).GetOrDefault();
+        }
+
+        public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2>>().Map(Equals).GetOrDefault();
+
+        public override int GetHashCode() => Match(_ => _.GetHashCode(), f => f.GetHashCode(), s => s.GetHashCode());
+
         public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString());
     }
 
     /// <summary>
     /// Type that represents one of the 4 possible values (T1, T2, T3 or Empty).
     /// </summary>
-    public class OneOf<T1, T2, T3> : OneOf
+    public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     {
         public OneOf(T1 first)
             : base(first, 1)
@@ -279,13 +296,31 @@ namespace Funk
 
         public static implicit operator OneOf<T1, T2, T3>(T3 t3) => new OneOf<T1, T2, T3>(t3);
 
+        public static bool operator ==(OneOf<T1, T2, T3> oneOf, OneOf<T1, T2, T3> other) => oneOf.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
+
+        public static bool operator !=(OneOf<T1, T2, T3> oneOf, OneOf<T1, T2, T3> other) => !(oneOf == other);
+
+        public bool Equals(OneOf<T1, T2, T3> other)
+        {
+            return other.AsMaybe().Map(o => Match(
+                _ => o.IsEmpty,
+                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault(),
+                t => o.Third.Map(t3 => t.SafeEquals(t3)).GetOrDefault()
+            )).GetOrDefault();
+        }
+
+        public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2, T3>>().Map(Equals).GetOrDefault();
+
+        public override int GetHashCode() => Match(_ => _.GetHashCode(), f => f.GetHashCode(), s => s.GetHashCode(), t => t.GetHashCode());
+
         public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString(), t => t.ToString());
     }
 
     /// <summary>
     /// Type that represents one of the 5 possible values (T1, T2, T3, T4 or Empty).
     /// </summary>
-    public class OneOf<T1, T2, T3, T4> : OneOf
+    public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     {
         public OneOf(T1 first)
             : base(first, 1)
@@ -450,13 +485,32 @@ namespace Funk
 
         public static implicit operator OneOf<T1, T2, T3, T4>(T4 t4) => new OneOf<T1, T2, T3, T4>(t4);
 
+        public static bool operator ==(OneOf<T1, T2, T3, T4> oneOf, OneOf<T1, T2, T3, T4> other) => oneOf.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
+
+        public static bool operator !=(OneOf<T1, T2, T3, T4> oneOf, OneOf<T1, T2, T3, T4> other) => !(oneOf == other);
+
+        public bool Equals(OneOf<T1, T2, T3, T4> other)
+        {
+            return other.AsMaybe().Map(o => Match(
+                _ => o.IsEmpty,
+                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault(),
+                t => o.Third.Map(t3 => t.SafeEquals(t3)).GetOrDefault(),
+                f => o.Fourth.Map(t4 => f.SafeEquals(t4)).GetOrDefault()
+            )).GetOrDefault();
+        }
+
+        public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2, T3, T4>>().Map(Equals).GetOrDefault();
+
+        public override int GetHashCode() => Match(_ => _.GetHashCode(), f => f.GetHashCode(), s => s.GetHashCode(), t => t.GetHashCode(), f => f.GetHashCode());
+
         public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString(), t => t.ToString(), f => f.ToString());
     }
 
     /// <summary>
     /// Type that represents one of the 6 possible values (T1, T2, T3, T4, T5 or Empty).
     /// </summary>
-    public class OneOf<T1, T2, T3, T4, T5> : OneOf
+    public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4, T5>>
     {
         public OneOf(T1 first)
             : base(first, 1)
@@ -653,6 +707,26 @@ namespace Funk
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T4 t4) => new OneOf<T1, T2, T3, T4, T5>(t4);
 
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T5 t5) => new OneOf<T1, T2, T3, T4, T5>(t5);
+
+        public static bool operator ==(OneOf<T1, T2, T3, T4, T5> oneOf, OneOf<T1, T2, T3, T4, T5> other) => oneOf.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
+
+        public static bool operator !=(OneOf<T1, T2, T3, T4, T5> oneOf, OneOf<T1, T2, T3, T4, T5> other) => !(oneOf == other);
+
+        public bool Equals(OneOf<T1, T2, T3, T4, T5> other)
+        {
+            return other.AsMaybe().Map(o => Match(
+                _ => o.IsEmpty,
+                f => o.First.Map(t1 => f.SafeEquals(t1)).GetOrDefault(),
+                s => o.Second.Map(t2 => s.SafeEquals(t2)).GetOrDefault(),
+                t => o.Third.Map(t3 => t.SafeEquals(t3)).GetOrDefault(),
+                f => o.Fourth.Map(t4 => f.SafeEquals(t4)).GetOrDefault(),
+                f => o.Fifth.Map(t4 => f.SafeEquals(t4)).GetOrDefault()
+            )).GetOrDefault();
+        }
+
+        public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2, T3, T4, T5>>().Map(Equals).GetOrDefault();
+
+        public override int GetHashCode() => Match(_ => _.GetHashCode(), f => f.GetHashCode(), s => s.GetHashCode(), t => t.GetHashCode(), f => f.GetHashCode(), f => f.GetHashCode());
 
         public override string ToString() => Match(_ => _.ToString(), f => f.ToString(), s => s.ToString(), t => t.ToString(), f => f.ToString(), f => f.ToString());
     }
