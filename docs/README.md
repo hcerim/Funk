@@ -21,7 +21,7 @@ The following specific tasks should also be performed within the scope of this t
 
 Functional programming (**FP**) gives you:
 
-- **Power** - Get more done with less code. Every line is a liability and asset. By reducing code size you are having less liability by keeping the assets.
+- **Power** - Get more done with less code. Every line is a liability and an asset. By reducing code size you are having less liability by keeping the assets.
 - **Safety** - Stronger typing and declarative style of writing code. This is especially beneficial when dealing with concurrency due to function purity and state immutability.
 - **Clarity** - Code is more readable and understandable. This is especially important during consumption and the maintenance of the existing code.
 
@@ -58,7 +58,7 @@ original.Sort();
 
 Pure FP languages don't allow in-place updates.
 
-Following this principle, sorting or filtering should never update existing list but create a new one without affecting the old one, e.g.
+Following this principle, sorting or filtering should never update the existing list but create a new one without affecting the old one, e.g.
 
 ```c#
 Func<int, bool> isOdd = x => x % 2 == 1;
@@ -89,7 +89,7 @@ However, by default everything in C# is mutable and the only way to disable muta
 
 Usually, C# developers work with sequences (`IEnumerable`) in a right (functional) way and with everything else in an imperative way. This is due to the lack of understanding of the design principles behind `LINQ`.
 
-C# has get-only auto-properties -> complier implicitly declares readonly backing field.
+C# has get-only auto-properties -> complier implicitly declares `readonly` backing field.
 
 ```c#
 public string Name { get; } // value can only be assigned in constructor.
@@ -128,7 +128,7 @@ Comparison<int> alphabetically = (l, r) => l.ToString().CompareTo(r.ToString();
 list.Sort(alphabetically);
 ```
 
-We can see that it is similar to an interface-class relationship. The interface defines the contract and the class' responsibility is how to implement it. So we have a delegate that represents an interface (but it is an object) for the function object that implements it. Thanks to delegates, C# has functions as first-class values.
+We can see that it is similar to an interface-class relationship. The interface defines the contract and the class's responsibility is how to implement it. So we have a delegate that represents an interface (but it is an object) for the function object that implements it. Thanks to delegates, C# has functions as first-class values.
 
 In newer versions of the language, `Func` and `Action` types with various `arities` (number of arguments that a function accepts) are used instead of a raw delegate as it is more straight-forward and produces less code. 
 
@@ -136,7 +136,7 @@ In newer versions of the language, `Func` and `Action` types with various `ariti
 Func<int, bool> greaterThanZero = x => x > 0; // e.g. predicate
 ```
 
-`=>` represents a lambda expression or just `lamba` used to declare a function inline.
+`=>` represents a lambda expression or just `lambda` used to declare a function inline.
 
 A `closure` is the combination of the lambda expression itself along with the context in which that lambda is declared.
 
