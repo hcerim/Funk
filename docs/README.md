@@ -1,4 +1,4 @@
-# Funk
+# Introduction
 
 ## Diploma Thesis Topic
 
@@ -251,7 +251,6 @@ Drawbacks of HOFs are increased stack use (callbacks, repackaged callbacks, etc.
 | --------------------------------------------------------- | ------------------------------------------------------------- |
 | **The output depends entirely on the input arguments.**   | **Factors other than input arguments may affect the output.** |
 | **Cause no side effects.**                                | **May cause side effects.**                                   |
-|                                                           |                                                               |
 
 Functions that do one of the following are not pure functions:
 
@@ -271,3 +270,22 @@ What you can do is:
  - Handle errors functionally (Try, Either, etc.)
  - Make a non-local state immutable.
 
+# Installation
+
+Funk is available as a **NuGet** package.
+
+You can install it through Package Manager:
+
+`Install-Package Funk`
+
+Or through .NET CLI:
+
+`dotnet add package Funk`
+
+Or add it directly in package references:
+
+`<PackageReference Include="Funk"/>`
+
+*Optionally, you can specify a version as well.*
+
+# Guide
