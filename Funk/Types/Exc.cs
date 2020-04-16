@@ -17,71 +17,47 @@ namespace Funk
         /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// It will fail on unhandled exceptions.
         /// </summary>
-        public static Exc<T, E> Create<T, E>(Func<Unit, T> operation) where E : Exception
-        {
-            return operation.TryCatch<T, E>();
-        }
+        public static Exc<T, E> Create<T, E>(Func<Unit, T> operation) where E : Exception => operation.TryCatch<T, E>();
 
         /// <summary>
         /// Preferably use Create with an explicit exception handling.
         /// Using this method you are handling all exceptions which you should not do.
         /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
-        public static Exc<T, Exception> Create<T>(Func<Unit, T> operation)
-        {
-            return operation.TryCatch<T, Exception>();
-        }
+        public static Exc<T, Exception> Create<T>(Func<Unit, T> operation) => operation.TryCatch<T, Exception>();
 
         /// <summary>
         /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// It will fail on unhandled exceptions.
         /// </summary>
-        public static Task<Exc<T, E>> CreateAsync<T, E>(Func<Unit, Task<T>> operation) where E : Exception
-        {
-            return operation.TryCatchAsync<T, E>();
-        }
+        public static Task<Exc<T, E>> CreateAsync<T, E>(Func<Unit, Task<T>> operation) where E : Exception => operation.TryCatchAsync<T, E>();
 
         /// <summary>
         /// Preferably use Create with an explicit exception handling.
         /// Using this method you are handling all exceptions which you should not do.
         /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
-        public static Task<Exc<T, Exception>> CreateAsync<T>(Func<Unit, Task<T>> operation)
-        {
-            return operation.TryCatchAsync<T, Exception>();
-        }
+        public static Task<Exc<T, Exception>> CreateAsync<T>(Func<Unit, Task<T>> operation) => operation.TryCatchAsync<T, Exception>();
 
         /// <summary>
         /// Creates failed Exc.
         /// </summary>
-        public static Exc<T, E> Failure<T, E>(EnumerableException<E> exception) where E : Exception
-        {
-            return new Exc<T, E>(exception);
-        }
+        public static Exc<T, E> Failure<T, E>(EnumerableException<E> exception) where E : Exception => new Exc<T, E>(exception);
 
         /// <summary>
         /// Creates failed Exc.
         /// </summary>
-        public static Exc<T, E> Failure<T, E>(E exception) where E : Exception
-        {
-            return new Exc<T, E>(exception);
-        }
+        public static Exc<T, E> Failure<T, E>(E exception) where E : Exception => new Exc<T, E>(exception);
 
         /// <summary>
         /// Creates successful Exc.
         /// </summary>
-        public static Exc<T, E> Success<T, E>(T result) where E : Exception
-        {
-            return new Exc<T, E>(result);
-        }
+        public static Exc<T, E> Success<T, E>(T result) where E : Exception => new Exc<T, E>(result);
 
         /// <summary>
         /// Creates empty Exc.
         /// </summary>
-        public static Exc<T, E> Empty<T, E>() where E : Exception
-        {
-            return new Exc<T, E>();
-        }
+        public static Exc<T, E> Empty<T, E>() where E : Exception => new Exc<T, E>();
     }
 
     /// <summary>
