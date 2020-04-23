@@ -64,7 +64,7 @@ namespace Funk
     /// <summary>
     /// Record with arity of 1.
     /// </summary>
-    public struct Record<T1> : IEquatable<Record<T1>>
+    public readonly struct Record<T1> : IEquatable<Record<T1>>
     {
         internal Record(T1 t1)
         {
@@ -125,7 +125,7 @@ namespace Funk
     /// <summary>
     /// Record with arity of 2.
     /// </summary>
-    public struct Record<T1, T2> : IEquatable<Record<T1, T2>>
+    public readonly struct Record<T1, T2> : IEquatable<Record<T1, T2>>
     {
         internal Record(T1 t1, T2 t2)
         {
@@ -194,7 +194,7 @@ namespace Funk
     /// <summary>
     /// Record with arity of 3.
     /// </summary>
-    public struct Record<T1, T2, T3> : IEquatable<Record<T1, T2, T3>>
+    public readonly struct Record<T1, T2, T3> : IEquatable<Record<T1, T2, T3>>
     {
         internal Record(T1 t1, T2 t2, T3 t3)
         {
@@ -266,7 +266,7 @@ namespace Funk
     /// <summary>
     /// Record with arity of 4.
     /// </summary>
-    public struct Record<T1, T2, T3, T4> : IEquatable<Record<T1, T2, T3, T4>>
+    public readonly struct Record<T1, T2, T3, T4> : IEquatable<Record<T1, T2, T3, T4>>
     {
         internal Record(T1 t1, T2 t2, T3 t3, T4 t4)
         {
@@ -341,7 +341,7 @@ namespace Funk
     /// <summary>
     /// Record with arity of 5.
     /// </summary>
-    public struct Record<T1, T2, T3, T4, T5> : IEquatable<Record<T1, T2, T3, T4, T5>>
+    public readonly struct Record<T1, T2, T3, T4, T5> : IEquatable<Record<T1, T2, T3, T4, T5>>
     {
         internal Record(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
         {

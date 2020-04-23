@@ -7,7 +7,7 @@ namespace Funk
     /// Replacement for empty tuple.
     /// Represents a type that contains no information (empty value).
     /// </summary>
-    public struct Unit : IEquatable<Unit>
+    public readonly struct Unit : IEquatable<Unit>
     {
         public static readonly Unit Value = new Unit();
 
