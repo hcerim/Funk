@@ -34,7 +34,7 @@ namespace Funk
     /// Maybe monad.
     /// Type that represents the possible absence of data with appropriate handling.
     /// </summary>
-    public struct Maybe<T> : IEquatable<Maybe<T>>
+    public readonly struct Maybe<T> : IEquatable<Maybe<T>>
     {
         internal Maybe(T item)
         {

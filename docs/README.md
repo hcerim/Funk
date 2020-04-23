@@ -289,3 +289,98 @@ Or add it directly in package references:
 *Optionally, you can specify a version as well.*
 
 # Guide
+
+## Types
+
+There are 5 types in Funk that provide helpful structures for correctly representing your programs and data. Everything else is built around them. All types implement `IEquatable<T>` interface providing structural equality capabilities. `==` and `!=` operators are available on all types as well with overridden `ToString`, `GetHashCode` and `Equals` methods.
+
+### Unit
+
+In C# representing the absence of data is always a tedious and unsafe work. There are reference types that can be null and value types that can also be null when wrapped in a Nullable struct and now in the latest version nullable reference types as well.
+
+`Unit` is a structure or a term used in functional programming languages that denotes that absence.
+
+In Funk, `Unit` is a struct that contains no information and has only one possible value, itself. It is used throughout the whole library in case of an empty/null value.
+
+`Unit` can be created with its constructor:
+
+```c#
+var unit = new Unit();
+```
+
+Or by its static field:
+
+```c#
+var unit = Unit.Value;
+```
+
+Or by a `Prelude` (a functional standard module):
+
+```c#
+using static Funk.Prelude;
+
+var unit = empty;
+```
+
+In most cases, `Unit` doesn't need to be created as other types provide handling for the possible absence of data that will be described in the following sections.
+
+`Unit` provides 2 `Match` functions. One returns result specified by the `selector function` and other is `void`.
+
+```c#
+var john = unit.Match(_ => "John Doe");
+unit.Match(_ => Console.WriteLine(_.ToString())); // prints "empty"
+```
+
+`_` represents `Unit` as the `Unit` cannot offer anything else but itself as it contains no value inside. It is a convention to represent `empty` as `_` and will be used like that throughout this guide.
+
+`Unit` is a perfect replacement as a return type for void methods. `Prelude` offers many conversions from `Action` to `Func`, from `Task` to `Task<T>`, etc.
+
+### Record
+
+Record is an immutable `ValueTuple` with up to arity of 5 and in terms of functional programming and Category theory, it represents a [cartesian product](https://ncatlab.org/nlab/show/cartesian+product). Converting `ValueTuple` to `Record` is a straightforward way and since `Record` exposes inner values with the same naming, conversion can be done with minimal refactoring.
+
+`Record` can be created in multiple ways.
+
+Factory way:
+
+```c#
+var record = Record.Create("John", "Doe"); // Record<string, string>
+
+var existingTuple = ("John", "Doe");
+var rec = Record.Create(existingTuple); // Record<string, string>
+```
+
+With `Prelude`:
+
+```c#
+using static Funk.Prelude;
+
+var record = rec("John", "Doe"); // Record<string, string>
+
+var existingTuple = ("John", "Doe");
+var rec = rec(existingTuple); // Record<string, string>
+```
+
+Using extensions:
+
+```c#
+var record = "John Doe".ToRecord(); // Record<string>
+
+var existingTuple = ("John", "Doe");
+var rec = existingTuple.ToRecord(); // Record<string, string>
+```
+
+`Record` is an **amplifier** for a `ValueTuple` and in functional terms is referred to as a `monad`.
+
+It provides `Match` and `Map` operations that represent mapping functions. `Match` is simply an executor that invokes either a `Func` or `Action` provided as an argument. The `Map` is in terms of functional programming a **bind** operation with 2 versions (`Map` and `FlatMap`). They can be also executed asynchronously.
+
+
+
+There is also an implicit conversion between `ValueTuple` and `Record` and in some cases where the intention can be inferred, returning `ValueTuple` instead of `Record` is perfectly legal.
+
+```c#
+public Record<string, int> GetInfo()
+{
+    return ("John Doe", 30);
+}
+```
