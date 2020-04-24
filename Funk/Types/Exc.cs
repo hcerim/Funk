@@ -24,7 +24,6 @@ namespace Funk
         /// Using this method you are handling all exceptions which you should not do.
         /// Returns Exc of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
-        [Pure]
         public static Exc<T, Exception> Create<T>(Func<Unit, T> operation) => operation.TryCatch<T, Exception>();
 
         /// <summary>
@@ -38,7 +37,6 @@ namespace Funk
         /// Using this method you are handling all exceptions which you should not do.
         /// Returns Exc of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
-        [Pure]
         public static Task<Exc<T, Exception>> CreateAsync<T>(Func<Unit, Task<T>> operation) => operation.TryCatchAsync<T, Exception>();
 
         /// <summary>
