@@ -8,13 +8,13 @@ using static Funk.Prelude;
 namespace Funk
 {
     /// <summary>
-    /// Exceptional monad.
+    /// Type that represents a possible failure.
     /// Can represent successful result, error (in a form of EnumerableException of a specified exception type) or empty value.
     /// </summary>
     public static class Exc
     {
         /// <summary>
-        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
+        /// Returns Exc of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// It will fail on unhandled exceptions.
         /// </summary>
         public static Exc<T, E> Create<T, E>(Func<Unit, T> operation) where E : Exception => operation.TryCatch<T, E>();
@@ -22,12 +22,12 @@ namespace Funk
         /// <summary>
         /// Preferably use Create with an explicit exception handling.
         /// Using this method you are handling all exceptions which you should not do.
-        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
+        /// Returns Exc of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
         public static Exc<T, Exception> Create<T>(Func<Unit, T> operation) => operation.TryCatch<T, Exception>();
 
         /// <summary>
-        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
+        /// Returns Exc of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// It will fail on unhandled exceptions.
         /// </summary>
         public static Task<Exc<T, E>> CreateAsync<T, E>(Func<Unit, Task<T>> operation) where E : Exception => operation.TryCatchAsync<T, E>();
@@ -35,33 +35,37 @@ namespace Funk
         /// <summary>
         /// Preferably use Create with an explicit exception handling.
         /// Using this method you are handling all exceptions which you should not do.
-        /// Returns Exceptional of result or error or can be empty. Indicates that the operation can throw specified exception.
+        /// Returns Exc of result or error or can be empty. Indicates that the operation can throw specified exception.
         /// </summary>
         public static Task<Exc<T, Exception>> CreateAsync<T>(Func<Unit, Task<T>> operation) => operation.TryCatchAsync<T, Exception>();
 
         /// <summary>
         /// Creates failed Exc.
         /// </summary>
+        [Pure]
         public static Exc<T, E> Failure<T, E>(EnumerableException<E> exception) where E : Exception => new Exc<T, E>(exception);
 
         /// <summary>
         /// Creates failed Exc.
         /// </summary>
+        [Pure]
         public static Exc<T, E> Failure<T, E>(E exception) where E : Exception => new Exc<T, E>(exception);
 
         /// <summary>
         /// Creates successful Exc.
         /// </summary>
+        [Pure]
         public static Exc<T, E> Success<T, E>(T result) where E : Exception => new Exc<T, E>(result);
 
         /// <summary>
         /// Creates empty Exc.
         /// </summary>
+        [Pure]
         public static Exc<T, E> Empty<T, E>() where E : Exception => new Exc<T, E>();
     }
 
     /// <summary>
-    /// Exceptional monad.
+    /// Type that represents a possible failure.
     /// Can represent successful result, error (in a form of EnumerableException of a specified exception type) or empty value.
     /// </summary>
     public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>>, IEquatable<Exc<T, E>> where E : Exception
@@ -98,10 +102,20 @@ namespace Funk
         [Pure]
         public Maybe<EnumerableException<E>> Failure => Second;
 
+        /// <summary>
+        /// If Failure, Maybe contains the root exception inside EnumerableException if there is one. Otherwise, Maybe will be empty.
+        /// </summary>
         [Pure]
+        public Maybe<E> RootFailure => Failure.FlatMap(e => e.Root);
+
+        /// <summary>
+        /// If Failure, Maybe contains nested exceptions inside EnumerableException if there are any. Otherwise, Maybe will be empty.
+        /// </summary>
+        [Pure]
+        public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
+
         public bool IsSuccess => IsFirst;
 
-        [Pure]
         public bool IsFailure => IsSecond;
 
         /// <summary>
@@ -133,18 +147,6 @@ namespace Funk
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
         public Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector) => Match(_ => result(Exc.Empty<R, E>()), selector, e => result(Exc.Failure<R, E>(e)));
-
-        /// <summary>
-        /// If Failure, Maybe contains the root exception inside EnumerableException if there is one. Otherwise, Maybe will be empty.
-        /// </summary>
-        [Pure]
-        public Maybe<E> RootFailure => Failure.FlatMap(e => e.Root);
-
-        /// <summary>
-        /// If Failure, Maybe contains nested exceptions inside EnumerableException if there are any. Otherwise, Maybe will be empty.
-        /// </summary>
-        [Pure]
-        public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
         public static implicit operator Exc<T, E>(Unit unit) => Exc.Empty<T, E>();
 

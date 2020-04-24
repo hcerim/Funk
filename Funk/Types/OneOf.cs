@@ -23,7 +23,6 @@ namespace Funk
             Value = item;
         }
 
-        [Pure]
         protected static Exception GetException(string itemName, Func<Unit, Exception> otherwiseThrow = null)
         {
             return otherwiseThrow.AsMaybe().Match(
@@ -32,11 +31,11 @@ namespace Funk
             );
         }
 
-        [Pure]
-        public bool IsEmpty => !NotEmpty;
-        public bool NotEmpty { get; }
         protected int Discriminator { get; }
         protected object Value { get; }
+
+        public bool IsEmpty => !NotEmpty;
+        public bool NotEmpty { get; }
     }
 
     /// <summary>
@@ -66,10 +65,8 @@ namespace Funk
         [Pure]
         public Maybe<T2> Second => Discriminator.SafeEquals(2) ? Maybe.Create((T2)Value) : empty;
 
-        [Pure]
         public bool IsFirst => First.NotEmpty;
 
-        [Pure]
         public bool IsSecond => Second.NotEmpty;
 
         /// <summary>
@@ -199,13 +196,10 @@ namespace Funk
         [Pure]
         public Maybe<T3> Third => Discriminator.SafeEquals(3) ? Maybe.Create((T3)Value) : empty;
 
-        [Pure]
         public bool IsFirst => First.NotEmpty;
 
-        [Pure]
         public bool IsSecond => Second.NotEmpty;
 
-        [Pure]
         public bool IsThird => Third.NotEmpty;
 
         /// <summary>
@@ -366,16 +360,12 @@ namespace Funk
         [Pure]
         public Maybe<T4> Fourth => Discriminator.SafeEquals(4) ? Maybe.Create((T4)Value) : empty;
 
-        [Pure]
         public bool IsFirst => First.NotEmpty;
 
-        [Pure]
         public bool IsSecond => Second.NotEmpty;
 
-        [Pure]
         public bool IsThird => Third.NotEmpty;
 
-        [Pure]
         public bool IsFourth => Fourth.NotEmpty;
 
         /// <summary>
@@ -567,19 +557,14 @@ namespace Funk
         [Pure]
         public Maybe<T5> Fifth => Discriminator.SafeEquals(5) ? Maybe.Create((T5)Value) : empty;
 
-        [Pure]
         public bool IsFirst => First.NotEmpty;
 
-        [Pure]
         public bool IsSecond => Second.NotEmpty;
 
-        [Pure]
         public bool IsThird => Third.NotEmpty;
 
-        [Pure]
         public bool IsFourth => Fourth.NotEmpty;
 
-        [Pure]
         public bool IsFifth => Fifth.NotEmpty;
 
         /// <summary>

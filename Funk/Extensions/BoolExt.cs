@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using static Funk.Prelude;
 
 namespace Funk
@@ -12,11 +13,13 @@ namespace Funk
         /// <summary>
         /// If false, Maybe will be empty.
         /// </summary>
+        [Pure]
         public static Maybe<bool> AsTrue(this bool item) => item ? Maybe.Create(true) : empty;
 
         /// <summary>
         /// If false or null, Maybe will be empty.
         /// </summary>
+        [Pure]
         public static Maybe<bool> AsTrue(this bool? item) => item.IsNull() ? empty : AsTrue(item.Value);
     }
 }
