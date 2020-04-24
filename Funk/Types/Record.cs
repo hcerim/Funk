@@ -397,7 +397,7 @@ namespace Funk
         /// </summary>
         public void Match(Action<T1, T2, T3, T4, T5> operation) => operation(Item1, Item2, Item3, Item4, Item5);
 
-        public static implicit operator Record<T1, T2, T3, T4, T5>((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple) => new Record<T1,T2,T3,T4,T5>(tuple);
+        public static implicit operator Record<T1, T2, T3, T4, T5>((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple) => new Record<T1, T2, T3, T4, T5>(tuple);
 
         public static bool operator ==(Record<T1, T2, T3, T4, T5> record, Record<T1, T2, T3, T4, T5> other) => record.Equals(other);
 

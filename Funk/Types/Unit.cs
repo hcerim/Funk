@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Funk
 {
     /// <summary>
-    /// Type with only one value -> itself.
-    /// Replacement for empty tuple.
-    /// Represents a type that contains no information (empty value).
+    /// Type that represents an empty value.
+    /// Should be used to represent the absence of data.
+    /// It does not contain any information and has only one possible value, itself.
     /// </summary>
     public readonly struct Unit : IEquatable<Unit>
     {
-        public static readonly Unit Value = new Unit();
+        [Pure]
+        public static Unit Value => new Unit();
 
         /// <summary>
         /// Maps Unit to the result of the selector.

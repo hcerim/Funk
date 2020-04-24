@@ -1,11 +1,10 @@
-﻿namespace Funk
+﻿using System.Diagnostics.Contracts;
+
+namespace Funk
 {
     public static partial class Prelude
     {
-        /// <summary>
-        /// Represents empty value.
-        /// Can be used on OneOf and its corresponding implementations (including Exceptional monad) and Maybe monad.
-        /// </summary>
-        public static readonly Unit empty = Unit.Value;
+        [Pure]
+        public static Unit empty => Unit.Value;
     }
 }

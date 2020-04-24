@@ -6,7 +6,6 @@ using static Funk.Prelude;
 namespace Funk
 {
     /// <summary>
-    /// Maybe monad.
     /// Type that represents the possible absence of data with appropriate handling.
     /// </summary>
     public struct Maybe
@@ -31,7 +30,6 @@ namespace Funk
     }
 
     /// <summary>
-    /// Maybe monad.
     /// Type that represents the possible absence of data with appropriate handling.
     /// </summary>
     public readonly struct Maybe<T> : IEquatable<Maybe<T>>
@@ -53,9 +51,8 @@ namespace Funk
 
         private object Value { get; }
         private int Discriminator { get; }
-        public bool NotEmpty { get; }
 
-        [Pure]
+        public bool NotEmpty { get; }
         public bool IsEmpty => !NotEmpty;
 
         /// <summary>
@@ -143,7 +140,6 @@ namespace Funk
 
         public override int GetHashCode() => Match(_ => _.GetHashCode(), v => v.GetHashCode());
 
-        [Pure]
         private static Exception GetException(Func<Unit, Exception> otherwiseThrow = null)
         {
             return otherwiseThrow.AsMaybe().Match(
