@@ -345,6 +345,32 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Enumerable_MapFold()
+        {
+            UnitTest(
+                _ => new List<Maybe<string>> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.MapFold(
+                    s => new
+                    {
+                        Name = s,
+                        InitialLetter = Enumerable.FirstOrDefault(s)
+                    },
+                    (first, second) => new
+                    {
+                        second.Name,
+                        first.InitialLetter
+                    }
+                ),
+                o =>
+                {
+                    Assert.True(o.NotEmpty);
+                    Assert.Equal('F', o.UnsafeGet().InitialLetter);
+                    Assert.Equal("Bosnia", o.UnsafeGet().Name);
+                }
+            );
+        }
+
+        [Fact]
         public void Enumerable_FlatMapReduce()
         {
             UnitTest(
@@ -352,7 +378,28 @@ namespace Funk.Tests
                 l => l.FlatMapReduce(
                     s => new List<Record<string, char>>
                     {
-                        rec(s, Enumerable.FirstOrDefault(s))
+                        rec(s, s.FirstOrDefault())
+                    },
+                    (first, second) => rec(second.Item1, first.Item2)
+                ),
+                o =>
+                {
+                    Assert.True(o.NotEmpty);
+                    Assert.Equal('F', o.UnsafeGet().Item2);
+                    Assert.Equal("Bosnia", o.UnsafeGet().Item1);
+                }
+            );
+        }
+
+        [Fact]
+        public void Enumerable_FlatMapFold()
+        {
+            UnitTest(
+                _ => new List<Maybe<string>> { "Funk", "Funky", "Harun", "Bosnia" },
+                l => l.FlatMapFold(
+                    s => new List<Record<string, char>>
+                    {
+                        rec(s, s.FirstOrDefault())
                     },
                     (first, second) => rec(second.Item1, first.Item2)
                 ),
