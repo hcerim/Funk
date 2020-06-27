@@ -137,13 +137,13 @@ namespace Funk
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception and its nested ones.
         /// </summary>
-        public EnumerableException<E> Bind(EnumerableException<E> exception) => BindRange(exception.ToImmutableList());
+        public EnumerableException<E> Merge(EnumerableException<E> exception) => MergeRange(exception.ToImmutableList());
 
         /// <summary>
         /// Structure-preserving map.
         /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions and their nested ones.
         /// </summary>
-        public EnumerableException<E> BindRange(IEnumerable<EnumerableException<E>> exceptions) => EnumerableException.Create(list<E>().AddRange(nested).AddRange(exceptions.FlatMap(e => e.nested)), Message);
+        public EnumerableException<E> MergeRange(IEnumerable<EnumerableException<E>> exceptions) => EnumerableException.Create(list<E>().AddRange(nested).AddRange(exceptions.FlatMap(e => e.nested)), Message);
 
         /// <summary>
         /// Returns a Maybe of an immutable dictionary of key as a discriminator and collection of corresponding exceptions if there are any nested exception.
