@@ -1,10 +1,24 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace Funk
 {
     public static class MaybeExt
     {
+        /// <summary>
+        /// Structure-preserving map.
+        /// Maps not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
+        /// Use FlatMap if you have nested Maybes.
+        /// </summary>
+        public static async Task<Maybe<R>> MapAsync<T, R>(this Task<Maybe<T>> maybe, Func<T, Task<R>> selector) => await (await maybe).MapAsync(selector).ConfigureAwait(false);
+
+        /// <summary>
+        /// Structure-preserving map.
+        /// Binds not empty Maybe to the Task of new Maybe of the selector. Otherwise, returns Task of empty Maybe of the selector.
+        /// </summary>
+        public static async Task<Maybe<R>> FlatMapAsync<T, R>(this Task<Maybe<T>> maybe, Func<T, Task<Maybe<R>>> selector) => await (await maybe).FlatMapAsync(selector).ConfigureAwait(false);
+
         /// <summary>
         /// Creates Maybe from item.
         /// </summary>
