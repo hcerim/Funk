@@ -175,9 +175,19 @@ namespace Funk
         public static Maybe<R> MapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, R> mapper, Func<R, R, R> reducer) => enumerable.Map(mapper).Reduce(reducer);
 
         /// <summary>
+        /// Maps the specified sequence to an immutable sequence of not empty maybes and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
+        /// </summary>
+        public static Maybe<R> MapFold<T, R>(this IEnumerable<Maybe<T>> enumerable, Func<T, R> mapper, Func<R, R, R> reducer) => enumerable.Flatten().Map(mapper).Reduce(reducer);
+
+        /// <summary>
         /// Maps the specified sequence to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
         /// </summary>
         public static Maybe<R> FlatMapReduce<T, R>(this IEnumerable<T> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer) => enumerable.FlatMap(mapper).Reduce(reducer);
+
+        /// <summary>
+        /// Maps the specified sequence of not empty maybes to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
+        /// </summary>
+        public static Maybe<R> FlatMapFold<T, R>(this IEnumerable<Maybe<T>> enumerable, Func<T, IEnumerable<R>> mapper, Func<R, R, R> reducer) => enumerable.Flatten().FlatMap(mapper).Reduce(reducer);
 
         /// <summary>
         /// Executes specified operation on items from sequence and return successful Exc (represented by unit) if all operations are successful. Otherwise, return failure. Handles null enumerable
