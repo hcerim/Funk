@@ -327,7 +327,7 @@ namespace Funk.Tests
                     s => new
                     {
                         Name = s,
-                        InitialLetter = Enumerable.FirstOrDefault(s)
+                        InitialLetter = s.FirstOrDefault()
                     },
                     (first, second) => new
                     {
@@ -348,12 +348,12 @@ namespace Funk.Tests
         public void Enumerable_MapFold()
         {
             UnitTest(
-                _ => new List<Maybe<string>> { "Funk", "Funky", "Harun", "Bosnia" },
+                _ => new List<Maybe<string>> { "Funk", "Funky", "Harun", null },
                 l => l.MapFold(
                     s => new
                     {
                         Name = s,
-                        InitialLetter = Enumerable.FirstOrDefault(s)
+                        InitialLetter = s.FirstOrDefault()
                     },
                     (first, second) => new
                     {
@@ -365,7 +365,7 @@ namespace Funk.Tests
                 {
                     Assert.True(o.NotEmpty);
                     Assert.Equal('F', o.UnsafeGet().InitialLetter);
-                    Assert.Equal("Bosnia", o.UnsafeGet().Name);
+                    Assert.Equal("Harun", o.UnsafeGet().Name);
                 }
             );
         }
@@ -395,7 +395,7 @@ namespace Funk.Tests
         public void Enumerable_FlatMapFold()
         {
             UnitTest(
-                _ => new List<Maybe<string>> { "Funk", "Funky", "Harun", "Bosnia" },
+                _ => new List<Maybe<string>> { "Funk", "Funky", "Harun", null },
                 l => l.FlatMapFold(
                     s => new List<Record<string, char>>
                     {
@@ -407,7 +407,7 @@ namespace Funk.Tests
                 {
                     Assert.True(o.NotEmpty);
                     Assert.Equal('F', o.UnsafeGet().Item2);
-                    Assert.Equal("Bosnia", o.UnsafeGet().Item1);
+                    Assert.Equal("Harun", o.UnsafeGet().Item1);
                 }
             );
         }
@@ -435,7 +435,7 @@ namespace Funk.Tests
                     s => new
                     {
                         Name = s,
-                        InitialLetter = Enumerable.FirstOrDefault(s)
+                        InitialLetter = s.FirstOrDefault()
                     },
                     (first, second) => new
                     {
