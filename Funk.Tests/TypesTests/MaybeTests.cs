@@ -1,4 +1,5 @@
 ﻿using System;
+using FsCheck.Xunit;
 using Xunit;
 using static Funk.Prelude;
 
@@ -10,7 +11,7 @@ namespace Funk.Tests
         public void Create_Maybe_With_Value()
         {
             UnitTest(
-                _ => "Funk", 
+                _ => "Funk",
                 s =>
                 {
                     var maybe = s.AsMaybe().Map(ss => $"{s} is here");
@@ -64,7 +65,7 @@ namespace Funk.Tests
         public void Create_Maybe_With_Empty_Value()
         {
             UnitTest(
-                _ => (object) null,
+                _ => (object)null,
                 s =>
                 {
                     var maybe = s.AsMaybe().Map(ss => $"{s} is here");
@@ -122,6 +123,36 @@ namespace Funk.Tests
                     return act(() => maybe.UnsafeGet());
                 },
                 a => Assert.Throws<EmptyValueException>(a)
+            );
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        public void RightIdentity(Maybe<object> maybe)
+        {
+            UnitTest(
+                _ => maybe,
+                m => m.SafeEquals(m.FlatMap(v => v.AsMaybe())),
+                Assert.True
+            );
+        }
+
+        [Property]
+        public void LeftIdentity(object obj)
+        {
+            UnitTest(
+                _ => func((object o) => o.AsMaybe()),
+                f => obj.AsMaybe().FlatMap(f).SafeEquals(f(obj)),
+                Assert.True
+            );
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        public void Associativity(Maybe<int> maybe)
+        {
+            UnitTest(
+                _ => rec(func((int o) => may(o * 3)), func((int o) => may(o * 4))),
+                r => maybe.FlatMap(r.Item1).FlatMap(r.Item2).SafeEquals(maybe.FlatMap(v => r.Item1(v).FlatMap(r.Item2))),
+                Assert.True
             );
         }
     }
