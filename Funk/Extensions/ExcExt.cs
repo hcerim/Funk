@@ -15,6 +15,11 @@ namespace Funk
         public static Maybe<T> AsSuccess<T, E>(this Exc<T, E> exceptional) where E : Exception => exceptional.Match(_ => Maybe.Empty<T>(), Maybe.Create, e => Maybe.Empty<T>());
 
         /// <summary>
+        /// Flattens the nested exceptional into a single exceptional.
+        /// </summary>
+        public static Exc<T, E> Flatten<T, E>(this Exc<Exc<T, E>, E> exceptional) where E : Exception => exceptional.FlatMap(v => v);
+
+        /// <summary>
         /// Maps Exc Error type to the new type specified by the selector.
         /// </summary>
         public static Exc<T, E2> MapFailure<T, E1, E2>(this Exc<T, E1> exceptional, Func<EnumerableException<E1>, E2> selector) where E1 : Exception where E2 : Exception
