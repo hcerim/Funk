@@ -44,12 +44,13 @@ namespace Funk.Tests
                     return
                         from s in m
                         from i in s.AsLastOrDefault(i => true)
-                        select i.AsMaybe();
+                        let may = s.AsFirstOrDefault()
+                        select may;
                 },
                 r =>
                 {
                     Assert.True(r.NotEmpty);
-                    Assert.Equal("Funk", r.UnsafeGet());
+                    Assert.Equal("Harun", r.UnsafeGet());
                 }
             );
         }
@@ -85,7 +86,8 @@ namespace Funk.Tests
                     return
                         from s in e
                         from f in Exc.Failure<string, Exception>(new Exception().ToEnumerableException(s))
-                        select Exc.Success<string, Exception>(f);
+                        let ex = s.Split("a").First()
+                        select Exc.Success<string, Exception>(ex);
                 },
                 r =>
                 {
