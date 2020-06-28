@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using FsCheck.Xunit;
 using Xunit;
 using static Funk.Prelude;
 
@@ -345,6 +346,36 @@ namespace Funk.Tests
                 {
                     Assert.Equal(new List<string> { "1", "2", "3" }.Map(), s.UnsafeGetFirst());
                 }
+            );
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        public void RightIdentity(Exc<object, Exception> maybe)
+        {
+            UnitTest(
+                _ => maybe,
+                e => e.SafeEquals(e.FlatMap(success<object, Exception>)),
+                Assert.True
+            );
+        }
+
+        [Property]
+        public void LeftIdentity(object obj)
+        {
+            UnitTest(
+                _ => func((object o) => o.AsMaybe().ToExc(__ => new Exception())),
+                f => obj.AsMaybe().ToExc(_ => new Exception()).FlatMap(f).Success.SafeEquals(f(obj).Success),
+                Assert.True
+            );
+        }
+
+        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        public void Associativity(Exc<int, Exception> maybe)
+        {
+            UnitTest(
+                _ => rec(func((int o) => Exc.Create<int, Exception>(__ => o / 3)), func((int o) => success<int, Exception>(o * 4))),
+                r => maybe.FlatMap(r.Item1).FlatMap(r.Item2).SafeEquals(maybe.FlatMap(v => r.Item1(v).FlatMap(r.Item2))),
+                Assert.True
             );
         }
 
