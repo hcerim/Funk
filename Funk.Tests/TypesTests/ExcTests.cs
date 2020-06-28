@@ -350,10 +350,10 @@ namespace Funk.Tests
         }
 
         [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
-        public void RightIdentity(Exc<object, Exception> maybe)
+        public void RightIdentity(Exc<object, Exception> exc)
         {
             UnitTest(
-                _ => maybe,
+                _ => exc,
                 e => e.SafeEquals(e.FlatMap(success<object, Exception>)),
                 Assert.True
             );
@@ -370,11 +370,11 @@ namespace Funk.Tests
         }
 
         [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
-        public void Associativity(Exc<int, Exception> maybe)
+        public void Associativity(Exc<int, Exception> exc)
         {
             UnitTest(
                 _ => rec(func((int o) => Exc.Create<int, Exception>(__ => o / 3)), func((int o) => success<int, Exception>(o * 4))),
-                r => maybe.FlatMap(r.Item1).FlatMap(r.Item2).SafeEquals(maybe.FlatMap(v => r.Item1(v).FlatMap(r.Item2))),
+                r => exc.FlatMap(r.Item1).FlatMap(r.Item2).SafeEquals(exc.FlatMap(v => r.Item1(v).FlatMap(r.Item2))),
                 Assert.True
             );
         }
