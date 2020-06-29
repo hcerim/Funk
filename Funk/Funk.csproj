@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Harun Ćerim</Authors>
     <Company />
     <Description>Minimalistic Functional Library for C#.</Description>
@@ -13,11 +13,11 @@
     <PackageIcon>vinyl.png</PackageIcon>
     <RepositoryUrl>https://github.com/hcerim/Funk</RepositoryUrl>
     <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Programming, Asynchronous-Programming, Extensions</PackageTags>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
     <Copyright>Copyright © 2020 Harun Ćerim</Copyright>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>More extensions for Maybe and Exc with applicatives.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added flattening extensions (in case of empty or failure) for Exc with additional validation applicative functions for Exc.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
