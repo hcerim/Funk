@@ -32,7 +32,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => func((int a, int b, int c) => a / b * c),
-                f => rec(first.Map(f.Apply).ApplyContract(second).ApplyContract(third), success<Func<int, int, int, int>, Exception>(f).ApplyContract(first).ApplyContract(second).ApplyContract(third)),
+                f => rec(first.Map(f.Apply).Validate(second).Validate(third), success<Func<int, int, int, int>, Exception>(f).Validate(first).Validate(second).Validate(third)),
                 r => Assert.Equal(r.Item1.Success, r.Item2.Success)
             );
         }
@@ -43,9 +43,9 @@ namespace Funk.Tests
             UnitTest(
                 _ => func((int a, int b, int c) => a + b + c),
                 f => success<Func<int, int, int, int>, Exception>(f)
-                    .ApplyContract(failure<int, Exception>(new DivideByZeroException("One")))
-                    .ApplyContract(failure<int, Exception>(new InvalidCastException("Two")))
-                    .ApplyContract(failure<int, Exception>(new InvalidOperationException("Three"))),
+                    .Validate(failure<int, Exception>(new DivideByZeroException("One")))
+                    .Validate(failure<int, Exception>(new InvalidCastException("Two")))
+                    .Validate(failure<int, Exception>(new InvalidOperationException("Three"))),
                 r =>
                 {
                     Assert.True(r.Failure.NotEmpty);

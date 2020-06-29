@@ -20,7 +20,7 @@ namespace Funk
         /// Returns success if both are successful. Otherwise, returns error/s as part of EnumerableException.
         /// In case of continuation use Apply instead.
         /// </summary>
-        public static Exc<R, E> ApplyContract<T1, R, E>(this Exc<Func<T1, R>, E> function, Exc<T1, E> exceptional) where E : Exception
+        public static Exc<R, E> Validate<T1, R, E>(this Exc<Func<T1, R>, E> function, Exc<T1, E> exceptional) where E : Exception
         {
             return function.Match(
                 _ => Exc.Empty<R, E>(),
@@ -43,7 +43,7 @@ namespace Funk
         /// Returns success if both are successful. Otherwise, returns error/s as part of EnumerableException.
         /// In case of continuation use Apply instead.
         /// </summary>
-        public static Exc<Func<T2, R>, E> ApplyContract<T1, T2, R, E>(this Exc<Func<T1, T2, R>, E> function, Exc<T1, E> exceptional) where E : Exception
+        public static Exc<Func<T2, R>, E> Validate<T1, T2, R, E>(this Exc<Func<T1, T2, R>, E> function, Exc<T1, E> exceptional) where E : Exception
         {
             return function.Match(
                 _ => Exc.Empty<Func<T2, R>, E>(),
@@ -66,7 +66,7 @@ namespace Funk
         /// Returns success if both are successful. Otherwise, returns error/s as part of EnumerableException.
         /// In case of continuation use Apply instead.
         /// </summary>
-        public static Exc<Func<T2, T3, R>, E> ApplyContract<T1, T2, T3, R, E>(this Exc<Func<T1, T2, T3, R>, E> function, Exc<T1, E> exceptional) where E : Exception
+        public static Exc<Func<T2, T3, R>, E> Validate<T1, T2, T3, R, E>(this Exc<Func<T1, T2, T3, R>, E> function, Exc<T1, E> exceptional) where E : Exception
         {
             return function.Match(
                 _ => Exc.Empty<Func<T2, T3, R>, E>(),
@@ -89,7 +89,7 @@ namespace Funk
         /// Returns success if both are successful. Otherwise, returns error/s as part of EnumerableException.
         /// In case of continuation use Apply instead.
         /// </summary>
-        public static Exc<Func<T2, T3, T4, R>, E> ApplyContract<T1, T2, T3, T4, R, E>(this Exc<Func<T1, T2, T3, T4, R>, E> function, Exc<T1, E> exceptional) where E : Exception
+        public static Exc<Func<T2, T3, T4, R>, E> Validate<T1, T2, T3, T4, R, E>(this Exc<Func<T1, T2, T3, T4, R>, E> function, Exc<T1, E> exceptional) where E : Exception
         {
             return function.Match(
                 _ => Exc.Empty<Func<T2, T3, T4, R>, E>(),
@@ -112,7 +112,7 @@ namespace Funk
         /// Returns success if both are successful. Otherwise, returns error/s as part of EnumerableException.
         /// In case of continuation use Apply instead.
         /// </summary>
-        public static Exc<Func<T2, T3, T4, T5, R>, E> ApplyContract<T1, T2, T3, T4, T5, R, E>(this Exc<Func<T1, T2, T3, T4, T5, R>, E> function, Exc<T1, E> exceptional) where E : Exception
+        public static Exc<Func<T2, T3, T4, T5, R>, E> Validate<T1, T2, T3, T4, T5, R, E>(this Exc<Func<T1, T2, T3, T4, T5, R>, E> function, Exc<T1, E> exceptional) where E : Exception
         {
             return function.Match(
                 _ => Exc.Empty<Func<T2, T3, T4, T5, R>, E>(),
