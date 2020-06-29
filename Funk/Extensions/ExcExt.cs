@@ -57,12 +57,18 @@ namespace Funk
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static Exc<R, E> OnFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, R> recoverOperation) where T : R where E : Exception
+        public static Exc<R, E> OnFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, R> recoverOperation) where T : R where E : Exception => operationResult.OnFlatFailure(e => Exc.Create<R, E>(_ => recoverOperation(e)));
+
+        /// <summary>
+        /// Recover in case of the error during creation.
+        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Exc<R, E> OnFlatFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Exc<R, E>> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
                 _ => Exc.Empty<R, E>(),
                 v => Exc.Success<R, E>(v),
-                e => Exc.Create<R, E>(_ => recoverOperation(e))
+                recoverOperation
             );
         }
 
@@ -76,12 +82,24 @@ namespace Funk
         /// Recover in case of the error during creation.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> OnFlatFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnFlatFailureAsync(recoverOperation).ConfigureAwait(false);
+
+        /// <summary>
+        /// Recover in case of the error during creation.
+        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception => operationResult.OnFlatFailureAsync(e => Exc.CreateAsync<R, E>(_ => recoverOperation(e)));
+
+        /// <summary>
+        /// Recover in case of the error during creation.
+        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Task<Exc<R, E>> OnFlatFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
                 _ => result(Exc.Empty<R, E>()),
                 v => result(Exc.Success<R, E>(v)),
-                e => Exc.CreateAsync<R, E>(_ => recoverOperation(e))
+                recoverOperation
             );
         }
 
@@ -89,10 +107,16 @@ namespace Funk
         /// Recover in case of the empty exceptional.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static Exc<R, E> OnEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, R> recoverOperation) where T : R where E : Exception
+        public static Exc<R, E> OnEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, R> recoverOperation) where T : R where E : Exception => operationResult.OnFlatEmpty(_ => Exc.Create<R, E>(recoverOperation));
+
+        /// <summary>
+        /// Recover in case of the empty exceptional.
+        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Exc<R, E> OnFlatEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Exc<R, E>> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
-                _ => Exc.Create<R, E>(__ => recoverOperation(Unit.Value)),
+                recoverOperation,
                 v => Exc.Success<R, E>(v),
                 Exc.Failure<R, E>
             );
@@ -102,16 +126,28 @@ namespace Funk
         /// Recover in case of the empty exceptional.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => await OnEmptyAsync(await operationResult, recoverOperation).ConfigureAwait(false);
+        public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnEmptyAsync(recoverOperation).ConfigureAwait(false);
 
         /// <summary>
         /// Recover in case of the empty exceptional.
         /// Note that recover does not work if the creation fails because of unhandled exception.
         /// </summary>
-        public static Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception
+        public static async Task<Exc<R, E>> OnFlatEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnFlatEmptyAsync(recoverOperation).ConfigureAwait(false);
+
+        /// <summary>
+        /// Recover in case of the empty exceptional.
+        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => operationResult.OnFlatEmptyAsync(_ => Exc.CreateAsync<R, E>(recoverOperation));
+
+        /// <summary>
+        /// Recover in case of the empty exceptional.
+        /// Note that recover does not work if the creation fails because of unhandled exception.
+        /// </summary>
+        public static Task<Exc<R, E>> OnFlatEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception
         {
             return operationResult.Match(
-                _ => Exc.CreateAsync<R, E>(__ => recoverOperation(_)),
+                recoverOperation,
                 v => result(Exc.Success<R, E>(v)),
                 e => result(Exc.Failure<R, E>(e))
             );
