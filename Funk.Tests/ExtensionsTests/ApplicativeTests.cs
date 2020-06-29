@@ -44,12 +44,12 @@ namespace Funk.Tests
                 _ => func((int a, int b, int c) => a + b + c),
                 f => success<Func<int, int, int, int>, Exception>(f)
                     .Validate(failure<int, Exception>(new DivideByZeroException("One")))
-                    .Validate(failure<int, Exception>(new InvalidCastException("Two")))
+                    .Validate(success<int, Exception>(2))
                     .Validate(failure<int, Exception>(new InvalidOperationException("Three"))),
                 r =>
                 {
                     Assert.True(r.Failure.NotEmpty);
-                    Assert.Equal(3, r.NestedFailures.UnsafeGet().Count);
+                    Assert.Equal(2, r.NestedFailures.UnsafeGet().Count);
                     Assert.Equal("One", r.RootFailure.UnsafeGet().Message);
                 }
             );
