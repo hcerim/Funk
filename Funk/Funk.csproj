@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>Harun Ćerim</Authors>
     <Company />
     <Description>Minimalistic Functional Library for C#.</Description>
@@ -13,11 +13,14 @@
     <PackageIcon>vinyl.png</PackageIcon>
     <RepositoryUrl>https://github.com/hcerim/Funk</RepositoryUrl>
     <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Programming, Asynchronous-Programming, Extensions</PackageTags>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
     <Copyright>Copyright © 2020 Harun Ćerim</Copyright>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Added flattening extensions (in case of empty or failure) for Exc with additional validation applicative functions for Exc.</PackageReleaseNotes>
+    <PackageReleaseNotes>New types for pattern matching as an improvement to the existing general object Match extension methods.
+Gist: https://gist.github.com/hcerim/c0116f6d9c39373b2c839ea7e604de2a.
+
+However using Match functions available for specific Funk types (Maybe, Record, Exc, OneOf, Unit) is still desirable.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
