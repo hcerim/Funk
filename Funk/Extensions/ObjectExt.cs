@@ -28,7 +28,7 @@ namespace Funk
             return i;
         }
 
-        public static async Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => await function(item).ConfigureAwait(false);
+        public static Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => function(item);
 
         public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item).ConfigureAwait(false);
 
