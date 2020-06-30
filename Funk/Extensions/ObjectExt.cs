@@ -21,7 +21,16 @@ namespace Funk
             return item;
         }
 
+        public static async Task<T> DoAsync<T>(this Task<T> item, Func<T, Task> function)
+        {
+            var i = await item.ConfigureAwait(false);
+            await function(i);
+            return i;
+        }
+
         public static async Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => await function(item).ConfigureAwait(false);
+
+        public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item).ConfigureAwait(false);
 
         public static Maybe<R> SafeCast<R>(this object item)
         {
