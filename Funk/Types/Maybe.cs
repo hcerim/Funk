@@ -5,10 +5,7 @@ using static Funk.Prelude;
 
 namespace Funk
 {
-    /// <summary>
-    /// Type that represents the possible absence of data with appropriate handling.
-    /// </summary>
-    public struct Maybe
+    public static class Maybe
     {
         /// <summary>
         /// Creates a Maybe of item.

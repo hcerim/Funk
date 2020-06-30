@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Funk
 {
-    public struct Record
+    public static class Record
     {
         /// <summary>
         /// Creates a record of 1.
