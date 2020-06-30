@@ -7,7 +7,7 @@ namespace Funk
 {
     public static class Pattern
     {
-        public static Pattern<T> Match<T>(params (object, Func<object, T>)[] sequence) => new Pattern<T>(sequence.Map(r => rec(r.Item1, r.Item2)));
+        public static Pattern<T> Match<T>(params (object @case, Func<object, T> function)[] sequence) => new Pattern<T>(sequence.Map(r => rec(r.Item1, r.Item2)));
 
         public static Maybe<T> Apply<T>(this Pattern<T> pattern, object value)
         {
@@ -17,7 +17,7 @@ namespace Funk
 
     public static class AsyncPattern
     {
-        public static AsyncPattern<T> Match<T>(params (object, Func<object, Task<T>>)[] sequence) => new AsyncPattern<T>(sequence.Map(r => rec(r.Item1, r.Item2)));
+        public static AsyncPattern<T> Match<T>(params (object @case, Func<object, Task<T>> function)[] sequence) => new AsyncPattern<T>(sequence.Map(r => rec(r.Item1, r.Item2)));
 
         public static Task<Maybe<T>> Apply<T>(this AsyncPattern<T> pattern, object value)
         {
