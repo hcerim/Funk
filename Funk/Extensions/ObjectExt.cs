@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Internal.InternalExt;
 
@@ -6,6 +7,22 @@ namespace Funk
 {
     public static class ObjectExt
     {
+        public static T Do<T>(this T item, Action<T> action)
+        {
+            action(item);
+            return item;
+        }
+
+        public static R Do<T, R>(this T item, Func<T, R> function) => function(item);
+
+        public static async Task<T> DoAsync<T>(this T item, Func<T, Task> function)
+        {
+            await function(item).ConfigureAwait(false);
+            return item;
+        }
+
+        public static async Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => await function(item).ConfigureAwait(false);
+
         public static Maybe<R> SafeCast<R>(this object item)
         {
             if (item is R valid)
