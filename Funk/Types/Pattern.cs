@@ -22,19 +22,24 @@ namespace Funk
         }
     }
 
-    public sealed class Pattern<T>
+    public readonly struct Pattern<T>
     {
         internal Pattern(IImmutableList<Record<Maybe<object>, Maybe<Func<object, T>>>> patterns)
         {
             Patterns = patterns.WhereOrDefault(r => r.Item1.NotEmpty && r.Item2.NotEmpty).Map(l => l.Map(r => r.Map((a, b) => (a.UnsafeGet(), b.UnsafeGet()))));
+            TaskPatterns = empty;
+            IsAsync = false;
         }
 
         internal Pattern(IImmutableList<Record<Maybe<object>, Maybe<Func<object, Task<T>>>>> patterns)
         {
+            Patterns = empty;
             TaskPatterns = patterns.WhereOrDefault(r => r.Item1.NotEmpty && r.Item2.NotEmpty).Map(l => l.Map(r => r.Map((a, b) => (a.UnsafeGet(), b.UnsafeGet()))));
+            IsAsync = true;
         }
 
         internal Maybe<IImmutableList<Record<object, Func<object, T>>>> Patterns { get; }
         internal Maybe<IImmutableList<Record<object, Func<object, Task<T>>>>> TaskPatterns { get; }
+        public bool IsAsync { get; }
     }
 }
