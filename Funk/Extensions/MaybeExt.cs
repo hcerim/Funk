@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using static Funk.Prelude;
 
 namespace Funk
 {
@@ -37,6 +38,16 @@ namespace Funk
         public static R GetOr<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
 
         /// <summary>
+        /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
+        /// </summary>
+        public static Task<R> GetOrAsync<T, R>(this Maybe<T> maybe, Func<Unit, Task<R>> selector) where T : R => maybe.ToTask().GetOrAsync(selector);
+
+        /// <summary>
+        /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
+        /// </summary>
+        public static async Task<R> GetOrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<R>> selector) where T : R => await (await maybe).Match(_ => selector(Unit.Value), v => result((R)v)).ConfigureAwait(false);
+
+        /// <summary>
         /// Preferably use GetOr.
         /// Gets Maybe value if not empty. Otherwise, returns default value.
         /// </summary>
@@ -65,7 +76,12 @@ namespace Funk
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
-        public static Maybe<T> Or<T>(this Maybe<T?> maybe, Func<Unit, Maybe<T>> ifEmpty) where T : struct => maybe.Match(_ => ifEmpty(Unit.Value), Maybe.Create);
+        public static Task<Maybe<T>> OrAsync<T>(this Maybe<T> maybe, Func<Unit, Task<Maybe<T>>> ifEmpty) => maybe.ToTask().OrAsync(ifEmpty);
+
+        /// <summary>
+        /// Returns either not empty Maybe or a Maybe specified by the selector.
+        /// </summary>
+        public static async Task<Maybe<T>> OrAsync<T>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<T>>> ifEmpty) => await (await maybe).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create(v).ToTask()).ConfigureAwait(false);
 
         /// <summary>
         /// Creates Exc from Maybe with the specified Exception if Maybe is empty.

@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reflection;
 using System.Threading.Tasks;
+using Funk.Internal;
 using static Funk.Prelude;
 
 namespace Funk
 {
     public static class Pattern
     {
-        public static Pattern<T> Match<T>(params (object @case, Func<object, T> function)[] sequence) => new Pattern<T>(sequence.Map(r => rec(r.Item1, r.Item2)));
+        public static Pattern<T> Match<T>(params (object @case, Func<object, T> function)[] sequence) => new Pattern<T>(sequence.WhereOrDefault(r => r.@case.IsNotNull() && r.function.IsNotNull()).Map(l => l.Map(r => r.ToRecord())).GetOrEmpty());
 
         public static Maybe<T> Apply<T>(this Pattern<T> pattern, object value)
         {
@@ -17,12 +21,22 @@ namespace Funk
 
     public static class AsyncPattern
     {
-        public static AsyncPattern<T> Match<T>(params (object @case, Func<object, Task<T>> function)[] sequence) => new AsyncPattern<T>(sequence.Map(r => rec(r.Item1, r.Item2)));
+        public static AsyncPattern<T> Match<T>(params (object @case, Func<object, Task<T>> function)[] sequence) => new AsyncPattern<T>(sequence.WhereOrDefault(r => r.@case.IsNotNull() && r.function.IsNotNull()).Map(l => l.Map(r => r.ToRecord())).GetOrEmpty());
 
         public static Task<Maybe<T>> Apply<T>(this AsyncPattern<T> pattern, object value)
         {
             return pattern.Patterns.FlatMap(t => t.AsFirstOrDefault(i => i.Item1.SafeEquals(value))).MapAsync(r => r.Item2.Apply(value));
         }
+    }
+
+    public static class TypePattern
+    {
+        public static Maybe<T> Apply<T>(this TypePattern<T> pattern, object value) => pattern.AsMaybe().FlatMap(p => p.patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v))));
+    }
+
+    public static class AsyncTypePattern
+    {
+        public static Task<Maybe<T>> Apply<T>(this AsyncTypePattern<T> pattern, object value) => pattern.AsMaybe().FlatMapAsync(p => p.patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v))));
     }
 
     public readonly struct Pattern<T>
@@ -43,5 +57,23 @@ namespace Funk
         }
 
         internal Maybe<IImmutableList<Record<object, Func<object, Task<T>>>>> Patterns { get; }
+    }
+
+    public sealed class TypePattern<T> : IEnumerable
+    {
+        internal readonly List<Record<Type, Func<object, T>>> patterns = new List<Record<Type, Func<object, T>>>();
+
+        public void Add<TT>(Func<TT, T> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, T>>(typeof(TT), o => function((TT)o)).ToImmutableList()).GetOrEmpty());
+
+        public IEnumerator GetEnumerator() => patterns.GetEnumerator();
+    }
+
+    public sealed class AsyncTypePattern<T> : IEnumerable
+    {
+        internal readonly List<Record<Type, Func<object, Task<T>>>> patterns = new List<Record<Type, Func<object, Task<T>>>>();
+
+        public void Add<TT>(Func<TT, Task<T>> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, Task<T>>>(typeof(TT), o => function((TT)o)).ToImmutableList()).GetOrEmpty());
+
+        public IEnumerator GetEnumerator() => patterns.GetEnumerator();
     }
 }

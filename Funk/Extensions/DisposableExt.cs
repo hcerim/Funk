@@ -17,7 +17,7 @@ namespace Funk
             {
                 using (disposable)
                 {
-                    return await operation(disposable);
+                    return await operation(disposable).ConfigureAwait(false);
                 }
             }));
         }
@@ -33,7 +33,7 @@ namespace Funk
             {
                 using (disposable)
                 {
-                    await operation(disposable);
+                    await operation(disposable).ConfigureAwait(false);
                 }
             }));
         }
