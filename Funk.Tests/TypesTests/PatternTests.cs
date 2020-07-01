@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Funk.Tests
@@ -41,6 +42,42 @@ namespace Funk.Tests
                     (new { Name = "Harun" }, _ => 5.ToTask())
                 ).Apply(v),
                 r => Assert.True(r.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public void TypePatternCheck()
+        {
+            UnitTest(
+                _ => "Harun",
+                v =>
+                {
+                    return new TypePattern<string>
+                    {
+                        (string s) => s.Split('r').First(),
+                        (int s) => ""
+                    }.Apply(v);
+                },
+                r => Assert.Equal("Ha", r
+            ));
+        }
+
+        [Fact]
+        public async Task AsyncTypePatternCheck()
+        {
+            await UnitTestAsync(
+                _ => "Harun".ToTask(),
+                async v =>
+                {
+                    return await new AsyncTypePattern<string>
+                    {
+                        (string s) => s.Split('r').First().ToTask(),
+                        (double s) => "It is double".ToTask(),
+                        async (Task<string> s) => await s,
+                        (int s) => "".ToTask()
+                    }.Apply(v);
+                },
+                r => Assert.Equal("Ha", r)
             );
         }
     }
