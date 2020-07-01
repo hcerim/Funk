@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Threading.Tasks;
+using Xunit;
 using static Funk.Prelude;
 
 namespace Funk.Tests
@@ -50,11 +51,11 @@ namespace Funk.Tests
         }
 
         [Fact]
-        public void Get_Maybe_With_Nullable_Empty()
+        public async Task Get_Maybe_With_Nullable_Empty()
         {
-            UnitTest(
-                _ => new Maybe<int?>(), 
-                m => m.Or(_ => new Maybe<int?>()).Or(_ => may((int?)2)).Or(_ => may((int?)1)),
+            await UnitTestAsync(
+                _ => new Maybe<int?>().ToTask(), 
+                m => m.Map().Or(_ => new Maybe<int?>().Map()).Or(_ => may((int?)2)).OrAsync(_ => may((int?)1).ToTask()),
                 s => Assert.Equal(2, s.GetOr(_ => 1))
             );
         }

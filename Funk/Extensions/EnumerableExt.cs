@@ -210,7 +210,7 @@ namespace Funk
             {
                 foreach (var item in enumerable)
                 {
-                    await operation(item);
+                    await operation(item).ConfigureAwait(false);
                 }
                 return Unit.Value;
             });

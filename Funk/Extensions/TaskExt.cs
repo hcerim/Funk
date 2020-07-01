@@ -14,7 +14,7 @@ namespace Funk
         {
             return run(async () =>
             {
-                await task;
+                await task.ConfigureAwait(false);
                 return Unit.Value;
             });
         }
@@ -26,7 +26,7 @@ namespace Funk
         {
             return run(async () =>
             {
-                await task;
+                await task.ConfigureAwait(false);
                 return result(Unit.Value);
             });
         }
