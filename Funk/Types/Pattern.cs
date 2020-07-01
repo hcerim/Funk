@@ -63,20 +63,20 @@ namespace Funk
         internal Maybe<IImmutableList<Record<object, Func<object, Task<T>>>>> Patterns { get; }
     }
 
-    public sealed class TypePattern<T> : IEnumerable
+    public sealed class TypePattern<R> : IEnumerable
     {
-        internal readonly List<Record<Type, Func<object, T>>> patterns = new List<Record<Type, Func<object, T>>>();
+        internal readonly List<Record<Type, Func<object, R>>> patterns = new List<Record<Type, Func<object, R>>>();
 
-        public void Add<TT>(Func<TT, T> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, T>>(typeof(TT), o => function((TT)o)).ToImmutableList()).GetOrEmpty());
+        public void Add<T>(Func<T, R> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, R>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
 
         public IEnumerator GetEnumerator() => patterns.GetEnumerator();
     }
 
-    public sealed class AsyncTypePattern<T> : IEnumerable
+    public sealed class AsyncTypePattern<R> : IEnumerable
     {
-        internal readonly List<Record<Type, Func<object, Task<T>>>> patterns = new List<Record<Type, Func<object, Task<T>>>>();
+        internal readonly List<Record<Type, Func<object, Task<R>>>> patterns = new List<Record<Type, Func<object, Task<R>>>>();
 
-        public void Add<TT>(Func<TT, Task<T>> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, Task<T>>>(typeof(TT), o => function((TT)o)).ToImmutableList()).GetOrEmpty());
+        public void Add<T>(Func<T, Task<R>> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, Task<R>>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
 
         public IEnumerator GetEnumerator() => patterns.GetEnumerator();
     }
