@@ -13,6 +13,8 @@ namespace Funk
     {
         public static Pattern<T> Match<T>(params (object @case, Func<object, T> function)[] sequence) => new Pattern<T>(sequence.WhereOrDefault(r => r.@case.IsNotNull() && r.function.IsNotNull()).Map(l => l.Map(r => r.ToRecord())).GetOrEmpty());
 
+        public static Pattern<R> Match<T, R>(params (object @case, Func<T, R> function)[] sequence) => new Pattern<R>(sequence.WhereOrDefault(r => r.@case.IsNotNull() && r.function.IsNotNull()).Map(l => l.Map(r => rec<object, Func<object, R>>(r.@case, o => r.function((T)r.@case)))).GetOrEmpty());
+
         public static Maybe<T> Apply<T>(this Pattern<T> pattern, object value)
         {
             return pattern.Patterns.FlatMap(t => t.AsFirstOrDefault(i => i.Item1.SafeEquals(value))).Map(r => r.Item2.Apply(value));
@@ -22,6 +24,8 @@ namespace Funk
     public static class AsyncPattern
     {
         public static AsyncPattern<T> Match<T>(params (object @case, Func<object, Task<T>> function)[] sequence) => new AsyncPattern<T>(sequence.WhereOrDefault(r => r.@case.IsNotNull() && r.function.IsNotNull()).Map(l => l.Map(r => r.ToRecord())).GetOrEmpty());
+
+        public static AsyncPattern<R> Match<T, R>(params (object @case, Func<T, Task<R>> function)[] sequence) => new AsyncPattern<R>(sequence.WhereOrDefault(r => r.@case.IsNotNull() && r.function.IsNotNull()).Map(l => l.Map(r => rec<object, Func<object, Task<R>>>(r.@case, o => r.function((T)r.@case)))).GetOrEmpty());
 
         public static Task<Maybe<T>> Apply<T>(this AsyncPattern<T> pattern, object value)
         {
