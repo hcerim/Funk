@@ -40,12 +40,12 @@ namespace Funk
         /// <summary>
         /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
         /// </summary>
-        public static Task<R> GetOr<T, R>(this Maybe<T> maybe, Func<Unit, Task<R>> selector) where T : R => maybe.ToTask().GetOr(selector);
+        public static Task<R> GetOrAsync<T, R>(this Maybe<T> maybe, Func<Unit, Task<R>> selector) where T : R => maybe.ToTask().GetOrAsync(selector);
 
         /// <summary>
         /// Gets Maybe value if not empty. Otherwise, returns the result of the selector.
         /// </summary>
-        public static async Task<R> GetOr<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<R>> selector) where T : R => await (await maybe).Match(_ => selector(Unit.Value), v => result((R)v)).ConfigureAwait(false);
+        public static async Task<R> GetOrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<R>> selector) where T : R => await (await maybe).Match(_ => selector(Unit.Value), v => result((R)v)).ConfigureAwait(false);
 
         /// <summary>
         /// Preferably use GetOr.
