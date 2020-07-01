@@ -31,12 +31,12 @@ namespace Funk
 
     public static class TypePattern
     {
-        public static Maybe<T> Apply<T>(this TypePattern<T> pattern, object value) => pattern.AsMaybe().FlatMap(p => p.patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).Map(v => v.Item2.Apply(value)));
+        public static Maybe<T> Apply<T>(this TypePattern<T> pattern, object value) => pattern.AsMaybe().FlatMap(p => p.patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v))));
     }
 
     public static class AsyncTypePattern
     {
-        public static Task<Maybe<T>> Apply<T>(this AsyncTypePattern<T> pattern, object value) => pattern.AsMaybe().FlatMapAsync(p => p.patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).MapAsync(v => v.Item2.Apply(value)));
+        public static Task<Maybe<T>> Apply<T>(this AsyncTypePattern<T> pattern, object value) => pattern.AsMaybe().FlatMapAsync(p => p.patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v))));
     }
 
     public readonly struct Pattern<T>
