@@ -17,7 +17,7 @@ namespace Funk
 
         public static Maybe<T> Apply<T>(this Pattern<T> pattern, object value)
         {
-            return pattern.Patterns.FlatMap(t => t.AsFirstOrDefault(i => i.Item1.SafeEquals(value))).Map(r => r.Item2.Apply(value));
+            return pattern.Patterns.FlatMap(t => t.AsFirstOrDefault(i => i.Item1.SafeEquals(value))).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v)));
         }
     }
 
@@ -29,7 +29,7 @@ namespace Funk
 
         public static Task<Maybe<T>> Apply<T>(this AsyncPattern<T> pattern, object value)
         {
-            return pattern.Patterns.FlatMap(t => t.AsFirstOrDefault(i => i.Item1.SafeEquals(value))).MapAsync(r => r.Item2.Apply(value));
+            return pattern.Patterns.FlatMap(t => t.AsFirstOrDefault(i => i.Item1.SafeEquals(value))).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v)));
         }
     }
 
