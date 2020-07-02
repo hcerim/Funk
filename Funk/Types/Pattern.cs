@@ -48,7 +48,7 @@ namespace Funk
 
         public void Add<T>(Func<T, R> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, R>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
 
-        public IEnumerator GetEnumerator() => patterns.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
 
     public sealed class AsyncTypePattern<R> : IEnumerable
@@ -57,6 +57,6 @@ namespace Funk
 
         public void Add<T>(Func<T, Task<R>> function) => patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, Task<R>>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
 
-        public IEnumerator GetEnumerator() => patterns.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
 }
