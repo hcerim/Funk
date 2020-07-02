@@ -27,7 +27,7 @@ namespace Funk.Tests
         {
             await UnitTestAsync(
                 _ => "Funk".ToTask(),
-                v => AsyncPattern.Match<string, int>(
+                v => AsyncPattern.Match(
                     ("Harun", _ => 1.ToTask()),
                     ("Cerim", _ => 2.ToTask()),
                     ("Bosnia", _ => 3.ToTask()),
@@ -38,8 +38,7 @@ namespace Funk.Tests
                     ("Fu", _ => 00.ToTask()),
                     ("Funky", _ => 4.ToTask()),
                     ("ky", _ => 4.ToTask()),
-                    ("Fy", _ => 7.ToTask()),
-                    (new { Name = "Harun" }, _ => 5.ToTask())
+                    ("Fy", _ => 7.ToTask())
                 ).Apply(v),
                 r => Assert.True(r.IsEmpty)
             );
