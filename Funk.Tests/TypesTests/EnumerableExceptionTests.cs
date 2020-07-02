@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Xunit;
 using static Funk.Prelude;
@@ -27,9 +28,11 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-#pragma warning disable CS0618
-                e => e.ToEnumerableException().Clear().SafeCast<EnumerableException<FunkException>>().UnsafeGet(),
-#pragma warning restore CS0618
+                e =>
+                {
+                    IImmutableList<FunkException> ex = e.ToEnumerableException();
+                    return ex.Clear().SafeCast<EnumerableException<FunkException>>().UnsafeGet();
+                },
                 e =>
                 {
                     Assert.Equal("EnumerableException is empty.", e.ToString());
@@ -57,7 +60,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToEnumerableException().Add(_ => new EmptyValueException("Empty :(")),
+                e => e.ToEnumerableException().Add(new EmptyValueException("Empty :(")),
                 e =>
                 {
                     Assert.Equal(2, e.Count());
@@ -74,7 +77,7 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => new FunkException("Funk"),
-                e => e.ToEnumerableException().AddRange(_ => new List<FunkException>
+                e => e.ToEnumerableException().AddRange(new List<FunkException>
                 {
                     new EmptyValueException("Empty :("),
                     new EmptyValueException("Empty again :/"),
