@@ -19,17 +19,25 @@ Funk is available as a **NuGet** package.
 
 You can install it through **Package Manager**:
 
->`Install-Package Funk -Version 1.0.1`
+>`Install-Package Funk -Version 1.1.0`
 
 Or through **.NET CLI**:
 
->`dotnet add package Funk --version 1.0.1`
+>`dotnet add package Funk --version 1.1.0`
 
 Or add it directly in package references:
 
->`<PackageReference Include="Funk" Version="1.0.1" />`
+>`<PackageReference Include="Funk" Version="1.1.0" />`
 
 
 ## License
 
 Funk is licensed under the [MIT](/Files/license.txt) license.
+
+## Master Thesis
+
+**Topic**: Extending C# with a Library of Functional Programming Concepts
+
+**Advisor**: doc. RNDr. Pavel Parízek, Ph.D.
+
+<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/mff.png"/></h1>
