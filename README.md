@@ -40,4 +40,4 @@ Funk is licensed under the [MIT](/Files/license.txt) license.
 
 **Advisor**: doc. RNDr. Pavel Parízek, Ph.D.
 
-<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/mff.png"/></h1>
+<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/mff_uk.png"/></h1>
