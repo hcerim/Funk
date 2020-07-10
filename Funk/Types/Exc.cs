@@ -80,7 +80,7 @@ namespace Funk
         }
 
         internal Exc(E exception)
-            : base(exception.ToEnumerableException(exception?.Message))
+            : base(exception.AsMaybe().Map(e => e.ToEnumerableException(e.Message)).GetOrDefault())
         {
         }
 
