@@ -246,12 +246,16 @@ namespace Funk.Tests
 
         private static User GetEmptyUser()
         {
-            return new User(bio: null);
+            return new User();
         }
     }
 
     public class User : OneOf<BasicInfo, Biography>
     {
+        public User()
+        {
+        }
+
         public User(BasicInfo info)
             : base(info)
         {

@@ -43,6 +43,11 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     {
+        public OneOf()
+            : base(null, 0)
+        {
+        }
+
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -163,6 +168,11 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     {
+        public OneOf()
+            : base(null, 0)
+        {
+        }
+
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -316,6 +326,11 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     {
+        public OneOf()
+            : base(null, 0)
+        {
+        }
+
         public OneOf(T1 first)
             : base(first, 1)
         {
@@ -502,6 +517,11 @@ namespace Funk
     /// </summary>
     public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4, T5>>
     {
+        public OneOf()
+            : base(null, 0)
+        {
+        }
+
         public OneOf(T1 first)
             : base(first, 1)
         {

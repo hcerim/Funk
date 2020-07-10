@@ -71,7 +71,6 @@ namespace Funk
     public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>>, IEquatable<Exc<T, E>> where E : Exception
     {
         internal Exc()
-            : base(null)
         {
         }
 
