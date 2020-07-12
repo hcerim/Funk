@@ -11,13 +11,17 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => "Funk",
-                v => Pattern.Match(
-                    ("Harun", _ => 1),
-                    ("Cerim", _ => 2),
-                    ("Bosnia", _ => 3),
-                    ("Funk", _ => 4),
-                    (new {Name = "Harun"}, _=> 5)
-                ).Apply(v),
+                v =>
+                {
+                    return new Pattern<int>
+                    {
+                        ("Harun", _ => 1),
+                        ("Cerim", _ => 2),
+                        ("Bosnia", _ => 3),
+                        ("Funk", _ => 4),
+                        (new {Name = "Harun"}, _ => 5)
+                    }.Match(v);
+                },
                 r => Assert.Equal(4, r)
             );
         }
@@ -27,19 +31,24 @@ namespace Funk.Tests
         {
             await UnitTestAsync(
                 _ => "Funk".ToTask(),
-                v => AsyncPattern.Match(
-                    ("Harun", _ => 1.ToTask()),
-                    ("Cerim", _ => 2.ToTask()),
-                    ("Bosnia", _ => 3.ToTask()),
-                    ("Funky", _ => 4.ToTask()),
-                    ("Funy", _ => 4.ToTask()),
-                    ("F", _ => 4.ToTask()),
-                    ("Funky", _ => 3.ToTask()),
-                    ("Fu", _ => 00.ToTask()),
-                    ("Funky", _ => 4.ToTask()),
-                    ("ky", _ => 4.ToTask()),
-                    ("Fy", _ => 7.ToTask())
-                ).Apply(v),
+                v =>
+                {
+                    return new AsyncPattern<int>
+                    {
+                        ("Harun", _ => 1.ToTask()),
+                        ("Cerim", _ => 2.ToTask()),
+                        ("Bosnia", _ => 3.ToTask()),
+                        ("Funky", _ => 4.ToTask()),
+                        ("Funy", _ => 4.ToTask()),
+                        ("F", _ => 4.ToTask()),
+                        ("Funky", _ => 3.ToTask()),
+                        ("Fu", _ => 00.ToTask()),
+                        ("Funky", _ => 4.ToTask()),
+                        ("ky", _ => 4.ToTask()),
+                        (1, vv => vv.ToTask()),
+                        ("Fy", _ => 7.ToTask())
+                    }.Match(v);
+                },
                 r => Assert.True(r.IsEmpty)
             );
         }
@@ -55,7 +64,7 @@ namespace Funk.Tests
                     {
                         (string s) => s.Split('r').First(),
                         (int s) => ""
-                    }.Apply(v);
+                    }.Match(v);
                 },
                 r => Assert.Equal("Ha", r
             ));
@@ -66,15 +75,15 @@ namespace Funk.Tests
         {
             await UnitTestAsync(
                 _ => "Harun".ToTask(),
-                async v =>
+                v =>
                 {
-                    return await new AsyncTypePattern<string>
+                    return new AsyncTypePattern<string>
                     {
                         (string s) => s.Split('r').First().ToTask(),
                         (double s) => "It is double".ToTask(),
                         async (Task<string> s) => await s,
                         (int s) => "".ToTask()
-                    }.Apply(v);
+                    }.Match(v);
                 },
                 r => Assert.Equal("Ha", r)
             );
