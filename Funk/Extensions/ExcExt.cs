@@ -171,13 +171,13 @@ namespace Funk
 
         /// <summary>
         /// Aggregates Exc with another Exc. If both are success the result will be Success of Collection of results.
-        /// If there is any non-successful, Exc will be failure if any failures or will be empty if all are empty.
+        /// If there is any non-successful, Exc will be failure if any failures or will be empty.
         /// </summary>
         public static Exc<IImmutableList<T>, E> Merge<T, E>(this Exc<T, E> first, Exc<T, E> second, string errorMessage = null) where E : Exception => MergeRange(first, second.ToImmutableList(), errorMessage);
 
         /// <summary>
-        /// Aggregates Exc with collection of Exc. If all are success the result will be Success of Collection of results.
-        /// If there is any non-successful, Exc will be failure if any failures or will be empty if all are empty.
+        /// Aggregates Exc with the sequence of Exc. If all are success the result will be Success of Collection of results.
+        /// If there is any non-successful, Exc will be failure if any failures or will be empty.
         /// </summary>
         public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
