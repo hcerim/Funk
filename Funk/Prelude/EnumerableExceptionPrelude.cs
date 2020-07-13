@@ -14,5 +14,8 @@ namespace Funk
 
         [Pure]
         public static EnumerableException<E> exception<E>(string message, IEnumerable<E> exceptions) where E : Exception => exceptions.ToEnumerableException(message);
+
+        [Pure]
+        public static EnumerableException<E> exception<E>(string message, params E[] exceptions) where E : Exception => exceptions.ToEnumerableException(message);
     }
 }
