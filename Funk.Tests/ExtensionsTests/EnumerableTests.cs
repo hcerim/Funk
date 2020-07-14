@@ -227,6 +227,16 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Create_Flatten_List()
+        {
+            UnitTest(
+                _ => list(empty, "Funk".AsMaybe()),
+                l => l.First(),
+                s => Assert.Equal("Funk", s)
+            );
+        }
+
+        [Fact]
         public void Create_Maybe_Of_Enumerable_With_Predicate()
         {
             UnitTest(

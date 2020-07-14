@@ -11,6 +11,9 @@ namespace Funk
         public static IImmutableList<T> list<T>(params T[] items) => items.Map();
 
         [Pure]
+        public static IImmutableList<T> list<T>(params Maybe<T>[] items) => items.Flatten();
+
+        [Pure]
         public static IImmutableList<T> list<T>(IEnumerable<T> enumerable) => enumerable.Map();
 
         [Pure]
