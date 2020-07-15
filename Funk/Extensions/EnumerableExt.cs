@@ -55,11 +55,6 @@ namespace Funk
         public static IImmutableList<T> Flatten<T>(this IEnumerable<IEnumerable<T?>> enumerable) where T : struct => enumerable.FlatMap(i => i.ExceptNulls());
 
         /// <summary>
-        /// Returns an immutable sequence of not empty Maybes.
-        /// </summary>
-        public static IImmutableList<T> Flatten<T>(params Maybe<T>[] maybes) => Flatten(maybes.Map());
-
-        /// <summary>
         /// Merges not empty Maybe with not empty Maybes collection into an immutable sequence. Handles null sequence.
         /// </summary>
         public static IImmutableList<T> FlatMerge<T>(this Maybe<T> maybe, IEnumerable<Maybe<T>> enumerable) => Flatten(new[] { maybe }.Concat(enumerable.Map()));
