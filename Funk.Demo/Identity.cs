@@ -1,10 +1,10 @@
 ﻿namespace Funk.Demo
 {
-    public sealed class Auth
+    public sealed class Identity
     {
         public Maybe<string> Token { get; }
 
-        public Auth(string token)
+        public Identity(string token)
         {
             Token = token.AsNotEmptyString();
         }
