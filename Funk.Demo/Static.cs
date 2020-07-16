@@ -62,8 +62,10 @@ namespace Funk.Demo
         private static Task<Exc<T, Error>> Get<T>(this Identity identity, Uri uri)
         {
             return identity.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).FlatMapAsync(token =>
-                uri.CreateGetRequest(token).SendAsync().GetContent().FlatMapAsync(r => result(r.SafeDeserialize<T>().MapFailure(e =>
-                    new Error(e.Root.Map(ex => ex.Message).GetOr(_ => "Unable to properly deserialize response returned by the server.")))
+                uri.CreateGetRequest(token).DisposeAfterAsync(m => m.SendAsync().DisposeAfterAsync(mm => 
+                    mm.GetContent().FlatMapAsync(r => result(r.SafeDeserialize<T>().MapFailure(e =>
+                        new Error(e.Root.Map(ex => ex.Message).GetOr(_ => "Unable to properly deserialize response returned by the server."))
+                    )))
                 ))
             );
         }
