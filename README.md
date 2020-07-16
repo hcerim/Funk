@@ -19,15 +19,15 @@ Funk is available as a **NuGet** package.
 
 You can install it through **Package Manager**:
 
->`Install-Package Funk -Version 1.1.0`
+>`Install-Package Funk -Version 1.1.2`
 
 Or through **.NET CLI**:
 
->`dotnet add package Funk --version 1.1.0`
+>`dotnet add package Funk --version 1.1.2`
 
 Or add it directly in package references:
 
->`<PackageReference Include="Funk" Version="1.1.0" />`
+>`<PackageReference Include="Funk" Version="1.1.2" />`
 
 
 ## License
