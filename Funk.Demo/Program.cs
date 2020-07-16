@@ -8,10 +8,10 @@ namespace Funk.Demo
         private static async Task Main()
         {
             Console.WriteLine("Enter your token:");
-            var service = new ResourceService(Console.ReadLine());
+            var identity = new Identity(Console.ReadLine());
             Console.WriteLine("See: Info (i), Publications (p), Contributors (c)");
             var input = Console.ReadLine();
-            var resource = await service.GetResource(
+            var resource = await identity.GetResource(
                 input.Match(
                     "i", _ => ResourceType.Info,
                     "p", _ => ResourceType.Publications,
