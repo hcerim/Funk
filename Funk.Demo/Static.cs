@@ -22,27 +22,24 @@ namespace Funk.Demo
         public static async Task<Exc<Resource, Error>> GetResource(this Identity identity, ResourceType type, string publicationId = null)
         {
             var info = await identity.Get<Info>(new Uri($"{Medium.BaseUrl}{Medium.Info}"));
-            return await type.Match(
-                ResourceType.Info, _ => info.Match(
-                    __ => Exc.Empty<Resource, Error>().ToTask(),
+            return await new AsyncPattern<Exc<Resource, Error>>
+            {
+                (ResourceType.Info, _ => info.Match(
                     i => success<Resource, Error>(new Resource(i)).ToTask(),
                     e => failure<Resource, Error>(e).ToTask()
-                ),
-                ResourceType.Publications, _ => info.Match(
-                    __ => Exc.Empty<Resource, Error>().ToTask(),
+                )),
+                (ResourceType.Publications, _ => info.Match(
                     async i =>
                     {
                         var result = await identity.Get<Publications>(new Uri($"{Medium.BaseUrl}{Medium.Users}/{i.Data.Id}/{Medium.Publications}"));
                         return result.Match(
-                            __ => empty,
                             p => success<Resource, Error>(new Resource(new Publication(p))),
                             failure<Resource, Error>
                         );
                     },
                     e => result(failure<Resource, Error>(e))
-                ),
-                ResourceType.Contributors, _ => info.Match(
-                    __ => Exc.Empty<Resource, Error>().ToTask(),
+                )),
+                (ResourceType.Contributors, _ => info.Match(
                     i =>
                     {
                         return publicationId.AsNotEmptyString().Match(
@@ -51,7 +48,6 @@ namespace Funk.Demo
                             {
                                 var result = await identity.Get<Contributors>(new Uri($"{Medium.BaseUrl}{Medium.Publications}/{id}/{Medium.Contributors}"));
                                 return result.Match(
-                                    __ => empty,
                                     c => success<Resource, Error>(new Resource(new Publication(c))),
                                     failure<Resource, Error>
                                 );
@@ -59,9 +55,8 @@ namespace Funk.Demo
                         );
                     },
                     e => failure<Resource, Error>(e).ToTask()
-                ),
-                _ => Exc.Empty<Resource, Error>().ToTask()
-            );
+                ))
+            }.Match(type).GetOrAsync(_ => Exc.Empty<Resource, Error>().ToTask());
         }
 
         private static Task<Exc<T, Error>> Get<T>(this Identity identity, Uri uri)
