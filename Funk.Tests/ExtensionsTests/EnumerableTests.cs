@@ -20,7 +20,7 @@ namespace Funk.Tests
         public void Create_ReadOnlyCollection_From_Not_Empty_List()
         {
             UnitTest(
-                _ => new List<string>{"Funk", "Funky Funk", "Da Funk"}, 
+                _ => new List<string> { "Funk", "Funky Funk", "Da Funk" },
                 l => l.Map(),
                 c => Assert.Equal("Funky Funk", c.ElementAt(1))
             );
@@ -65,7 +65,7 @@ namespace Funk.Tests
         public void Create_ReadOnlyCollection_Without_Nulls()
         {
             UnitTest(
-                _ => new List<string>{"Funk", null, "Funk not null", null}, 
+                _ => new List<string> { "Funk", null, "Funk not null", null },
                 l => l.ExceptNulls(),
                 c =>
                 {
@@ -105,7 +105,7 @@ namespace Funk.Tests
         public void Create_ReadOnlyCollection_From_Maybes()
         {
             UnitTest(
-                _ => new List<Maybe<string>>{"Funk".AsMaybe(), default(string).AsMaybe(), "Funky".AsMaybe()},
+                _ => new List<Maybe<string>> { "Funk".AsMaybe(), default(string).AsMaybe(), "Funky".AsMaybe() },
                 l => l.Flatten(),
                 c =>
                 {
@@ -140,7 +140,7 @@ namespace Funk.Tests
         public void Create_ReadOnlyCollection_From_Enumerable_Of_Combined_Enumerables()
         {
             UnitTest(
-                _ => new List<List<string>>{new List<string>{"Harun"}, null, new List<string>{"Funk", null, "Funky"}}, 
+                _ => new List<List<string>> { new List<string> { "Harun" }, null, new List<string> { "Funk", null, "Funky" } },
                 l => l.Flatten(),
                 c =>
                 {
@@ -200,7 +200,7 @@ namespace Funk.Tests
         public void Create_Maybe_Of_Empty_Enumerable()
         {
             UnitTest(
-                _ => new List<string>().AsNotEmptyList(), 
+                _ => new List<string>().AsNotEmptyList(),
                 m => m.Map(c => c.ElementAt(2)),
                 s => Assert.True(s.IsEmpty)
             );
@@ -454,6 +454,23 @@ namespace Funk.Tests
                     }
                 ),
                 o => Assert.True(o.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public void List_Pattern_Matching()
+        {
+            UnitTest(
+                _ => list(1, 2, 3),
+                l =>
+                {
+                    return l.Match(
+                        _ => 0,
+                        i => i,
+                        (i, j) => i * j
+                    );
+                },
+                r => Assert.Equal(6, r)
             );
         }
 
