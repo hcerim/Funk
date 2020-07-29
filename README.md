@@ -11,7 +11,7 @@ Funk implements many concepts from functional programming languages to reduce co
 
 Many agree that code is a liability where each line is a **commitment** and an **asset**. By using Funk you reduce the code size, end up with less commitment and keep all the good parts. Funk helps developers write code in a declarative rather than in an imperative way. It offers structures for representing and working with objects in a functional way. It introduces pattern matching for earlier versions of C#. It also provides extensions for working with immutable types painlessly. Expressions become a natural way of writing code where statements can be completely omitted.
 
-For a detailed guide check out the [Thesis paper](/Files/Thesis.pdf).
+For a detailed guide check out the [Thesis paper](/Files/Funk.pdf).
 
 ## Installation
 
