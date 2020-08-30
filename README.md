@@ -5,7 +5,7 @@
 ![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
 ![Tests](https://github.com/cerimharun/Funk/workflows/Tests/badge.svg)
 
-## Minimalistic Functional Library for C#
+## Functional programming library for C#
 
 Funk implements many concepts from functional programming languages to reduce code size and most importantly help developers write **honest** bug-free code.
 
@@ -37,6 +37,6 @@ Funk is licensed under the [MIT](/Files/license.txt) license.
 
 **Topic**: Extending C# with a Library of Functional Programming Concepts
 
-**Advisor**: doc. RNDr. Pavel Parízek, Ph.D.
+**Advisor**: [doc. RNDr. Pavel Parízek, Ph.D.](https://d3s.mff.cuni.cz/people/pavelparizek/)
 
-<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/mff_uk.png"/></h1>
+<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/mff_uk.png" width="210"/></h1>
