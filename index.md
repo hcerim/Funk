@@ -16,3 +16,14 @@ One can do very little with pure functions but fp teaches us to break down and s
 
 Another, more important concept that we can benefit from in oo programs that fp insists on is the concept of **_honest functions_**. Honest functions represent functions that tell you by their interface what kind of computation do they perform, which parameters do they accept, and what is their return type. Honest functions never have unexpected behaviors (the ones not stated in the interface) that can be caused by
 inner or outside factors.
+
+In fp, everything is about functions. They serve as mappings between set elements (objects).
+
+![map.png]({{site.baseurl}}/map.png)
+
+These two sets we call **_domain_** and **_codomain_** and in oop they can represent concrete types.
+
+We are not gonna go into detail about fp as we are going to describe those concepts while covering features available in Funk.
+
+## Functional C#
+
