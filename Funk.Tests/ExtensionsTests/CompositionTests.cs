@@ -58,6 +58,9 @@ namespace Funk.Tests
                     .Compose((int i) => i / 2)
                     .Compose((int i) => i / 2)
                     .ComposeInvert(i => i * 2),
+                // execution goes from the latest compose function through the initiator to the last composeInvert function.
+                // pipe syntax (execution order): (i/2) -> (i/2) -> (i*2) -> (i*2) -> (i*3) -> (i-3) -> (i/3) -> (i*2)
+                // composition syntax (code order): (i*3) >> (i*2) << (i-3) >> (i*2) << (i/3) >> (i/2) >> (i/2) << (i*2)
                 f =>
                 {
                     Assert.Equal(14, f.Apply(8));
