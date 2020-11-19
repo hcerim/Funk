@@ -1,37 +1,32 @@
-## Welcome to GitHub Pages
+## Idea
 
-You can use the [editor on GitHub](https://github.com/hcerim/Funk/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+The main goal of this project was to implement a fp library that extends C# with support for concepts present in fp languages, such as F# and Scala.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+**Funk** utilizes many fp concepts, including immutability, pattern matching, and
+various types of monads, together with stronger typing. Introduction of these concepts
+into C# helps in avoiding many runtime errors and boilerplate code, and it also lets
+developers write C# code in a declarative rather than in an imperative way, making the
+day-to-day software development easier and less error-prone.
 
-### Markdown
+## Functional Programming
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Functional programming is a declarative programming paradigm where **_functions are first-class values_**. Those functions are usually pure, which means that besides always returning the same result for the same input (**_referential transparency_**) and they never have any side effects. Those side effects come in a form of the state mutation of non-local variables or any other mutation of the global state.
 
-```markdown
-Syntax highlighted code block
+One can do very little with pure functions but fp teaches us to break down and separate pure form impure code as much as possible. Isolating impure code makes it much easier to test your codebase.
 
-# Header 1
-## Header 2
-### Header 3
+Another, more important concept that we can benefit from in oo programs that fp insists on is the concept of **_honest functions_**. Honest functions represent functions that tell you by their interface what kind of computation do they perform, which parameters do they accept, and what is their return type. Honest functions never have unexpected behaviors (the ones not stated in the interface) that can be caused by
+inner or outside factors.
 
-- Bulleted
-- List
+In fp, everything is about functions. They serve as mappings between set elements (objects).
 
-1. Numbered
-2. List
+![map.png]({{site.baseurl}}/map.png)
 
-**Bold** and _Italic_ and `Code` text
+These two sets we call **_domain_** and **_codomain_** and in oop they can represent concrete types.
 
-[Link](url) and ![Image](src)
-```
+We are not gonna go into detail about fp as we are going to describe those concepts while covering features available in Funk.
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## Functional C#
 
-### Jekyll Themes
+C# as a multi-paradigm but primarily an object-oriented programming language has properties of a functional programming language as well. It had fp features from the earliest versions when the **Delegate** type was introduced. It is a type that makes functions first-class values in the language and makes everything else that is functional, including Language Integrated Query (**LINQ**), possible.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/hcerim/Funk/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+In later versions of C#, working with the raw Delegate type was replaced with **Func** and **Action** delegates that represent a function that returns and a void function respectively. Lambda expressions (**lambdas**) were also introduced which made syntax even more fluent and enabled easier delegate representation.
