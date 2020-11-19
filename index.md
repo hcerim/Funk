@@ -27,3 +27,6 @@ We are not gonna go into detail about fp as we are going to describe those conce
 
 ## Functional C#
 
+C# as a multi-paradigm but primarily an object-oriented programming language has properties of a functional programming language as well. It had fp features from the earliest versions when the **Delegate** type was introduced. It is a type that makes functions first-class values in the language and makes everything else that is functional, including Language Integrated Query (**LINQ**), possible.
+
+In later versions of C#, working with the raw Delegate type was replaced with **Func** and **Action** delegates that represent a function that returns and a void function respectively. Lambda expressions (**lambdas**) were also introduced which made syntax even more fluent and enabled easier delegate representation.
