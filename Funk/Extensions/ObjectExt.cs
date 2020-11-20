@@ -7,20 +7,32 @@ namespace Funk
 {
     public static class ObjectExt
     {
+        /// <summary>
+        /// Acts as a pipe that performs the operation and returns the argument that initiated the pipeline.
+        /// </summary>
         public static T Do<T>(this T item, Action<T> action)
         {
             action(item);
             return item;
         }
 
+        /// <summary>
+        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+        /// </summary>
         public static R Do<T, R>(this T item, Func<T, R> function) => function(item);
 
+        /// <summary>
+        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+        /// </summary>
         public static async Task<T> DoAsync<T>(this T item, Func<T, Task> function)
         {
             await function(item).ConfigureAwait(false);
             return item;
         }
 
+        /// <summary>
+        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+        /// </summary>
         public static async Task<T> DoAsync<T>(this Task<T> item, Func<T, Task> function)
         {
             var i = await item.ConfigureAwait(false);
@@ -28,10 +40,19 @@ namespace Funk
             return i;
         }
 
+        /// <summary>
+        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+        /// </summary>
         public static Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => function(item);
 
+        /// <summary>
+        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+        /// </summary>
         public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item).ConfigureAwait(false);
 
+        /// <summary>
+        /// Safely casts object to the specified type. Returns empty maybe if the casting fails.
+        /// </summary>
         public static Maybe<R> SafeCast<R>(this object item)
         {
             if (item is R valid)
