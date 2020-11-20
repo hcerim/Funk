@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using FsCheck.Xunit;
+using Xunit;
 using static Funk.Prelude;
 
 namespace Funk.Tests
@@ -62,6 +63,54 @@ namespace Funk.Tests
                 f =>
                 {
                     Assert.Equal(14, f.Apply(8));
+                }
+            );
+        }
+        
+        [Property]
+        public void LeftAssociativity(int num)
+        {
+            UnitTest(
+                _ =>
+                {
+                    var triple = func((int i) => i * 3);
+                    var @double = func((int i) => i * 2);
+                    var subtractThree = func((int i) => i - 3);
+                    return (triple, @double, subtractThree);
+                },
+                f =>
+                {
+                    var composition = f.@double.ComposeLeft(f.triple).ComposeLeft(f.subtractThree);
+                    var chaining = func((int i) => f.subtractThree(f.triple(f.@double(i))));
+                    return (composition, chaining);
+                },
+                r =>
+                {
+                    Assert.True(r.composition.Apply(num).SafeEquals(r.chaining.Apply(num)));
+                }
+            );
+        }
+        
+        [Property]
+        public void RightAssociativity(int num)
+        {
+            UnitTest(
+                _ =>
+                {
+                    var triple = func((int i) => i * 3);
+                    var @double = func((int i) => i * 2);
+                    var subtractThree = func((int i) => i - 3);
+                    return (triple, @double, subtractThree);
+                },
+                f =>
+                {
+                    var composition = f.@double.ComposeRight(f.triple).ComposeRight(f.subtractThree);
+                    var chaining = func((int i) => f.@double(f.triple(f.subtractThree(i))));
+                    return (composition, chaining);
+                },
+                r =>
+                {
+                    Assert.True(r.composition.Apply(num).SafeEquals(r.chaining.Apply(num)));
                 }
             );
         }
