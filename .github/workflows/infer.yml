@@ -1,7 +1,2 @@
-- name: Run Infer#      
+- name: InferSharp
   uses: microsoft/infersharpaction@v0.2
-  id: runinfersharp
-  with:
-    binary-path: 'Funk/bin/Debug/netstandard2.0'
-- name: Infer# analysis results
-  run: echo "${{ steps.runinfersharp.outputs.results }}"
