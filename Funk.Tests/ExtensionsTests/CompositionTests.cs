@@ -158,6 +158,38 @@ namespace Funk.Tests
             );
         }
         
+        [Fact]
+        public void ComposeCombineChainFunctionsWithActions4()
+        {
+            UnitTest(
+                _ => act((string x, string y, int z) =>
+                {
+                    _output.WriteLine(x);
+                    _output.WriteLine(y);
+                    _output.WriteLine("Initialize logging:\n");
+                    _output.WriteLine($"Initial item - {z.ToString()}\n");
+                }),
+                f => f
+                    .Apply("Partially applied 1")
+                    .Apply("Partially applied 2")
+                    .ComposeLeft(i => i * 3)
+                    .ComposeLeft(act((string x, string y, int _, int j) =>
+                    {
+                        _output.WriteLine(x);
+                        _output.WriteLine(y);
+                        _output.WriteLine("Middle step:\n");
+                        _output.WriteLine($"Operation result - {j.ToString()}\n");
+                    }).Apply("Partially applied 3").Apply("Partially applied 4"))
+                    .ComposeLeft(i => i * 3)
+                    .ComposeLeft((_, j) =>
+                    {
+                        _output.WriteLine("Finalize logging:\n");
+                        _output.WriteLine($"Final item - {j.ToString()}\n");
+                    }),
+            f => Assert.Equal(27, f.Apply(3))
+            );
+        }
+        
         [Property]
         public void LeftAssociativity(int num)
         {
