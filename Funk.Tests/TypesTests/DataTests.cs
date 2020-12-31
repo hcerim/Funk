@@ -63,7 +63,7 @@ namespace Funk.Tests
 
         public int Age { get; private set; }
 
-        public string Surname;
+        public readonly string Surname;
         
         public static Customer New => new Customer();
     }
