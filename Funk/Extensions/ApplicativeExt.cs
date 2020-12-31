@@ -5,6 +5,7 @@ namespace Funk
     public static class ApplicativeExt
     {
         public static Maybe<R> Apply<T1, R>(this Maybe<Func<T1, R>> function, Maybe<T1> maybe) => function.FlatMap(maybe.Map);
+        
         public static Maybe<Unit> Apply<T1>(this Maybe<Action<T1>> function, Maybe<T1> maybe) =>
             function.FlatMap(f => maybe.Map(m =>
             {
