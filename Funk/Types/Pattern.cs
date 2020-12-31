@@ -10,36 +10,62 @@ namespace Funk
 {
     public struct Pattern<R> : IEnumerable
     {
-        private List<Record<object, Func<object, R>>> patterns;
+        private List<Record<Func<object, bool>, Func<object, R>>> patterns;
 
         public void Add<T>((T @case, Func<T, R> function) item)
         {
             if (patterns.IsNull())
             {
-                patterns = new List<Record<object, Func<object, R>>>();
+                patterns = new List<Record<Func<object, bool>, Func<object, R>>>();
             }
-            patterns.AddRange(item.@case.AsMaybe().FlatMap(c => item.function.AsMaybe().Map(f => rec((object)c, func((object o) => f(c))).ToImmutableList())).GetOrEmpty());
+            patterns.AddRange(item.@case.AsMaybe().FlatMap(c =>
+                item.function.AsMaybe().Map(f => rec(func((object o) => o.SafeEquals(c)), func((object o) => f(c))).ToImmutableList())
+            ).GetOrEmpty());
         }
 
-        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => value.SafeEquals(i.Item1)).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v)));
+        public void Add<T>((Func<T, bool> predicate, Func<T, R> function) item)
+        {
+            if (patterns.IsNull())
+            {
+                patterns = new List<Record<Func<object, bool>, Func<object, R>>>();
+            }
+            patterns.AddRange(item.predicate.AsMaybe().FlatMap(p =>
+                item.function.AsMaybe().Map(f => rec(func((object o) => o.SafeCast<T>().Map(p).GetOrDefault()), func((object o) => f((T)o))).ToImmutableList())
+            ).GetOrEmpty());
+        }
+
+        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v)));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
 
     public struct AsyncPattern<R> : IEnumerable
     {
-        private List<Record<object, Func<object, Task<R>>>> patterns;
+        private List<Record<Func<object, bool>, Func<object, Task<R>>>> patterns;
 
         public void Add<T>((T @case, Func<T, Task<R>> function) item)
         {
             if (patterns.IsNull())
             {
-                patterns = new List<Record<object, Func<object, Task<R>>>>();
+                patterns = new List<Record<Func<object, bool>, Func<object, Task<R>>>>();
             }
-            patterns.AddRange(item.@case.AsMaybe().FlatMap(c => item.function.AsMaybe().Map(f => rec((object)c, func((object o) => f(c))).ToImmutableList())).GetOrEmpty());
+            patterns.AddRange(item.@case.AsMaybe().FlatMap(c =>
+                item.function.AsMaybe().Map(f => rec(func((object o) => o.SafeEquals(c)), func((object o) => f(c))).ToImmutableList())
+            ).GetOrEmpty());
+        }
+        
+        public void Add<T>((Func<T, bool> predicate, Func<T, Task<R>> function) item)
+        {
+            if (patterns.IsNull())
+            {
+                patterns = new List<Record<Func<object, bool>, Func<object, Task<R>>>>();
+            }
+            patterns.AddRange(item.predicate.AsMaybe().FlatMap(p =>
+                item.function.AsMaybe().Map(f => rec(func((object o) => o.SafeCast<T>().Map(p).GetOrDefault()), func((object o) => f((T)o))).ToImmutableList())
+            ).GetOrEmpty());
         }
 
-        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => value.SafeEquals(i.Item1)).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v)));
+        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v)));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
