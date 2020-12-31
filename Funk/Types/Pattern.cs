@@ -34,7 +34,7 @@ namespace Funk
             ).GetOrEmpty());
         }
 
-        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v)));
+        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).Map(r => r.Item2.Apply(value));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
@@ -65,7 +65,7 @@ namespace Funk
             ).GetOrEmpty());
         }
 
-        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v)));
+        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).MapAsync(r => r.Item2.Apply(value));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
@@ -83,7 +83,9 @@ namespace Funk
             patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, R>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
         }
 
-        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).FlatMap(r => value.AsMaybe().Map(v => r.Item2.Apply(v)));
+        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => value.AsMaybe().Map(v =>
+            v.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())
+        ).GetOrDefault()).Map(r => r.Item2.Apply(value));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
@@ -101,7 +103,9 @@ namespace Funk
             patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, Task<R>>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
         }
 
-        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => value.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())).FlatMapAsync(r => value.AsMaybe().MapAsync(v => r.Item2.Apply(v)));
+        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => value.AsMaybe().Map(v =>
+            v.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())
+        ).GetOrDefault()).MapAsync(r => r.Item2.Apply(value));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
