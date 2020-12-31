@@ -17,6 +17,7 @@ namespace Funk.Tests
                     {
                         ("Harun", _ => 1),
                         ("Cerim", _ => 2),
+                        ((int i) => i == 3, _ => 2),
                         ("Bosnia", _ => 3),
                         ("Funk", _ => 4),
                         (new {Name = "Harun"}, _ => 5)
@@ -40,6 +41,7 @@ namespace Funk.Tests
                         ("Bosnia", _ => 3.ToTask()),
                         ("Funky", _ => 4.ToTask()),
                         ("Funy", _ => 4.ToTask()),
+                        ((string i) => i.Contains("Funk"), _ => 2.ToTask()),
                         ("F", _ => 4.ToTask()),
                         ("Funky", _ => 3.ToTask()),
                         ("Fu", _ => 00.ToTask()),
@@ -49,7 +51,7 @@ namespace Funk.Tests
                         ("Fy", _ => 7.ToTask())
                     }.Match(v);
                 },
-                r => Assert.True(r.IsEmpty)
+                r => Assert.Equal(2, r)
             );
         }
 
