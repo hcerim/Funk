@@ -6,7 +6,7 @@ namespace Funk.Tests
     public class DataTests : Test
     {
         [Fact]
-        public void CreateCustomer()
+        public void Create()
         {
             UnitTest(
                 _ => Customer.New,
@@ -22,7 +22,7 @@ namespace Funk.Tests
         }
         
         [Fact]
-        public void UpdateCustomer()
+        public void Update()
         {
             UnitTest(
                 _ => Customer.New
