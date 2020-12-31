@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Prelude;
@@ -72,40 +71,40 @@ namespace Funk
 
     public struct TypePattern<R> : IEnumerable
     {
-        private List<Record<Type, Func<object, R>>> patterns;
+        private List<Record<Func<object, bool>, Func<object, R>>> patterns;
 
         public void Add<T>(Func<T, R> function)
         {
             if (patterns.IsNull())
             {
-                patterns = new List<Record<Type, Func<object, R>>>();
+                patterns = new List<Record<Func<object, bool>, Func<object, R>>>();
             }
-            patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, R>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
+            patterns.AddRange(function.AsMaybe().Map(f =>
+                rec(func((object o) => o is T), func((object o) => function((T)o))).ToImmutableList()
+            ).GetOrEmpty());
         }
 
-        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => value.AsMaybe().Map(v =>
-            v.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())
-        ).GetOrDefault()).Map(r => r.Item2.Apply(value));
+        public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).Map(r => r.Item2.Apply(value));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
 
     public struct AsyncTypePattern<R> : IEnumerable
     {
-        private List<Record<Type, Func<object, Task<R>>>> patterns;
+        private List<Record<Func<object, bool>, Func<object, Task<R>>>> patterns;
 
         public void Add<T>(Func<T, Task<R>> function)
         {
             if (patterns.IsNull())
             {
-                patterns = new List<Record<Type, Func<object, Task<R>>>>();
+                patterns = new List<Record<Func<object, bool>, Func<object, Task<R>>>>();
             }
-            patterns.AddRange(function.AsMaybe().Map(f => rec<Type, Func<object, Task<R>>>(typeof(T), o => function((T)o)).ToImmutableList()).GetOrEmpty());
+            patterns.AddRange(function.AsMaybe().Map(f =>
+                rec(func((object o) => o is T), func((object o) => function((T)o))).ToImmutableList()
+            ).GetOrEmpty());
         }
 
-        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => value.AsMaybe().Map(v =>
-            v.GetType().GetTypeInfo().IsAssignableFrom(i.Item1.GetTypeInfo())
-        ).GetOrDefault()).MapAsync(r => r.Item2.Apply(value));
+        public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).MapAsync(r => r.Item2.Apply(value));
 
         IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
     }
