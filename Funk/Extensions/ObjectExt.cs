@@ -62,25 +62,25 @@ namespace Funk
             return Maybe.Empty<R>();
         }
         
-        public static R Match<T, R>(
+        public static Maybe<R> Match<T, R>(
             this T obj,
             params ValueTuple<T, Func<T, R>>[] patterns
-        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).UnsafeGet(_ => UnhandledException).Item2.Apply(obj);
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).Map(p => p.Item2.Apply(obj));
         
-        public static void Match<T>(
+        public static Maybe<Unit> Match<T>(
             this T obj,
             params ValueTuple<T, Action<T>>[] patterns
-        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).UnsafeGet(_ => UnhandledException).Item2.Apply(obj);
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).Map(p => p.Item2.Apply(obj));
         
-        public static R Match<T, R>(
+        public static Maybe<R> Match<T, R>(
             this T obj,
             params ValueTuple<Func<T, bool>, Func<T, R>>[] patterns
-        ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).UnsafeGet(_ => UnhandledException).Item2.Apply(obj);
+        ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
         
-        public static void Match<T>(
+        public static Maybe<Unit> Match<T>(
             this T obj,
             params ValueTuple<Func<T, bool>, Action<T>>[] patterns
-        ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).UnsafeGet(_ => UnhandledException).Item2.Apply(obj);
+        ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
 
         public static R Match<T, R>(
             this T obj,

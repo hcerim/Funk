@@ -105,9 +105,9 @@ namespace Funk
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null)
         {
             Discriminator.Match(
-                0, _ => ifEmpty?.Invoke(Unit.Value),
-                1, _ => ifFirst?.Invoke((T1)Value),
-                2, _ => ifSecond?.Invoke((T2)Value)
+                0, _ => ifEmpty?.Apply(Unit.Value),
+                1, _ => ifFirst?.Apply((T1)Value),
+                2, _ => ifSecond?.Apply((T2)Value)
             );
         }
 
@@ -245,10 +245,10 @@ namespace Funk
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null)
         {
             Discriminator.Match(
-                0, _ => ifEmpty?.Invoke(Unit.Value),
-                1, _ => ifFirst?.Invoke((T1)Value),
-                2, _ => ifSecond?.Invoke((T2)Value),
-                3, _ => ifThird?.Invoke((T3)Value)
+                0, _ => ifEmpty?.Apply(Unit.Value),
+                1, _ => ifFirst?.Apply((T1)Value),
+                2, _ => ifSecond?.Apply((T2)Value),
+                3, _ => ifThird?.Apply((T3)Value)
             );
         }
 
@@ -418,11 +418,11 @@ namespace Funk
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null)
         {
             Discriminator.Match(
-                0, _ => ifEmpty?.Invoke(Unit.Value),
-                1, _ => ifFirst?.Invoke((T1)Value),
-                2, _ => ifSecond?.Invoke((T2)Value),
-                3, _ => ifThird?.Invoke((T3)Value),
-                4, _ => ifFourth?.Invoke((T4)Value)
+                0, _ => ifEmpty?.Apply(Unit.Value),
+                1, _ => ifFirst?.Apply((T1)Value),
+                2, _ => ifSecond?.Apply((T2)Value),
+                3, _ => ifThird?.Apply((T3)Value),
+                4, _ => ifFourth?.Apply((T4)Value)
             );
         }
 
@@ -624,12 +624,12 @@ namespace Funk
         public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null, Action<T5> ifFifth = null)
         {
             Discriminator.Match(
-                0, _ => ifEmpty?.Invoke(Unit.Value),
-                1, _ => ifFirst?.Invoke((T1)Value),
-                2, _ => ifSecond?.Invoke((T2)Value),
-                3, _ => ifThird?.Invoke((T3)Value),
-                4, _ => ifFourth?.Invoke((T4)Value),
-                5, _ => ifFifth?.Invoke((T5)Value)
+                0, _ => ifEmpty?.Apply(Unit.Value),
+                1, _ => ifFirst?.Apply((T1)Value),
+                2, _ => ifSecond?.Apply((T2)Value),
+                3, _ => ifThird?.Apply((T3)Value),
+                4, _ => ifFourth?.Apply((T4)Value),
+                5, _ => ifFifth?.Apply((T5)Value)
             );
         }
 
