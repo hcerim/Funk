@@ -84,8 +84,8 @@ namespace Funk
         {
             var value = Value;
             Discriminator.Match(
-                0, _ => ifEmpty?.Invoke(Unit.Value),
-                1, _ => ifNotEmpty?.Invoke((T)value)
+                0, _ => ifEmpty?.Apply(Unit.Value),
+                1, _ => ifNotEmpty?.Apply((T)value)
             );
         }
 

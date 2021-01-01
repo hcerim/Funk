@@ -473,6 +473,16 @@ namespace Funk.Tests
                 r => Assert.Equal(6, r)
             );
         }
+        
+        [Fact]
+        public void List_Pattern_Matching_Partition_Naive_Sort()
+        {
+            UnitTest(
+                _ => list(1, 2, 3, 5, 7, 4, 5, 2, 10, 4, 6, 9),
+                NaiveSort,
+                r => Assert.True(list(1, 2, 2, 3, 4, 4, 5, 5, 6, 7, 9, 10).SequenceEqual(r))
+            );
+        }
 
         [Fact]
         public void ForEach_Enumerable_Failure()
@@ -491,6 +501,19 @@ namespace Funk.Tests
                 _ => result(list("Harun", "Funk", "Funky")),
                 l => l.ForEachAsync<string, FunkException>(i => run(act(() => _testOutputHelper.WriteLine(i)))),
                 e => Assert.True(e.IsSuccess)
+            );
+        }
+        
+        private static IEnumerable<int> NaiveSort(IEnumerable<int> items)
+        {
+            return items.Match(
+                _ => list<int>(),
+                (first, rest) =>
+                {
+                    var partition = rest.ConditionalSplit(i => i <= first);
+                    return list(NaiveSort(partition.Item1)).Concat(list(first))
+                        .Concat(NaiveSort(partition.Item2)).Map();
+                }
             );
         }
     }

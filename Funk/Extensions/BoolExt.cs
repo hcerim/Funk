@@ -8,7 +8,7 @@ namespace Funk
     {
         public static T Match<T>(this bool item, Func<Unit, T> ifFalse, Func<Unit, T> ifTrue) => item.Match(false, _ => ifFalse(Unit.Value), true, _ => ifTrue(Unit.Value));
 
-        public static void Match(this bool item, Action<Unit> ifFalse = null, Action<Unit> ifTrue = null) => item.Match(false, _ => ifFalse?.Invoke(Unit.Value), true, _ => ifTrue?.Invoke(Unit.Value));
+        public static void Match(this bool item, Action<Unit> ifFalse = null, Action<Unit> ifTrue = null) => item.Match(false, _ => ifFalse?.Apply(Unit.Value), true, _ => ifTrue?.Apply(Unit.Value));
 
         /// <summary>
         /// If false, Maybe will be empty.

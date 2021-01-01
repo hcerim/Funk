@@ -35,6 +35,18 @@ namespace Funk
                 _ => ifMultiple(list)
             );
         }
+        
+        /// <summary>
+        /// Pattern-matches on the sequence. Handles null sequence.
+        /// </summary>
+        public static R Match<T, R>(this IEnumerable<T> sequence, Func<Unit, R> ifEmpty, Func<T, IImmutableList<T>, R> ifNotEmpty)
+        {
+            var list = sequence.Map();
+            return list.Count.Match(
+                0, _ => ifEmpty(Unit.Value),
+                _ => ifNotEmpty(list.First(), list.Skip(1).Map())
+            );
+        }
 
         /// <summary>
         /// Returns Maybe of immutable list of items that can be safely converted to the specified type.
@@ -137,7 +149,7 @@ namespace Funk
         {
             var collection = enumerable.Map();
             var left = collection.Where(predicate).Map();
-            var right = collection.Except(left).Map();
+            var right = collection.Where(i => !predicate(i)).Map();
             return Record.Create(left, right);
         }
 

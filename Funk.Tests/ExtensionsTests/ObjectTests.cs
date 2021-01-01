@@ -29,12 +29,17 @@ namespace Funk.Tests
         public void Match_On_Int_For_Result()
         {
             UnitTest(
-                _ => 2,
+                _ => 7,
                 i => i.Match(
-                    2, _ => "Funk",
-                    3, _ => "Harun"
+                    (1, _ => "Funk"),
+                    (2, _ => "Harun"),
+                    (3, _ => "Funky"),
+                    (6, _ => "Fun"),
+                    (7, _ => "Funny"),
+                    (3, _ => "F"),
+                    (9, _ => "FP")
                 ),
-                s => Assert.Equal("Funk", s)
+                s => Assert.Equal("Funny", s)
             );
         }
 
@@ -44,9 +49,9 @@ namespace Funk.Tests
             UnitTest(
                 _ => "Bosnia",
                 i => i.Match(
-                    "Harun", _ => "Funk",
-                    "Funk", _ => "Harun",
-                    _ => "Hello Funk"
+                    (c => c == "Bosnia", _ => "Hello Funk"),
+                    (c => c == "Hello", _ => "Funky"),
+                    (c => c.StartsWith("B"), _ => "Funk")
                 ),
                 s => Assert.Equal("Hello Funk", s)
             );

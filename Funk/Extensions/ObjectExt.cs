@@ -61,6 +61,26 @@ namespace Funk
             }
             return Maybe.Empty<R>();
         }
+        
+        public static Maybe<R> Match<T, R>(
+            this T obj,
+            params ValueTuple<T, Func<T, R>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).Map(p => p.Item2.Apply(obj));
+        
+        public static Maybe<Unit> Match<T>(
+            this T obj,
+            params ValueTuple<T, Action<T>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).Map(p => p.Item2.Apply(obj));
+        
+        public static Maybe<R> Match<T, R>(
+            this T obj,
+            params ValueTuple<Func<T, bool>, Func<T, R>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
+        
+        public static Maybe<Unit> Match<T>(
+            this T obj,
+            params ValueTuple<Func<T, bool>, Action<T>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
 
         public static R Match<T, R>(
             this T obj,
@@ -128,7 +148,7 @@ namespace Funk
             }
             return obj.SafeEquals(case2) ? selector2(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         public static R Match<T, R>(
             this T obj,
             Func<T, bool> predicate1, Func<T, R> selector1,
