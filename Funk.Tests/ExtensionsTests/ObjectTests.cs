@@ -31,15 +31,11 @@ namespace Funk.Tests
             UnitTest(
                 _ => 7,
                 i => i.Match(
-                    (1, _ => "Funk"),
-                    (2, _ => "Harun"),
-                    (3, _ => "Funky"),
-                    (6, _ => "Fun"),
-                    (7, _ => "Funny"),
-                    (3, _ => "F"),
-                    (9, _ => "FP")
+                    (list(1, 2, 3), _ => "Funk"),
+                    (list(3, 4, 7), _ => "Funky"),
+                    (list(5, 7, 3), _ => "Funny")
                 ),
-                s => Assert.Equal("Funny", s)
+                s => Assert.Equal("Funky", s)
             );
         }
 
