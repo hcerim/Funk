@@ -72,13 +72,13 @@ namespace Funk.Internal
                     return nested.Match(
                         _ =>
                         {
-                            p.SetValue(data, Convert.ChangeType(value, p.PropertyType), null);
+                            p.SetValue(data, value, null);
                             return Unit.Value;
                         },
                         l =>
                         {
                             var aggregate = l.Reduce(target.Parent, data);
-                            p.SetValue(aggregate.data, Convert.ChangeType(value, p.PropertyType), null);
+                            p.SetValue(aggregate.data, value, null);
                             return Unit.Value;
                         }
                     );
@@ -90,13 +90,13 @@ namespace Funk.Internal
                     return nested.Match(
                         _ =>
                         {
-                            f.SetValue(data, Convert.ChangeType(value, f.FieldType));
+                            f.SetValue(data, value);
                             return Unit.Value;
                         },
                         l =>
                         {
                             var aggregate = l.Reduce(target.Parent, data);
-                            f.SetValue(aggregate.data, Convert.ChangeType(value, f.FieldType));
+                            f.SetValue(aggregate.data, value);
                             return Unit.Value;
                         }
                     );
