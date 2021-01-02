@@ -38,26 +38,26 @@ namespace Funk.Tests
                     }),
                 c =>
                 {
-                    var copy = c.Copy();
-                    Assert.True(ReferenceEquals(c.Account, copy.Account));
                     var updated = c
                         .With(cc => cc.Age, 35)
-                        .With(cc => cc.Surname, "Doe");
-                    Assert.True(ReferenceEquals(c.Account, updated.Account));
-                    var yeah = updated.With(u => u.Account.CreditCard.Contract, new Contract
-                    {
-                        Document = "Example"
-                    });
-                    Assert.True(ReferenceEquals(c.Account, yeah.Account));
-                    return updated;
+                        .With(cc => cc.Surname, "Doe")
+                        .With(u => u.Account.CreditCard.Contract, new Contract
+                        {
+                            Document = "Example"
+                        })
+                        .With(u => u.Account2.CreditCard.Contract, new Contract
+                        {
+                            Document = "Example"
+                        });
+                    return (c, updated);
                 },
                 c =>
                 {
-                    Assert.Equal("John", c.Name);
-                    Assert.Equal("Doe", c.Surname);
-                    Assert.Equal(35, c.Age);
-                    Assert.Equal(123456789, c.Account.Number);
-                    Assert.Equal(DateTime.Parse("12-12-2021"), c.Account.CreditCard.ExpirationDate);
+                    Assert.NotSame(c.c.Account, c.updated.Account);
+                    Assert.Equal("Example", c.updated.Account.CreditCard.Contract.Document);
+                    Assert.Null(c.c.Account.CreditCard.Contract);
+                    Assert.Equal("Doe", c.updated.Surname);
+                    Assert.Equal(35, c.updated.Age);
                 }
             );
         }
@@ -71,6 +71,8 @@ namespace Funk.Tests
 
         public Account Account { get; private set; }
         
+        public readonly Account Account2;
+        
         public string Name { get; private set; }
 
         public int Age { get; private set; }
@@ -83,6 +85,8 @@ namespace Funk.Tests
     public class Account
     {
         public int Number { get; set; }
+
+        public readonly DateTime Created;
         
         public CreditCard CreditCard { get; set; }
     }

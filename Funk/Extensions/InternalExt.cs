@@ -77,8 +77,8 @@ namespace Funk.Internal
                         },
                         l =>
                         {
-                            var aggregate = data.Reduce(target.Parent, l);
-                            p.SetValue(aggregate.Item2, Convert.ChangeType(value, p.PropertyType), null);
+                            var aggregate = l.Reduce(target.Parent, data);
+                            p.SetValue(aggregate.data, Convert.ChangeType(value, p.PropertyType), null);
                             return Unit.Value;
                         }
                     );
@@ -95,8 +95,8 @@ namespace Funk.Internal
                         },
                         l =>
                         {
-                            var aggregate = data.Reduce(target.Parent, l);
-                            f.SetValue(aggregate.Item2, Convert.ChangeType(value, f.FieldType));
+                            var aggregate = l.Reduce(target.Parent, data);
+                            f.SetValue(aggregate.data, Convert.ChangeType(value, f.FieldType));
                             return Unit.Value;
                         }
                     );
@@ -133,19 +133,19 @@ namespace Funk.Internal
                 otherwiseThrow: _ => new InvalidOperationException("Type member must be either a property or a field.")
             );
         
-        private static (Type, object) Reduce(this object data, Type parent, IImmutableList<(MemberTypes, string)> l) =>
+        private static (Type _, object data) Reduce(this IImmutableList<(MemberTypes type, string child)> l, Type parent, object data) =>
             l.Aggregate((parent, data), (a, b) =>
             {
-                return b.Item1.Match(
+                return b.type.Match(
                     MemberTypes.Property, __ =>
                     {
-                        var obj = a.parent.GetProperty(b.Item2)?.GetValue(a.Item2, null);
+                        var obj = a.parent.GetProperty(b.child)?.GetValue(a.data, null);
                         return (obj?.GetType(), obj);
                     },
                     MemberTypes.Field, __ =>
                     {
-                        var info = a.parent.GetField(b.Item2);
-                        return (info?.GetType(), info?.GetValue(a.Item2));
+                        var obj = a.parent.GetField(b.child).GetValue(a.data);
+                        return (obj?.GetType(), obj);
                     }
                 );
             });
