@@ -77,21 +77,7 @@ namespace Funk.Internal
                         },
                         l =>
                         {
-                            var aggregate = l.Aggregate((target.Parent, (object)data), (a, b) =>
-                            {
-                                return b.Type.Match(
-                                    MemberTypes.Property, __ =>
-                                    {
-                                        var obj = a.Parent.GetProperty(b.Name)?.GetValue(a.Item2, null);
-                                        return (obj?.GetType(), obj);
-                                    },
-                                    MemberTypes.Field, __ =>
-                                    {
-                                        var info = a.Parent.GetField(b.Name);
-                                        return (info?.GetType(), info?.GetValue(a.Item2));
-                                    }
-                                );
-                            });
+                            var aggregate = data.Reduce(target.Parent, l);
                             p.SetValue(aggregate.Item2, Convert.ChangeType(value, p.PropertyType), null);
                             return Unit.Value;
                         }
@@ -109,21 +95,7 @@ namespace Funk.Internal
                         },
                         l =>
                         {
-                            var aggregate = l.Aggregate((target.Parent, (object)data), (a, b) =>
-                            {
-                                return b.Type.Match(
-                                    MemberTypes.Property, __ =>
-                                    {
-                                        var obj = a.Parent.GetProperty(b.Name)?.GetValue(a.Item2, null);
-                                        return (obj?.GetType(), obj);
-                                    },
-                                    MemberTypes.Field, __ =>
-                                    {
-                                        var info = a.Parent.GetField(b.Name);
-                                        return (info?.GetType(), info?.GetValue(a.Item2));
-                                    }
-                                );
-                            });
+                            var aggregate = data.Reduce(target.Parent, l);
                             f.SetValue(aggregate.Item2, Convert.ChangeType(value, f.FieldType));
                             return Unit.Value;
                         }
@@ -160,5 +132,22 @@ namespace Funk.Internal
                 ),
                 otherwiseThrow: _ => new InvalidOperationException("Type member must be either a property or a field.")
             );
+        
+        private static (Type, object) Reduce(this object data, Type parent, IImmutableList<(MemberTypes, string)> l) =>
+            l.Aggregate((parent, data), (a, b) =>
+            {
+                return b.Item1.Match(
+                    MemberTypes.Property, __ =>
+                    {
+                        var obj = a.parent.GetProperty(b.Item2)?.GetValue(a.Item2, null);
+                        return (obj?.GetType(), obj);
+                    },
+                    MemberTypes.Field, __ =>
+                    {
+                        var info = a.parent.GetField(b.Item2);
+                        return (info?.GetType(), info?.GetValue(a.Item2));
+                    }
+                );
+            });
     }
 }
