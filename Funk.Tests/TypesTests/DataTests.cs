@@ -1,5 +1,6 @@
 ﻿using System;
 using Xunit;
+using static Funk.Prelude;
 
 namespace Funk.Tests
 {
@@ -20,7 +21,19 @@ namespace Funk.Tests
                 }
             );
         }
-        
+
+        [Fact]
+        public void Create_Failure()
+        {
+            UnitTest(
+                _ => Customer.New,
+                c => act(() => c
+                    .With(cc => cc.Name, "John")
+                    .With(cc => cc.Account2.Number, 1234567890)),
+                a => Assert.Throws<EmptyValueException>(a)
+            );
+        }
+
         [Fact]
         public void Update()
         {
@@ -75,15 +88,15 @@ namespace Funk.Tests
         }
 
         public Account Account { get; private set; }
-        
+
         public readonly Account Account2;
-        
+
         public string Name { get; private set; }
 
         public int Age { get; private set; }
 
         public readonly string Surname;
-        
+
         public static Customer New => new Customer();
     }
 
@@ -92,7 +105,7 @@ namespace Funk.Tests
         public int Number { get; set; }
 
         public readonly int Amount;
-        
+
         public CreditCard CreditCard { get; set; }
     }
 
