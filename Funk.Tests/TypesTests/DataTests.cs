@@ -30,22 +30,39 @@ namespace Funk.Tests
                     .With(cc => cc.Age, 40)
                     .With(cc => cc.Account, new Account
                     {
-                        Number = 123456789,
+                        Number = 1234567890,
                         CreditCard = new CreditCard
                         {
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
                     }),
-                c => c
-                    .With(cc => cc.Age, 35)
-                    .With(cc => cc.Surname, "Doe"),
                 c =>
                 {
-                    Assert.Equal("John", c.Name);
-                    Assert.Equal("Doe", c.Surname);
-                    Assert.Equal(35, c.Age);
-                    Assert.Equal(123456789, c.Account.Number);
-                    Assert.Equal(DateTime.Parse("12-12-2021"), c.Account.CreditCard.ExpirationDate);
+                    var updated = c
+                        .With(cc => cc.Age, 35)
+                        .With(cc => cc.Surname, "Doe")
+                        .With(cc => cc.Account.CreditCard.Contract, new Contract
+                        {
+                            Document = "Example"
+                        })
+                        .With(cc => cc.Account2, new Account
+                        {
+                            Number = 1234567891,
+                            CreditCard = new CreditCard
+                            {
+                                ExpirationDate = DateTime.Parse("12-12-2022")
+                            }
+                        })
+                        .With(u => u.Account2.Amount, 200);
+                    return (c, updated);
+                },
+                c =>
+                {
+                    Assert.NotSame(c.c.Account, c.updated.Account);
+                    Assert.Equal("Example", c.updated.Account.CreditCard.Contract.Document);
+                    Assert.Null(c.c.Account.CreditCard.Contract);
+                    Assert.Equal("Doe", c.updated.Surname);
+                    Assert.Equal(35, c.updated.Age);
                 }
             );
         }
@@ -59,6 +76,8 @@ namespace Funk.Tests
 
         public Account Account { get; private set; }
         
+        public readonly Account Account2;
+        
         public string Name { get; private set; }
 
         public int Age { get; private set; }
@@ -71,6 +90,8 @@ namespace Funk.Tests
     public class Account
     {
         public int Number { get; set; }
+
+        public readonly int Amount;
         
         public CreditCard CreditCard { get; set; }
     }
@@ -78,5 +99,12 @@ namespace Funk.Tests
     public class CreditCard
     {
         public DateTime ExpirationDate { get; set; }
+
+        public Contract Contract { get; set; }
+    }
+
+    public class Contract
+    {
+        public string Document { get; set; }
     }
 }

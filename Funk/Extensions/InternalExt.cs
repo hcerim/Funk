@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -61,31 +62,93 @@ namespace Funk.Internal
         
         internal static T Map<T, TKey>(this T data, TKey value, Expression<Func<T, TKey>> expression)
         {
+            var memberExpression = expression.GetMemberExpression();
             new TypePattern<Unit>
             {
                 (PropertyInfo p) =>
                 {
-                    p.SetValue(data, Convert.ChangeType(value, p.PropertyType), null);
-                    return Unit.Value;
+                    var target = GetTarget(ImmutableList<(MemberTypes, string)>.Empty, memberExpression);
+                    var nested = target.Children.Take(target.Children.Count - 1).AsNotEmptyList();
+                    return nested.Match(
+                        _ =>
+                        {
+                            p.SetValue(data, Convert.ChangeType(value, p.PropertyType), null);
+                            return Unit.Value;
+                        },
+                        l =>
+                        {
+                            var aggregate = l.Reduce(target.Parent, data);
+                            p.SetValue(aggregate.data, Convert.ChangeType(value, p.PropertyType), null);
+                            return Unit.Value;
+                        }
+                    );
                 },
                 (FieldInfo f) =>
                 {
-                    f.SetValue(data, Convert.ChangeType(value, f.FieldType));
-                    return Unit.Value;
+                    var target = GetTarget(ImmutableList<(MemberTypes, string)>.Empty, memberExpression);
+                    var nested = target.Children.Take(target.Children.Count - 1).AsNotEmptyList();
+                    return nested.Match(
+                        _ =>
+                        {
+                            f.SetValue(data, Convert.ChangeType(value, f.FieldType));
+                            return Unit.Value;
+                        },
+                        l =>
+                        {
+                            var aggregate = l.Reduce(target.Parent, data);
+                            f.SetValue(aggregate.data, Convert.ChangeType(value, f.FieldType));
+                            return Unit.Value;
+                        }
+                    );
                 }
-            }.Match(expression.GetMemberInfo()).UnsafeGet(_ =>
+            }.Match(memberExpression.Member).UnsafeGet(_ =>
                 new InvalidOperationException("Type member must be either a property or a field.")
             );
 
             return data;
         }
 
-        private static MemberInfo GetMemberInfo<T, TKey>(this Expression<Func<T, TKey>> expression)
-        {
-            return expression == null ? throw new ArgumentNullException(nameof(expression)) :
-                expression.Body is UnaryExpression u && u.Operand is MemberExpression m1 ? m1.Member :
-                expression.Body is MemberExpression m2 ? m2.Member :
-                throw new ArgumentException("The expression does not indicate a valid property or a field.");
-        }
+        private static MemberExpression GetMemberExpression<T, TKey>(this Expression<Func<T, TKey>> expression) =>
+            expression == null ? throw new ArgumentNullException(nameof(expression)) :
+            expression.Body is UnaryExpression u && u.Operand is MemberExpression m1 ? m1 :
+            expression.Body is MemberExpression m2 ? m2 :
+            throw new ArgumentException("The expression does not indicate a valid property or a field.");
+
+        private static (Type Parent, ImmutableList<(MemberTypes Type, string Name)> Children) GetTarget(this ImmutableList<(MemberTypes, string)> nested, MemberExpression expression) =>
+            expression.Expression.NodeType.Match(
+                ExpressionType.Parameter, _ => (expression.Expression.Type, nested.Add((expression.Member.MemberType, expression.Member.Name)).Reverse()),
+                ExpressionType.MemberAccess, _ => new TypePattern<(Type, ImmutableList<(MemberTypes, string)>)>
+                {
+                    (PropertyInfo p) => GetTarget(
+                        nested.Add((expression.Member.MemberType, expression.Member.Name)),
+                        (MemberExpression)expression.Expression
+                    ),
+                    (FieldInfo f) => GetTarget(
+                        nested.Add((expression.Member.MemberType, expression.Member.Name)),
+                        (MemberExpression)expression.Expression
+                    )
+                }.Match(expression.Member).UnsafeGet(__ =>
+                    new ArgumentException("The expression does not indicate a valid property or a field.")
+                ),
+                otherwiseThrow: _ => new InvalidOperationException("Type member must be either a property or a field.")
+            );
+        
+        private static (Type _, object data) Reduce(this IImmutableList<(MemberTypes type, string child)> l, Type parent, object data) =>
+            l.Aggregate((parent, data), (a, b) => b.type.Match(
+                MemberTypes.Property, __ =>
+                {
+                    var obj = a.parent.GetProperty(b.child).GetValue(a.data, null).AsMaybe().UnsafeGet(_ =>
+                        new EmptyValueException($"{b.child} is empty.")
+                    );
+                    return (obj.GetType(), obj);
+                },
+                MemberTypes.Field, __ =>
+                {
+                    var obj = a.parent.GetField(b.child).GetValue(a.data).AsMaybe().UnsafeGet(_ =>
+                        new EmptyValueException($"{b.child} is empty.")
+                    );
+                    return (obj?.GetType(), obj);
+                }
+            ));
     }
 }
