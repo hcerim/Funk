@@ -36,9 +36,21 @@ namespace Funk.Tests
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
                     }),
-                c => c
-                    .With(cc => cc.Age, 35)
-                    .With(cc => cc.Surname, "Doe"),
+                c =>
+                {
+                    var copy = c.Copy();
+                    Assert.True(ReferenceEquals(c.Account, copy.Account));
+                    var updated = c
+                        .With(cc => cc.Age, 35)
+                        .With(cc => cc.Surname, "Doe");
+                    Assert.True(ReferenceEquals(c.Account, updated.Account));
+                    var yeah = updated.With(u => u.Account.CreditCard.Contract, new Contract
+                    {
+                        Document = "Example"
+                    });
+                    Assert.True(ReferenceEquals(c.Account, yeah.Account));
+                    return updated;
+                },
                 c =>
                 {
                     Assert.Equal("John", c.Name);
@@ -78,5 +90,12 @@ namespace Funk.Tests
     public class CreditCard
     {
         public DateTime ExpirationDate { get; set; }
+
+        public Contract Contract { get; set; }
+    }
+
+    public class Contract
+    {
+        public string Document { get; set; }
     }
 }
