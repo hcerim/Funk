@@ -26,10 +26,13 @@ namespace Funk
         /// Override if desired copy behavior differs from this one.
         /// </summary>
         public virtual T Copy() =>
-            JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this), new JsonSerializerSettings
+            Exc.Create(_ => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this), new JsonSerializerSettings
             {
                 ContractResolver = new Writable()
-            });
+            })).Match(
+                v => v,
+                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
+            );
     }
     
     internal class Writable : DefaultContractResolver

@@ -12,7 +12,8 @@ namespace Funk
         Undefined = 0,
         EmptyValue = 1,
         UnhandledValue = 2,
-        Enumerable = 3
+        Enumerable = 3,
+        Serialization = 4,
     }
 
     /// <summary>
@@ -42,6 +43,17 @@ namespace Funk
     {
         public EmptyValueException(string message)
             : base(FunkExceptionType.EmptyValue, message)
+        {
+        }
+    }
+    
+    /// <summary>
+    /// Indicates error upon serialization.
+    /// </summary>
+    public sealed class SerializationException : FunkException
+    {
+        public SerializationException(string message)
+            : base(FunkExceptionType.Serialization, message)
         {
         }
     }
