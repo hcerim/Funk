@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Internal.InternalExt;
@@ -81,6 +82,16 @@ namespace Funk
             this T obj,
             params ValueTuple<Func<T, bool>, Action<T>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
+        
+        public static Maybe<R> Match<T, R>(
+            this T obj,
+            params ValueTuple<IEnumerable<T>, Func<Unit, R>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(Unit.Value));
+        
+        public static Maybe<Unit> Match<T>(
+            this T obj,
+            params ValueTuple<IEnumerable<T>, Action<Unit>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(Unit.Value));
 
         public static R Match<T, R>(
             this T obj,
