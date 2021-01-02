@@ -85,13 +85,13 @@ namespace Funk
         
         public static Maybe<R> Match<T, R>(
             this T obj,
-            params ValueTuple<IEnumerable<T>, Func<Unit, R>>[] patterns
-        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(Unit.Value));
+            params ValueTuple<IEnumerable<T>, Func<T, R>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(obj));
         
         public static Maybe<Unit> Match<T>(
             this T obj,
-            params ValueTuple<IEnumerable<T>, Action<Unit>>[] patterns
-        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(Unit.Value));
+            params ValueTuple<IEnumerable<T>, Action<T>>[] patterns
+        ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(obj));
 
         public static R Match<T, R>(
             this T obj,
