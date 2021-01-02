@@ -134,20 +134,21 @@ namespace Funk.Internal
             );
         
         private static (Type _, object data) Reduce(this IImmutableList<(MemberTypes type, string child)> l, Type parent, object data) =>
-            l.Aggregate((parent, data), (a, b) =>
-            {
-                return b.type.Match(
-                    MemberTypes.Property, __ =>
-                    {
-                        var obj = a.parent.GetProperty(b.child)?.GetValue(a.data, null);
-                        return (obj?.GetType(), obj);
-                    },
-                    MemberTypes.Field, __ =>
-                    {
-                        var obj = a.parent.GetField(b.child).GetValue(a.data);
-                        return (obj?.GetType(), obj);
-                    }
-                );
-            });
+            l.Aggregate((parent, data), (a, b) => b.type.Match(
+                MemberTypes.Property, __ =>
+                {
+                    var obj = a.parent.GetProperty(b.child).GetValue(a.data, null).AsMaybe().UnsafeGet(_ =>
+                        new EmptyValueException($"{b.child} is empty.")
+                    );
+                    return (obj.GetType(), obj);
+                },
+                MemberTypes.Field, __ =>
+                {
+                    var obj = a.parent.GetField(b.child).GetValue(a.data).AsMaybe().UnsafeGet(_ =>
+                        new EmptyValueException($"{b.child} is empty.")
+                    );
+                    return (obj?.GetType(), obj);
+                }
+            ));
     }
 }

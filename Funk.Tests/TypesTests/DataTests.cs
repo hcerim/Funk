@@ -30,7 +30,7 @@ namespace Funk.Tests
                     .With(cc => cc.Age, 40)
                     .With(cc => cc.Account, new Account
                     {
-                        Number = 123456789,
+                        Number = 1234567890,
                         CreditCard = new CreditCard
                         {
                             ExpirationDate = DateTime.Parse("12-12-2021")
@@ -41,14 +41,19 @@ namespace Funk.Tests
                     var updated = c
                         .With(cc => cc.Age, 35)
                         .With(cc => cc.Surname, "Doe")
-                        .With(u => u.Account.CreditCard.Contract, new Contract
+                        .With(cc => cc.Account.CreditCard.Contract, new Contract
                         {
                             Document = "Example"
                         })
-                        .With(u => u.Account2.CreditCard.Contract, new Contract
+                        .With(cc => cc.Account2, new Account
                         {
-                            Document = "Example"
-                        });
+                            Number = 1234567891,
+                            CreditCard = new CreditCard
+                            {
+                                ExpirationDate = DateTime.Parse("12-12-2022")
+                            }
+                        })
+                        .With(u => u.Account2.Amount, 200);
                     return (c, updated);
                 },
                 c =>
@@ -86,7 +91,7 @@ namespace Funk.Tests
     {
         public int Number { get; set; }
 
-        public readonly DateTime Created;
+        public readonly int Amount;
         
         public CreditCard CreditCard { get; set; }
     }
