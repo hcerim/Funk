@@ -47,13 +47,7 @@ namespace Funk
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
         public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
-            new Builder<T>(
-                item,
-                new List<(Expression<Func<T, object>> expression, object value)>
-                {
-                    (Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value)
-                }
-            ).Build();
+            item.With(expression, value).Build();
 
         /// <summary>
         /// Creates a Builder object from the provided one for the specified Data type.
@@ -65,7 +59,7 @@ namespace Funk
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
         public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
-            builder.With(Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value).Build();
+            builder.With(expression, value).Build();
 
         /// <summary>
         /// Creates a new Data object from the specified Builder.
