@@ -13,7 +13,7 @@ namespace Funk.Tests
                 _ => Customer.New,
                 c => c
                     .With(cc => cc.Name, "John")
-                    .With(cc => cc.Age, 40),
+                    .WithBuild(cc => cc.Age, 40),
                 c =>
                 {
                     Assert.Equal("John", c.Name);
@@ -29,7 +29,9 @@ namespace Funk.Tests
                 _ => Customer.New,
                 c => act(() => c
                     .With(cc => cc.Name, "John")
-                    .With(cc => cc.Account2.Number, 1234567890)),
+                    .With(cc => cc.Account2.Number, 1234567890)
+                    .Build()
+                ),
                 a => Assert.Throws<EmptyValueException>(a)
             );
         }
@@ -48,11 +50,13 @@ namespace Funk.Tests
                         {
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
-                    }),
+                    })
+                    .Build(),
                 c =>
                 {
-                    var updated = c
-                        .With(cc => cc.Age, 35)
+                    var middle = c
+                        .WithBuild(cc => cc.Age, 35);
+                    var updated = middle    
                         .With(cc => cc.Surname, "Doe")
                         .With(cc => cc.Account.CreditCard.Contract, new Contract
                         {
@@ -66,7 +70,7 @@ namespace Funk.Tests
                                 ExpirationDate = DateTime.Parse("12-12-2022")
                             }
                         })
-                        .With(u => u.Account2.Amount, 200);
+                        .WithBuild(u => u.Account2.Amount, 200);
                     return (c, updated);
                 },
                 c =>
