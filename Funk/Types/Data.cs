@@ -71,18 +71,7 @@ namespace Funk
         /// Creates a new Data object from the specified Builder.
         /// </summary>
         public static T Build<T>(this Builder<T> builder) where T : Data<T> =>
-            builder.Expressions.Aggregate(builder.Item.Copy(), (item, expressions) => item.Map(expressions.value, expressions.expression));
-    }
-    
-    internal class Writable : DefaultContractResolver
-    {
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-        {
-            var property = base.CreateProperty(member, memberSerialization);
-            property.Readable = true;
-            property.Writable = true;
-            return property;
-        }
+            builder.Expressions.Aggregate(builder.Item.Copy(), (item, expressions) => item.Map(expressions.expression, expressions.value));
     }
 
     public sealed class Builder<T> where T : Data<T>
@@ -100,5 +89,16 @@ namespace Funk
 
         internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
             new List<(Expression<Func<T, object>> expression, object value)>();
+    }
+    
+    internal class Writable : DefaultContractResolver
+    {
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            var property = base.CreateProperty(member, memberSerialization);
+            property.Readable = true;
+            property.Writable = true;
+            return property;
+        }
     }
 }

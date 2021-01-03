@@ -60,7 +60,7 @@ namespace Funk.Internal
 
         internal static IImmutableList<T> GetOrEmpty<T>(this Maybe<IImmutableList<T>> maybe) => maybe.GetOr(_ => ImmutableList<T>.Empty.Map());
         
-        internal static T Map<T, TKey>(this T data, TKey value, Expression<Func<T, TKey>> expression)
+        internal static T Map<T, TKey>(this T data, Expression<Func<T, TKey>> expression, TKey value)
         {
             var memberExpression = expression.GetMemberExpression();
             new TypePattern<Unit>
