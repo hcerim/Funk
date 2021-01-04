@@ -12,8 +12,11 @@ namespace Funk.Tests
             UnitTest(
                 _ => Customer.New,
                 c => c
-                    .With(cc => cc.Name, "John")
-                    .WithBuild(cc => cc.Age, 40),
+                    .With(
+                        (cc => cc.Name, "John"),
+                        (cc => cc.Age, 40)
+                    )
+                    .Build(),
                 c =>
                 {
                     Assert.Equal("John", c.Name);
@@ -56,21 +59,23 @@ namespace Funk.Tests
                 {
                     var middle = c
                         .WithBuild(cc => cc.Age, 35);
-                    var updated = middle    
+                    var updated = middle
                         .With(cc => cc.Surname, "Doe")
                         .WithBuild(cc => cc.Account.CreditCard.Contract, new Contract
                         {
                             Document = "Example"
                         })
-                        .WithBuild(cc => cc.Account2, new Account
-                        {
-                            Number = 1234567891,
-                            CreditCard = new CreditCard
+                        .WithBuild(
+                            (cc => cc.Account2, new Account
                             {
-                                ExpirationDate = DateTime.Parse("12-12-2022")
-                            }
-                        })
-                        .WithBuild(u => u.Account2.Amount, 200);
+                                Number = 1234567891,
+                                CreditCard = new CreditCard
+                                {
+                                    ExpirationDate = DateTime.Parse("12-12-2022")
+                                }
+                            }),
+                            (u => u.Account2.Amount, 200)
+                        );
                     return (c, updated);
                 },
                 c =>

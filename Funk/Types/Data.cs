@@ -44,10 +44,25 @@ namespace Funk
             );
         
         /// <summary>
+        /// Creates a Builder object for the specified Data type.
+        /// </summary>
+        public static Builder<T> With<T>(this Data<T> item, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
+            new Builder<T>(
+                item,
+                expressions
+            );
+        
+        /// <summary>
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
         public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             item.With(expression, value).Build();
+        
+        /// <summary>
+        /// Creates a Builder object for the specified Data type.
+        /// </summary>
+        public static T WithBuild<T>(this Data<T> item, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
+            item.With(expressions).Build();
 
         /// <summary>
         /// Creates a Builder object from the provided one for the specified Data type.
@@ -56,10 +71,22 @@ namespace Funk
             builder.With(Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value);
         
         /// <summary>
+        /// Creates a Builder object from the provided one for the specified Data type.
+        /// </summary>
+        public static Builder<T> With<T>(this Builder<T> builder, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
+            builder.With(expressions);
+        
+        /// <summary>
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
         public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             builder.With(expression, value).Build();
+        
+        /// <summary>
+        /// Creates a Builder object from the provided one for the specified Data type.
+        /// </summary>
+        public static T WithBuild<T>(this Builder<T> builder, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
+            builder.With(expressions).Build();
 
         /// <summary>
         /// Creates a new Data object from the specified Builder.
@@ -78,6 +105,9 @@ namespace Funk
 
         internal Builder<T> With(Expression<Func<T, object>> expression, object value) =>
             new Builder<T>(Item, Expressions.Concat(list((expression, value))));
+        
+        internal Builder<T> With(IEnumerable<(Expression<Func<T, object>> expression, object value)> expressions) =>
+            new Builder<T>(Item, Expressions.Concat(expressions));
         
         internal Data<T> Item { get; }
 
