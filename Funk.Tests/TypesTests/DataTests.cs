@@ -58,11 +58,11 @@ namespace Funk.Tests
                         .WithBuild(cc => cc.Age, 35);
                     var updated = middle    
                         .With(cc => cc.Surname, "Doe")
-                        .With(cc => cc.Account.CreditCard.Contract, new Contract
+                        .WithBuild(cc => cc.Account.CreditCard.Contract, new Contract
                         {
                             Document = "Example"
                         })
-                        .With(cc => cc.Account2, new Account
+                        .WithBuild(cc => cc.Account2, new Account
                         {
                             Number = 1234567891,
                             CreditCard = new CreditCard
