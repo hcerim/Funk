@@ -137,7 +137,7 @@ namespace Funk.Internal
                     var obj = a.parent.GetField(b.child).GetValue(a.data).AsMaybe().UnsafeGet(_ =>
                         new EmptyValueException($"{b.child} is empty.")
                     );
-                    return (obj?.GetType(), obj);
+                    return (obj.GetType(), obj);
                 }
             ));
     }
