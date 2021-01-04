@@ -117,19 +117,9 @@ namespace Funk.Internal
         private static (Type Parent, ImmutableList<(MemberTypes Type, string Name)> Children) GetTarget(this ImmutableList<(MemberTypes, string)> nested, MemberExpression expression) =>
             expression.Expression.NodeType.Match(
                 ExpressionType.Parameter, _ => (expression.Expression.Type, nested.Add((expression.Member.MemberType, expression.Member.Name)).Reverse()),
-                ExpressionType.MemberAccess, _ => new TypePattern<(Type, ImmutableList<(MemberTypes, string)>)>
-                {
-                    (PropertyInfo p) => GetTarget(
-                        nested.Add((expression.Member.MemberType, expression.Member.Name)),
-                        (MemberExpression)expression.Expression
-                    ),
-                    (FieldInfo f) => GetTarget(
-                        nested.Add((expression.Member.MemberType, expression.Member.Name)),
-                        (MemberExpression)expression.Expression
-                    )
-                }.Match(expression.Member).UnsafeGet(__ =>
-                    new ArgumentException("The expression does not indicate a valid property or a field.")
-                ),
+                ExpressionType.MemberAccess, _ => (expression.Member is PropertyInfo).AsMaybe().Or(__ => (expression.Member is FieldInfo).AsMaybe()).Map(__ =>
+                    GetTarget(nested.Add((expression.Member.MemberType, expression.Member.Name)), (MemberExpression) expression.Expression)
+                ).UnsafeGet(__ => new ArgumentException("The expression does not indicate a valid property or a field.")),
                 otherwiseThrow: _ => new InvalidOperationException("Type member must be either a property or a field.")
             );
         
