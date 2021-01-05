@@ -21,7 +21,7 @@ namespace Funk
         /// </summary>
         public virtual T Copy() =>
             Exc.Create(_ => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this), new JsonSerializerSettings
-                    { 
+            {
                 ContractResolver = new Writable()
             })).Match(
                 v => v,
@@ -112,7 +112,7 @@ namespace Funk
         internal Data<T> Item { get; }
 
         internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
-            new List<(Expression<Func<T, object>> expression, object value)>();
+            new List<(Expression<Func<T, object>>, object)>();
 
         public static implicit operator Builder<T>(Data<T> data) =>
             new Builder<T>(data, list<(Expression<Func<T, object>>, object)>());
