@@ -19,56 +19,35 @@ namespace Funk.Demo
 
     public static class ResourceService
     {
-        public static async Task<Exc<Resource, Error>> GetResource(this Identity identity, ResourceType type, string publicationId = null)
-        {
-            var info = await identity.Get<Info>(new Uri($"{Medium.BaseUrl}{Medium.Info}"));
-            return await new AsyncPattern<Exc<Resource, Error>>
-            {
-                (ResourceType.Info, _ => info.Match(
-                    i => success<Resource, Error>(new Resource(i)).ToTask(),
-                    e => failure<Resource, Error>(e).ToTask()
-                )),
-                (ResourceType.Publications, _ => info.Match(
-                    async i =>
-                    {
-                        var result = await identity.Get<Publications>(new Uri($"{Medium.BaseUrl}{Medium.Users}/{i.Data.Id}/{Medium.Publications}"));
-                        return result.Match(
-                            p => success<Resource, Error>(new Resource(new Publication(p))),
+        public static async Task<Exc<Resource, Error>> GetResource(this Identity identity, ResourceType type, string publicationId = null) =>
+            await (await identity.Get<Info>(new Uri($"{Medium.BaseUrl}{Medium.Info}"))).Match(
+                i => new AsyncPattern<Exc<Resource, Error>>
+                {
+                    (ResourceType.Info, _ => success<Resource, Error>(new Resource(i)).ToTask()),
+                    (ResourceType.Publications, async _ => (await identity.Get<Publications>(
+                        new Uri($"{Medium.BaseUrl}{Medium.Users}/{i.Data.Id}/{Medium.Publications}"))).Match(
+                        p => success<Resource, Error>(new Resource(new Publication(p))),
+                        failure<Resource, Error>
+                    )),
+                    (ResourceType.Contributors, _ => publicationId.AsNotEmptyString().Match(
+                        __ => failure<Resource, Error>(new InvalidRequestError("Publication id cannot be empty.")).ToTask(),
+                        async id => (await identity.Get<Contributors>(new Uri($"{Medium.BaseUrl}{Medium.Publications}/{id}/{Medium.Contributors}"))).Match(
+                            c => success<Resource, Error>(new Resource(new Publication(c))),
                             failure<Resource, Error>
-                        );
-                    },
-                    e => result(failure<Resource, Error>(e))
-                )),
-                (ResourceType.Contributors, _ => info.Match(
-                    i =>
-                    {
-                        return publicationId.AsNotEmptyString().Match(
-                            __ => failure<Resource, Error>(new InvalidRequestError("Publication id cannot be empty.")).ToTask(),
-                            async id =>
-                            {
-                                var result = await identity.Get<Contributors>(new Uri($"{Medium.BaseUrl}{Medium.Publications}/{id}/{Medium.Contributors}"));
-                                return result.Match(
-                                    c => success<Resource, Error>(new Resource(new Publication(c))),
-                                    failure<Resource, Error>
-                                );
-                            }
-                        );
-                    },
-                    e => failure<Resource, Error>(e).ToTask()
-                ))
-            }.Match(type).GetOrAsync(_ => Exc.Empty<Resource, Error>().ToTask());
-        }
+                        )
+                    ))
+                }.Match(type).GetOrAsync(_ => Exc.Empty<Resource, Error>().ToTask()),
+                e => failure<Resource, Error>(e).ToTask()
+            );
 
-        private static Task<Exc<T, Error>> Get<T>(this Identity identity, Uri uri)
-        {
-            return identity.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).FlatMapAsync(token =>
+        private static Task<Exc<T, Error>> Get<T>(this Identity identity, Uri uri) =>
+            identity.Token.ToExc<string, Error>(_ => new InvalidRequestError("Token cannot be empty.")).FlatMapAsync(token =>
                 uri.CreateGetRequest(token).DisposeAfterAsync(m => m.SendAsync().DisposeAfterAsync(mm => 
                     mm.GetContent().FlatMapAsync(r => result(r.SafeDeserialize<T>().MapFailure(e =>
                         new Error(e.Root.Map(ex => ex.Message).GetOr(_ => "Unable to properly deserialize response returned by the server."))
                     )))
                 ))
             );
-        }
 
         private static HttpRequestMessage CreateGetRequest(this Uri uri, string token)
         {
@@ -94,17 +73,14 @@ namespace Funk.Demo
 
         public static async Task<Exc<string, Error>> GetContent(this Task<HttpResponseMessage> message) => await GetContent(await message);
 
-        public static async Task<Exc<string, Error>> GetContent(this HttpResponseMessage message)
-        {
-            var response = await message.Content.ReadAsStringAsync();
-            return message.StatusCode.Match(
-                HttpStatusCode.Unauthorized, _ => failure<string, Error>(new UnauthorizedError(response)),
-                HttpStatusCode.Forbidden, _ => failure<string, Error>(new ForbiddenError(response)),
-                HttpStatusCode.BadRequest, _ => failure<string, Error>(new InvalidRequestError(response)),
-                HttpStatusCode.OK, _ => success<string, Error>(response),
+        private static async Task<Exc<string, Error>> GetContent(this HttpResponseMessage message) =>
+            (await message.Content.ReadAsStringAsync()).Do(r => message.StatusCode.Match(
+                HttpStatusCode.Unauthorized, _ => failure<string, Error>(new UnauthorizedError(r)),
+                HttpStatusCode.Forbidden, _ => failure<string, Error>(new ForbiddenError(r)),
+                HttpStatusCode.BadRequest, _ => failure<string, Error>(new InvalidRequestError(r)),
+                HttpStatusCode.OK, _ => success<string, Error>(r),
                 _ => empty
-            );
-        }
+            ));
     }
 
     public static class Serializer
