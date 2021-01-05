@@ -57,8 +57,7 @@ namespace Funk.Tests
                     .Build(),
                 c =>
                 {
-                    var middle = c
-                        .WithBuild(cc => cc.Age, 35);
+                    var middle = GetMiddle(c);
                     var updated = middle
                         .With(cc => cc.Surname, "Doe")
                         .With(cc => cc.Account.CreditCard.Contract, new Contract
@@ -87,6 +86,12 @@ namespace Funk.Tests
                     Assert.Equal(35, c.updated.Age);
                 }
             );
+
+            // implicit conversion
+            static Builder<Customer> GetMiddle(Customer data)
+            {
+                return data.WithBuild(cc => cc.Age, 35);
+            }
         }
     }
 

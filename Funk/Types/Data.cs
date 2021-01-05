@@ -113,6 +113,9 @@ namespace Funk
 
         internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
             new List<(Expression<Func<T, object>> expression, object value)>();
+
+        public static implicit operator Builder<T>(Data<T> data) =>
+            new Builder<T>(data, list<(Expression<Func<T, object>>, object)>());
     }
     
     internal class Writable : DefaultContractResolver
