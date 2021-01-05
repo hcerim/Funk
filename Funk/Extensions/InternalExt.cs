@@ -67,6 +67,9 @@ namespace Funk.Internal
             {
                 (PropertyInfo p) =>
                 {
+                    p.GetSetMethod(true).AsMaybe().UnsafeGet(__ =>
+                        new InvalidOperationException($"Set method for property '{p.Name}' not found.")
+                    );
                     var target = GetTarget(ImmutableList<(MemberTypes, string)>.Empty, memberExpression);
                     var nested = target.Children.Take(target.Children.Count - 1).AsNotEmptyList();
                     return nested.Match(

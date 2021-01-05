@@ -21,7 +21,7 @@ namespace Funk
         /// </summary>
         public virtual T Copy() =>
             Exc.Create(_ => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this), new JsonSerializerSettings
-            {
+                    { 
                 ContractResolver = new Writable()
             })).Match(
                 v => v,
@@ -120,9 +120,21 @@ namespace Funk
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
-            property.Readable = true;
-            property.Writable = true;
-            return property;
+            return new TypePattern<JsonProperty>
+            {
+                (PropertyInfo p) => p.GetSetMethod(true).AsMaybe().Map(_ =>
+                {
+                    property.Readable = true;
+                    property.Writable = true;
+                    return property;
+                }).GetOr(_ => property),
+                (FieldInfo f) =>
+                {
+                    property.Readable = true;
+                    property.Writable = true;
+                    return property;
+                }
+            }.Match(member).UnsafeGet(_ => new InvalidOperationException("Type member must be either a property or a field."));
         }
     }
 }
