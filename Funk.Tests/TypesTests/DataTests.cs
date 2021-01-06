@@ -54,10 +54,10 @@ namespace Funk.Tests
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
                     })
-                    .Build(),
+                    .Build().GetUpdated(),
                 c =>
                 {
-                    var middle = GetMiddle(c);
+                    var middle = GetMiddle(c).Build();
                     var updated = middle
                         .With(cc => cc.Surname, "Doe")
                         .With(cc => cc.Account.CreditCard.Contract, new Contract
@@ -84,6 +84,7 @@ namespace Funk.Tests
                     Assert.Null(c.c.Account.CreditCard.Contract);
                     Assert.Equal("Doe", c.updated.Surname);
                     Assert.Equal(35, c.updated.Age);
+                    Assert.True(c.c.PrivateEqual(c.updated));
                 }
             );
 
@@ -99,11 +100,37 @@ namespace Funk.Tests
     {
         private Customer()
         {
+            Include(
+                c => c.One,
+                c => c.Two,
+                c => c.Three,
+                c => c.Four
+            );
         }
+
+        public Customer GetUpdated() =>
+            this.With(c => c.One, "One")
+                .With(c => c.Two, "Two")
+                .With(c => c.Three, "Three")
+                .With(c => c.Four, "Four").Build();
+
+        public bool PrivateEqual(Customer other) => One == other.One && Two == other.Two && Three == other.Three && Four == other.Four;
 
         public Account Account { get; private set; }
 
         public readonly Account Account2;
+
+        private string One;
+
+        protected string Two { private get; set; }
+        
+        protected string Three { get; private set; }
+
+        protected string Four
+        {
+            get => One;
+            private set => One = value;
+        }
 
         public string Name { get; private set; }
 

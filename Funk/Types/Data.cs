@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -20,13 +21,44 @@ namespace Funk
         /// Override if desired copy behavior differs from this one.
         /// </summary>
         public virtual T Copy() =>
-            Exc.Create(_ => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this), new JsonSerializerSettings
-            {
-                ContractResolver = new Writable()
-            })).Match(
+            Exc.Create(_ => JsonConvert.DeserializeObject<T>
+            (
+                JsonConvert.SerializeObject(this, new JsonSerializerSettings 
+                {
+                    ContractResolver = new NonPublic()
+                }),
+                new JsonSerializerSettings
+                {
+                    ContractResolver = new Writable()
+                })).Match(
                 v => v,
-                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
+                e => throw new SerializationException(e.Root.Map(r => r.Message)
+                    .GetOr(_ => "Item cannot be serialized."))
             );
+
+        protected void Include(Expression<Func<T, object>> expression) => Include(expression.ToImmutableList());
+
+        protected void Include(params Expression<Func<T, object>>[] expressions) => Include(expressions.Map());
+        
+        protected void Exclude(Expression<Func<T, object>> expression) => Exclude(expression.ToImmutableList());
+
+        protected void Exclude(params Expression<Func<T, object>>[] expressions) => Exclude(expressions.Map());
+
+        private static void Include(IEnumerable<Expression<Func<T, object>>> expressions)
+        {
+            foreach (var e in expressions)
+            {
+                Data.Inclusions.Add((typeof(T), e.GetMemberName()));
+            }
+        }
+        
+        private static void Exclude(IEnumerable<Expression<Func<T, object>>> expressions)
+        {
+            foreach (var e in expressions)
+            {
+                Data.Exclusions.Add((typeof(T), e.GetMemberName()));
+            }
+        }
     }
 
     public static class Data
@@ -34,12 +66,12 @@ namespace Funk
         /// <summary>
         /// Creates a Builder object for the specified Data type.
         /// </summary>
-        public static Builder<T> With<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
+        public static Builder<T> With<T, TKey>(this Data<T> item, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
             new Builder<T>(
                 item,
                 new List<(Expression<Func<T, object>> expression, object value)>
                 {
-                    (Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value)
+                    (expression, value)
                 }
             );
         
@@ -55,7 +87,7 @@ namespace Funk
         /// <summary>
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
+        public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
             item.With(expression, value).Build();
         
         /// <summary>
@@ -67,8 +99,8 @@ namespace Funk
         /// <summary>
         /// Creates a Builder object from the provided one for the specified Data type.
         /// </summary>
-        public static Builder<T> With<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
-            builder.With(Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value);
+        public static Builder<T> With<T, TKey>(this Builder<T> builder, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
+            builder.With(expression, value);
         
         /// <summary>
         /// Creates a Builder object from the provided one for the specified Data type.
@@ -79,7 +111,7 @@ namespace Funk
         /// <summary>
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
+        public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
             builder.With(expression, value).Build();
         
         /// <summary>
@@ -91,8 +123,18 @@ namespace Funk
         /// <summary>
         /// Creates a new Data object from the specified Builder.
         /// </summary>
-        public static T Build<T>(this Builder<T> builder) where T : Data<T> =>
-            builder.Expressions.Aggregate(builder.Item.Copy(), (item, expressions) => item.Map(expressions.expression, expressions.value));
+        public static T Build<T>(this Builder<T> builder) where T : Data<T>
+        {
+            var aggregate = builder.Expressions.Aggregate(builder.Item.Copy(),
+                (item, expressions) => item.Map(expressions.expression, expressions.value));
+            return aggregate.Copy();
+        }
+
+        internal static readonly ConcurrentBag<(Type type, string member)> Inclusions =
+            new ConcurrentBag<(Type, string)>();
+        
+        internal static readonly ConcurrentBag<(Type type, string member)> Exclusions =
+            new ConcurrentBag<(Type, string)>();
     }
 
     public sealed class Builder<T> where T : Data<T>
@@ -138,6 +180,65 @@ namespace Funk
                     return property;
                 }
             }.Match(member).UnsafeGet(_ => new InvalidOperationException("Type member must be either a property or a field."));
+        }
+        
+        protected override List<MemberInfo> GetSerializableMembers(Type type)
+        {
+            var result = base.GetSerializableMembers(type);
+            var members = Data.Inclusions.Distinct().Where(i => i.type.SafeEquals(type)).Select(i =>
+                type.GetMember(i.member, BindingFlags.NonPublic | BindingFlags.Instance).Single()
+            );
+            result.AddRange(members);
+            return result;
+        }
+        
+        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+        {
+            var properties = base.CreateProperties(type, memberSerialization);
+            var inclusions = Data.Inclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
+            var exclusions = Data.Exclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
+            var included = properties.Where(p => inclusions.Contains(p.PropertyName));
+            var excluded = properties.Where(p => exclusions.Contains(p.PropertyName));
+            foreach (var p in included)
+            {
+                p.Readable = true;
+            }
+            foreach (var p in excluded)
+            {
+                p.Readable = false;
+            }
+            return properties;
+        }
+    }
+
+    internal class NonPublic : DefaultContractResolver
+    {
+        protected override List<MemberInfo> GetSerializableMembers(Type type)
+        {
+            var result = base.GetSerializableMembers(type);
+            var members = Data.Inclusions.Distinct().Where(i => i.type.SafeEquals(type)).Select(i =>
+                type.GetMember(i.member, BindingFlags.NonPublic | BindingFlags.Instance).Single()
+            );
+            result.AddRange(members);
+            return result;
+        }
+        
+        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+        {
+            var properties = base.CreateProperties(type, memberSerialization);
+            var inclusions = Data.Inclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
+            var exclusions = Data.Exclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
+            var included = properties.Where(p => inclusions.Contains(p.PropertyName));
+            var excluded = properties.Where(p => exclusions.Contains(p.PropertyName));
+            foreach (var p in included)
+            {
+                p.Readable = true;
+            }
+            foreach (var p in excluded)
+            {
+                p.Readable = false;
+            }
+            return properties;
         }
     }
 }

@@ -26,13 +26,11 @@ namespace Funk.Internal
             );
         }
 
-        internal static void Execute(this Action<Unit> otherwise)
-        {
+        internal static void Execute(this Action<Unit> otherwise) =>
             otherwise.AsMaybe().Match(
                 _ => throw UnhandledException,
                 e => e(Unit.Value)
             );
-        }
 
         internal static Exc<T, E> TryCatch<T, E>(this Func<Unit, T> operation) where E : Exception
         {
@@ -109,6 +107,18 @@ namespace Funk.Internal
             );
 
             return data;
+        }
+        
+        internal static string GetMemberName<T, TKey>(this Expression<Func<T, TKey>> expression)
+        {
+            var memberExpression = expression.GetMemberExpression();
+            return new TypePattern<string>
+            {
+                (PropertyInfo p) => p.Name,
+                (FieldInfo f) => f.Name
+            }.Match(memberExpression.Member).UnsafeGet(_ =>
+                new InvalidOperationException("Type member must be either a property or a field.")
+            );
         }
 
         private static MemberExpression GetMemberExpression<T, TKey>(this Expression<Func<T, TKey>> expression) =>
