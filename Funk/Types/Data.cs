@@ -20,7 +20,7 @@ namespace Funk
         /// Performs deep copy based on Newtonsoft.JSON serialization/deserialization.
         /// Override if desired copy behavior differs from this one.
         /// </summary>
-        public virtual T Copy() =>
+        public T Copy() =>
             Exc.Create(_ => JsonConvert.DeserializeObject<T>
             (
                 JsonConvert.SerializeObject(this, new JsonSerializerSettings 
