@@ -17,23 +17,28 @@ namespace Funk
     public abstract class Data<T> where T : Data<T>
     {
         /// <summary>
-        /// Performs deep copy based on Newtonsoft.JSON serialization/deserialization.
-        /// Override if desired copy behavior differs from this one.
+        /// Performs deep copy of fields/properties.
         /// </summary>
-        public virtual T Copy() =>
-            Exc.Create(_ => JsonConvert.DeserializeObject<T>
-            (
-                JsonConvert.SerializeObject(this, new JsonSerializerSettings 
-                {
-                    ContractResolver = new NonPublic()
-                }),
-                new JsonSerializerSettings
-                {
-                    ContractResolver = new Writable()
-                })).Match(
+        public T Copy() =>
+            Exc.Create(
+                _ => JsonConvert.DeserializeObject<T>
+                (
+                    JsonConvert.SerializeObject
+                    (
+                        this,
+                        new JsonSerializerSettings 
+                        {
+                            ContractResolver = new NonPublic()
+                        }
+                    ),
+                    new JsonSerializerSettings
+                    {
+                        ContractResolver = new Writable()
+                    }
+                )
+            ).Match(
                 v => v,
-                e => throw new SerializationException(e.Root.Map(r => r.Message)
-                    .GetOr(_ => "Item cannot be serialized."))
+                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
             );
 
         protected void Include(Expression<Func<T, object>> expression) => Include(expression.ToImmutableList());
@@ -48,7 +53,8 @@ namespace Funk
         {
             foreach (var e in expressions)
             {
-                Data.Inclusions.Add((typeof(T), e.GetMemberName()));
+                var member = e.GetMember();
+                Data.Inclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
             }
         }
         
@@ -56,7 +62,8 @@ namespace Funk
         {
             foreach (var e in expressions)
             {
-                Data.Exclusions.Add((typeof(T), e.GetMemberName()));
+                var member = e.GetMember();
+                Data.Exclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
             }
         }
     }
@@ -130,11 +137,11 @@ namespace Funk
             return aggregate.Copy();
         }
 
-        internal static readonly ConcurrentBag<(Type type, string member)> Inclusions =
-            new ConcurrentBag<(Type, string)>();
+        internal static readonly ConcurrentDictionary<string, (Type type, string member)> Inclusions =
+            new ConcurrentDictionary<string, (Type type, string member)>();
         
-        internal static readonly ConcurrentBag<(Type type, string member)> Exclusions =
-            new ConcurrentBag<(Type, string)>();
+        internal static readonly ConcurrentDictionary<string, (Type type, string member)> Exclusions =
+            new ConcurrentDictionary<string, (Type type, string member)>();
     }
 
     public sealed class Builder<T> where T : Data<T>
@@ -185,27 +192,31 @@ namespace Funk
         protected override List<MemberInfo> GetSerializableMembers(Type type)
         {
             var result = base.GetSerializableMembers(type);
-            var members = Data.Inclusions.Distinct().Where(i => i.type.SafeEquals(type)).Select(i =>
-                type.GetMember(i.member, BindingFlags.NonPublic | BindingFlags.Instance).Single()
-            );
-            result.AddRange(members);
-            return result;
+            var inclusions = Data.Inclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member)
+                .Select(i => type.GetMember(i, BindingFlags.NonPublic | BindingFlags.Instance).Single()).ToList();
+            var exclusions = result.Where(m => Data.Exclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(m.Name)).ToList();
+            result.AddRange(inclusions);
+            return result.Except(exclusions).ToList();
         }
         
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization);
-            var inclusions = Data.Inclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
-            var exclusions = Data.Exclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
-            var included = properties.Where(p => inclusions.Contains(p.PropertyName));
-            var excluded = properties.Where(p => exclusions.Contains(p.PropertyName));
+            var included = properties.Where(p => Data.Inclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
+            var excluded = properties.Where(p => Data.Exclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
             foreach (var p in included)
             {
                 p.Readable = true;
+                p.Writable = true;
             }
             foreach (var p in excluded)
             {
                 p.Readable = false;
+                p.Writable = false;
             }
             return properties;
         }
@@ -216,27 +227,31 @@ namespace Funk
         protected override List<MemberInfo> GetSerializableMembers(Type type)
         {
             var result = base.GetSerializableMembers(type);
-            var members = Data.Inclusions.Distinct().Where(i => i.type.SafeEquals(type)).Select(i =>
-                type.GetMember(i.member, BindingFlags.NonPublic | BindingFlags.Instance).Single()
-            );
-            result.AddRange(members);
-            return result;
+            var inclusions = Data.Inclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member)
+                .Select(i => type.GetMember(i, BindingFlags.NonPublic | BindingFlags.Instance).Single()).ToList();
+            var exclusions = result.Where(m => Data.Exclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(m.Name)).ToList();
+            result.AddRange(inclusions);
+            return result.Except(exclusions).ToList();
         }
         
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization);
-            var inclusions = Data.Inclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
-            var exclusions = Data.Exclusions.Where(i => i.type.SafeEquals(type)).Select(i => i.member).Distinct();
-            var included = properties.Where(p => inclusions.Contains(p.PropertyName));
-            var excluded = properties.Where(p => exclusions.Contains(p.PropertyName));
+            var included = properties.Where(p => Data.Inclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
+            var excluded = properties.Where(p => Data.Exclusions.ToList()
+                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
             foreach (var p in included)
             {
                 p.Readable = true;
+                p.Writable = true;
             }
             foreach (var p in excluded)
             {
                 p.Readable = false;
+                p.Writable = false;
             }
             return properties;
         }

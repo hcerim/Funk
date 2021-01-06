@@ -49,12 +49,13 @@ namespace Funk.Tests
                     .With(cc => cc.Account, new Account
                     {
                         Number = 1234567890,
+                        Something = "Hello",
                         CreditCard = new CreditCard
                         {
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
                     })
-                    .Build().GetUpdated(),
+                    .Build().Configure().GetUpdated(),
                 c =>
                 {
                     var middle = GetMiddle(c).Build();
@@ -80,7 +81,7 @@ namespace Funk.Tests
                 c =>
                 {
                     Assert.NotSame(c.c.Account, c.updated.Account);
-                    Assert.Equal("Example", c.updated.Account.CreditCard.Contract.Document);
+                    Assert.Null(c.updated.Account.CreditCard.Contract.Document);
                     Assert.Null(c.c.Account.CreditCard.Contract);
                     Assert.Equal("Doe", c.updated.Surname);
                     Assert.Equal(35, c.updated.Age);
@@ -100,12 +101,21 @@ namespace Funk.Tests
     {
         private Customer()
         {
+        }
+
+        public Customer Configure()
+        {
+            Exclude(
+                c => c.Account.Something,
+                c => c.Account.CreditCard.Contract.Document
+            );
+            
             Include(
                 c => c.One,
                 c => c.Two,
-                c => c.Three,
                 c => c.Four
             );
+            return this;
         }
 
         public Customer GetUpdated() =>
@@ -124,7 +134,7 @@ namespace Funk.Tests
 
         protected string Two { private get; set; }
         
-        protected string Three { get; private set; }
+        internal string Three { get; private set; }
 
         protected string Four
         {
@@ -144,6 +154,8 @@ namespace Funk.Tests
     public class Account
     {
         public int Number { get; set; }
+        
+        public string Something { get; set; }
 
         public readonly int Amount;
 
@@ -159,6 +171,8 @@ namespace Funk.Tests
 
     public class Contract
     {
+        public string Five { get; set; }
+        
         public string Document { get; set; }
     }
 }
