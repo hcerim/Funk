@@ -109,8 +109,9 @@ namespace Funk
             {
                 Exc.Create(_ => reduced.Map(item.expression, item.value));
             }
-            reduced.Exclusions = exclusions;
-            return reduced;
+            var copy = reduced.Copy();
+            copy.Exclusions = exclusions;
+            return copy;
         }
 
         private static T Copy<T>(this Data<T> data) where T : Data<T> =>
