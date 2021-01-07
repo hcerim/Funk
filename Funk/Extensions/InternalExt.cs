@@ -78,8 +78,8 @@ namespace Funk.Internal
                         },
                         l =>
                         {
-                            var aggregate = l.Reduce(target.Parent, data);
-                            p.SetValue(aggregate.data, value, null);
+                            var reduced = l.Reduce(target.Parent, data);
+                            p.SetValue(reduced.data, value, null);
                             return Unit.Value;
                         }
                     );
@@ -96,8 +96,8 @@ namespace Funk.Internal
                         },
                         l =>
                         {
-                            var aggregate = l.Reduce(target.Parent, data);
-                            f.SetValue(aggregate.data, value);
+                            var reduced = l.Reduce(target.Parent, data);
+                            f.SetValue(reduced.data, value);
                             return Unit.Value;
                         }
                     );

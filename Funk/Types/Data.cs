@@ -111,9 +111,9 @@ namespace Funk
         /// </summary>
         public static T Build<T>(this Builder<T> builder) where T : Data<T>
         {
-            var aggregate = builder.Expressions.Aggregate(builder.Item.Copy(),
+            var reduced = builder.Expressions.Aggregate(builder.Item.Copy(),
                 (item, expressions) => item.Map(expressions.expression, expressions.value));
-            return aggregate.Copy();
+            return reduced.Copy();
         }
 
         internal static void Include<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
