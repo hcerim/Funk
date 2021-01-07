@@ -49,7 +49,7 @@ namespace Funk.Tests
                     .With(cc => cc.Account, new Account
                     {
                         Number = 1234567890,
-                        Something = "Hello",
+                        Description = "Desc",
                         CreditCard = new CreditCard
                         {
                             ExpirationDate = DateTime.Parse("12-12-2021")
@@ -106,7 +106,7 @@ namespace Funk.Tests
         public Customer Configure()
         {
             Exclude(
-                c => c.Account.Something,
+                c => c.Account.Description,
                 c => c.Account.CreditCard.Contract.Document
             );
             
@@ -155,7 +155,7 @@ namespace Funk.Tests
     {
         public int Number { get; set; }
         
-        public string Something { get; set; }
+        public string Description { get; set; }
 
         public readonly int Amount;
 
@@ -171,8 +171,6 @@ namespace Funk.Tests
 
     public class Contract
     {
-        public string Five { get; set; }
-        
         public string Document { get; set; }
     }
 }

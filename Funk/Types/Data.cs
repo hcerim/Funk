@@ -16,56 +16,13 @@ namespace Funk
     /// </summary>
     public abstract class Data<T> where T : Data<T>
     {
-        /// <summary>
-        /// Performs deep copy of fields/properties.
-        /// </summary>
-        public T Copy() =>
-            Exc.Create(
-                _ => JsonConvert.DeserializeObject<T>
-                (
-                    JsonConvert.SerializeObject
-                    (
-                        this,
-                        new JsonSerializerSettings 
-                        {
-                            ContractResolver = new NonPublic()
-                        }
-                    ),
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new Writable()
-                    }
-                )
-            ).Match(
-                v => v,
-                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
-            );
+        protected void Include(Expression<Func<T, object>> expression) => expression.ToImmutableList().Include();
 
-        protected void Include(Expression<Func<T, object>> expression) => Include(expression.ToImmutableList());
-
-        protected void Include(params Expression<Func<T, object>>[] expressions) => Include(expressions.Map());
+        protected void Include(params Expression<Func<T, object>>[] expressions) => expressions.Map().Include();
         
-        protected void Exclude(Expression<Func<T, object>> expression) => Exclude(expression.ToImmutableList());
+        protected void Exclude(Expression<Func<T, object>> expression) => expression.ToImmutableList().Exclude();
 
-        protected void Exclude(params Expression<Func<T, object>>[] expressions) => Exclude(expressions.Map());
-
-        private static void Include(IEnumerable<Expression<Func<T, object>>> expressions)
-        {
-            foreach (var e in expressions)
-            {
-                var member = e.GetMember();
-                Data.Inclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
-            }
-        }
-        
-        private static void Exclude(IEnumerable<Expression<Func<T, object>>> expressions)
-        {
-            foreach (var e in expressions)
-            {
-                var member = e.GetMember();
-                Data.Exclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
-            }
-        }
+        protected void Exclude(params Expression<Func<T, object>>[] expressions) => expressions.Map().Exclude();
     }
 
     public static class Data
@@ -137,11 +94,51 @@ namespace Funk
             return aggregate.Copy();
         }
 
+        internal static void Include<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
+        {
+            foreach (var e in expressions)
+            {
+                var member = e.GetMember();
+                Inclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
+            }
+        }
+        
+        internal static void Exclude<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
+        {
+            foreach (var e in expressions)
+            {
+                var member = e.GetMember();
+                Exclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
+            }
+        }
+
         internal static readonly ConcurrentDictionary<string, (Type type, string member)> Inclusions =
             new ConcurrentDictionary<string, (Type type, string member)>();
         
         internal static readonly ConcurrentDictionary<string, (Type type, string member)> Exclusions =
             new ConcurrentDictionary<string, (Type type, string member)>();
+        
+        private static T Copy<T>(this Data<T> data) where T : Data<T> =>
+            Exc.Create(
+                _ => JsonConvert.DeserializeObject<T>
+                (
+                    JsonConvert.SerializeObject
+                    (
+                        data,
+                        new JsonSerializerSettings 
+                        {
+                            ContractResolver = new NonPublic()
+                        }
+                    ),
+                    new JsonSerializerSettings
+                    {
+                        ContractResolver = new Writable()
+                    }
+                )
+            ).Match(
+                v => v,
+                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
+            );
     }
 
     public sealed class Builder<T> where T : Data<T>
