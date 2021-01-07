@@ -121,7 +121,9 @@ namespace Funk
             foreach (var e in expressions.ExceptNulls())
             {
                 var member = e.GetMember();
-                Inclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
+                var parent = typeof(T).FullName;
+                var prefix = parent.SafeEquals(member.type.FullName) ? "" : $"{parent}.";
+                Inclusions.TryAdd($"{prefix}{member.type.FullName}.{member.member}", member);
             }
         }
         
@@ -130,7 +132,9 @@ namespace Funk
             foreach (var e in expressions.ExceptNulls())
             {
                 var member = e.GetMember();
-                Exclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
+                var parent = typeof(T).FullName;
+                var prefix = parent.SafeEquals(member.type.FullName) ? "" : $"{parent}.";
+                Exclusions.TryAdd($"{prefix}{member.type.FullName}.{member.member}", member);
             }
         }
 
