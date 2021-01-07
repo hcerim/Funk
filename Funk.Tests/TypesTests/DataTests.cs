@@ -82,6 +82,7 @@ namespace Funk.Tests
                 {
                     Assert.NotSame(c.c.Account, c.updated.Account);
                     Assert.Null(c.updated.Account.CreditCard.Contract.Document);
+                    Assert.Null(c.updated.Account.Description);
                     Assert.Null(c.c.Account.CreditCard.Contract);
                     Assert.Equal("Doe", c.updated.Surname);
                     Assert.Equal(35, c.updated.Age);
