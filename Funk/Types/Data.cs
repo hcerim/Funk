@@ -104,11 +104,9 @@ namespace Funk
         {
             var exclusions = builder.Item.Exclusions;
             var reduced = builder.Expressions.Aggregate(builder.Item.Copy(),
-                (item, expressions) => item.Map(expressions.expression, expressions.value));
-            foreach (var item in exclusions)
-            {
-                Exc.Create(_ => reduced.Map(item.expression, item.value));
-            }
+                (item, expressions) => item.Map(expressions.expression, expressions.value)
+            );
+            exclusions.ForEach(e => Exc.Create(_ => reduced.Map(e.expression, e.value)));
             var copy = reduced.Copy();
             copy.Exclusions = exclusions;
             return copy;
