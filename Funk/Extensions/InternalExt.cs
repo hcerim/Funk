@@ -108,34 +108,6 @@ namespace Funk.Internal
 
             return data;
         }
-        
-        internal static (Type type, string member) GetMember<T, TKey>(this Expression<Func<T, TKey>> expression)
-        {
-            var memberExpression = expression.GetMemberExpression();
-            return new TypePattern<(Type, string)>
-            {
-                (PropertyInfo p) =>
-                {
-                    var target = GetTarget(ImmutableList<(MemberTypes, string)>.Empty, memberExpression);
-                    var nested = target.Children.Take(target.Children.Count - 1).AsNotEmptyList();
-                    return nested.Match(
-                        _ => (target.Parent, p.Name),
-                        l => (l.Reduce(target.Parent), p.Name)
-                    );
-                },
-                (FieldInfo f) =>
-                {
-                    var target = GetTarget(ImmutableList<(MemberTypes, string)>.Empty, memberExpression);
-                    var nested = target.Children.Take(target.Children.Count - 1).AsNotEmptyList();
-                    return nested.Match(
-                        _ => (target.Parent, f.Name),
-                        l => (l.Reduce(target.Parent), f.Name)
-                    );
-                }
-            }.Match(memberExpression.Member).UnsafeGet(_ =>
-                new InvalidOperationException("Type member must be either a property or a field.")
-            );
-        }
 
         private static MemberExpression GetMemberExpression<T, TKey>(this Expression<Func<T, TKey>> expression) =>
             expression == null ? throw new ArgumentNullException(nameof(expression)) :
@@ -168,12 +140,6 @@ namespace Funk.Internal
                     );
                     return (obj.GetType(), obj);
                 }
-            ));
-        
-        private static Type Reduce(this IImmutableList<(MemberTypes type, string child)> l, Type parent) =>
-            l.Aggregate(parent, (a, b) => b.type.Match(
-                MemberTypes.Property, __ => a.GetProperty(b.child).PropertyType,
-                MemberTypes.Field, __ => a.GetField(b.child).FieldType
             ));
     }
 }

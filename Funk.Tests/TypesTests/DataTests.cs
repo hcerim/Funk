@@ -71,6 +71,7 @@ namespace Funk.Tests
                         .WithBuild(
                             (cc => cc.Account2, new Account
                             {
+                                Description = "Desc",
                                 Number = 1234567891,
                                 CreditCard = new CreditCard
                                 {
@@ -84,9 +85,10 @@ namespace Funk.Tests
                 c =>
                 {
                     Assert.NotSame(c.c.Account, c.updated.Account);
-                    Assert.Null(c.updated.Account.CreditCard.Contract.Document);
                     Assert.Null(c.updated.Account.Description);
+                    Assert.Equal("Desc", c.updated.Account2.Description);
                     Assert.Null(c.c.Account.CreditCard.Contract);
+                    Assert.Null(c.updated.Account.CreditCard.Contract.Document);
                     Assert.Equal("Doe", c.updated.Surname);
                     Assert.Equal(35, c.updated.Age);
                     Assert.True(c.c.PrivateEqual(c.updated));
@@ -94,35 +96,23 @@ namespace Funk.Tests
             );
 
             // implicit conversion
-            static Builder<Customer> GetMiddle(Customer data)
-            {
-                return data.WithBuild(cc => cc.Age, 35);
-            }
+            static Builder<Customer> GetMiddle(Customer data) => data.WithBuild(cc => cc.Age, 35);
         }
     }
 
     public class Customer : Data<Customer>
     {
-        protected override void Configure()
-        {
-            Exclude(
-                c => c.Account.Description,
-                c => c.Account.CreditCard.Contract.Document
-            );
-            
-            Include(
-                c => c.One,
-                c => c.Two,
-                c => c.Four,
-                c => c.Account.Description
-            );
-        }
-
         public Customer GetUpdated() =>
             this.With(c => c.One, "One")
                 .With(c => c.Two, "Two")
                 .With(c => c.Three, "Three")
                 .With(c => c.Four, "Four").Build();
+
+        protected override void Configure()
+        {
+            Exclude(c => c.Account.Description);
+            Exclude(c => c.Account.CreditCard.Contract.Document);
+        }
 
         public bool PrivateEqual(Customer other) => One == other.One && Two == other.Two && Three == other.Three && Four == other.Four;
 

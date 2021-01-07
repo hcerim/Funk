@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Funk.Internal;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using static Funk.Prelude;
 
 namespace Funk
@@ -14,6 +11,7 @@ namespace Funk
     /// <summary>
     /// Provides fluent way of creating new immutable objects with updated fields/properties using builders.
     /// </summary>
+    [JsonObject(MemberSerialization.Fields)]
     public abstract class Data<T> where T : Data<T>
     {
         protected Data()
@@ -21,30 +19,23 @@ namespace Funk
             Configure();
             Update();
         }
-        
-        protected void Include(Expression<Func<T, object>> expression) => inclusions.AddRange(expression.ToImmutableList());
-
-        protected void Include(params Expression<Func<T, object>>[] expressions) => inclusions.AddRange(expressions.Map());
-        
-        protected void Exclude(Expression<Func<T, object>> expression) => exclusions.AddRange(expression.ToImmutableList());
-
-        protected void Exclude(params Expression<Func<T, object>>[] expressions) => exclusions.AddRange(expressions.Map());
 
         protected virtual void Configure()
         {
         }
+        
+        protected void Exclude<TKey>(Expression<Func<T, TKey>> expression) =>
+            exclusions.Add((Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), default(TKey)));
 
-        private void Update()
-        {
-            inclusions.Include();
-            exclusions.Exclude();
-        }
+        private void Update() => Exclusions = Exclusions.Concat(exclusions).Distinct().ToList();
+
+        [JsonIgnore]
+        internal List<(Expression<Func<T, object>> expression, object value)> Exclusions =
+            new List<(Expression<Func<T, object>> expression, object value)>();
         
-        private readonly List<Expression<Func<T, object>>> inclusions =
-            new List<Expression<Func<T, object>>>();
-        
-        private readonly List<Expression<Func<T, object>>> exclusions =
-            new List<Expression<Func<T, object>>>();
+        [JsonIgnore]
+        private readonly List<(Expression<Func<T, object>> expression, object value)> exclusions =
+            new List<(Expression<Func<T, object>> expression, object value)>();
     }
 
     public static class Data
@@ -111,39 +102,17 @@ namespace Funk
         /// </summary>
         public static T Build<T>(this Builder<T> builder) where T : Data<T>
         {
+            var exclusions = builder.Item.Exclusions;
             var reduced = builder.Expressions.Aggregate(builder.Item.Copy(),
                 (item, expressions) => item.Map(expressions.expression, expressions.value));
-            return reduced.Copy();
+            foreach (var item in exclusions)
+            {
+                Exc.Create(_ => reduced.Map(item.expression, item.value));
+            }
+            reduced.Exclusions = exclusions;
+            return reduced;
         }
 
-        internal static void Include<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
-        {
-            foreach (var e in expressions.ExceptNulls())
-            {
-                var member = e.GetMember();
-                var parent = typeof(T).FullName;
-                var prefix = parent.SafeEquals(member.type.FullName) ? "" : $"{parent}.";
-                Inclusions.TryAdd($"{prefix}{member.type.FullName}.{member.member}", member);
-            }
-        }
-        
-        internal static void Exclude<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
-        {
-            foreach (var e in expressions.ExceptNulls())
-            {
-                var member = e.GetMember();
-                var parent = typeof(T).FullName;
-                var prefix = parent.SafeEquals(member.type.FullName) ? "" : $"{parent}.";
-                Exclusions.TryAdd($"{prefix}{member.type.FullName}.{member.member}", member);
-            }
-        }
-
-        internal static readonly ConcurrentDictionary<string, (Type type, string member)> Inclusions =
-            new ConcurrentDictionary<string, (Type type, string member)>();
-        
-        internal static readonly ConcurrentDictionary<string, (Type type, string member)> Exclusions =
-            new ConcurrentDictionary<string, (Type type, string member)>();
-        
         private static T Copy<T>(this Data<T> data) where T : Data<T> =>
             Exc.Create(
                 _ => JsonConvert.DeserializeObject<T>
@@ -151,15 +120,11 @@ namespace Funk
                     JsonConvert.SerializeObject
                     (
                         data,
-                        new JsonSerializerSettings 
+                        new JsonSerializerSettings
                         {
-                            ContractResolver = new NonPublic()
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         }
-                    ),
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new Writable()
-                    }
+                    )
                 )
             ).Match(
                 v => v,
@@ -188,107 +153,5 @@ namespace Funk
 
         public static implicit operator Builder<T>(Data<T> data) =>
             new Builder<T>(data, list<(Expression<Func<T, object>>, object)>());
-    }
-    
-    internal class Writable : DefaultContractResolver
-    {
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-        {
-            var property = base.CreateProperty(member, memberSerialization);
-            return new TypePattern<JsonProperty>
-            {
-                (PropertyInfo p) => p.GetSetMethod(true).AsMaybe().Map(_ =>
-                {
-                    property.Readable = true;
-                    property.Writable = true;
-                    return property;
-                }).GetOr(_ => property),
-                (FieldInfo f) =>
-                {
-                    property.Readable = true;
-                    property.Writable = true;
-                    return property;
-                }
-            }.Match(member).UnsafeGet(_ => new InvalidOperationException("Type member must be either a property or a field."));
-        }
-        
-        protected override List<MemberInfo> GetSerializableMembers(Type type)
-        {
-            var result = base.GetSerializableMembers(type);
-            var inclusions = Data.Inclusions.ToList();
-            var exclusions = Data.Exclusions.ToList();
-            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
-            var processedInclusions = inclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member)
-                .Select(i => type.GetMember(i, BindingFlags.NonPublic | BindingFlags.Instance).Single()).ToList();
-            var processedExclusions = result.Where(m => exclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(m.Name)).ToList();
-            result.AddRange(processedInclusions);
-            return result.Except(processedExclusions).ToList();
-        }
-        
-        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
-        {
-            var properties = base.CreateProperties(type, memberSerialization);
-            var inclusions = Data.Inclusions.ToList();
-            var exclusions = Data.Exclusions.ToList();
-            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
-            var processedInclusions = properties.Where(p => inclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            var processedExclusions = properties.Where(p => exclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            foreach (var p in processedInclusions)
-            {
-                p.Readable = true;
-                p.Writable = true;
-            }
-            foreach (var p in processedExclusions)
-            {
-                p.Readable = false;
-                p.Writable = false;
-            }
-            return properties;
-        }
-    }
-
-    internal class NonPublic : DefaultContractResolver
-    {
-        protected override List<MemberInfo> GetSerializableMembers(Type type)
-        {
-            var result = base.GetSerializableMembers(type);
-            var inclusions = Data.Inclusions.ToList();
-            var exclusions = Data.Exclusions.ToList();
-            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
-            var processedInclusions = inclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member)
-                .Select(i => type.GetMember(i, BindingFlags.NonPublic | BindingFlags.Instance).Single()).ToList();
-            var processedExclusions = result.Where(m => exclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(m.Name)).ToList();
-            result.AddRange(processedInclusions);
-            return result.Except(processedExclusions).ToList();
-        }
-        
-        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
-        {
-            var properties = base.CreateProperties(type, memberSerialization);
-            var inclusions = Data.Inclusions.ToList();
-            var exclusions = Data.Exclusions.ToList();
-            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
-            var processedInclusions = properties.Where(p => inclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            var processedExclusions = properties.Where(p => exclusions
-                .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            foreach (var p in processedInclusions)
-            {
-                p.Readable = true;
-                p.Writable = true;
-            }
-            foreach (var p in processedExclusions)
-            {
-                p.Readable = false;
-                p.Writable = false;
-            }
-            return properties;
-        }
     }
 }
