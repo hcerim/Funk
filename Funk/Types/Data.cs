@@ -211,28 +211,34 @@ namespace Funk
         protected override List<MemberInfo> GetSerializableMembers(Type type)
         {
             var result = base.GetSerializableMembers(type);
-            var inclusions = Data.Inclusions.ToList()
+            var inclusions = Data.Inclusions.ToList();
+            var exclusions = Data.Exclusions.ToList();
+            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
+            var processedInclusions = inclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member)
                 .Select(i => type.GetMember(i, BindingFlags.NonPublic | BindingFlags.Instance).Single()).ToList();
-            var exclusions = result.Where(m => Data.Exclusions.ToList()
+            var processedExclusions = result.Where(m => exclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(m.Name)).ToList();
-            result.AddRange(inclusions);
-            return result.Except(exclusions).ToList();
+            result.AddRange(processedInclusions);
+            return result.Except(processedExclusions).ToList();
         }
         
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization);
-            var included = properties.Where(p => Data.Inclusions.ToList()
+            var inclusions = Data.Inclusions.ToList();
+            var exclusions = Data.Exclusions.ToList();
+            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
+            var processedInclusions = properties.Where(p => inclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            var excluded = properties.Where(p => Data.Exclusions.ToList()
+            var processedExclusions = properties.Where(p => exclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            foreach (var p in included)
+            foreach (var p in processedInclusions)
             {
                 p.Readable = true;
                 p.Writable = true;
             }
-            foreach (var p in excluded)
+            foreach (var p in processedExclusions)
             {
                 p.Readable = false;
                 p.Writable = false;
@@ -246,28 +252,34 @@ namespace Funk
         protected override List<MemberInfo> GetSerializableMembers(Type type)
         {
             var result = base.GetSerializableMembers(type);
-            var inclusions = Data.Inclusions.ToList()
+            var inclusions = Data.Inclusions.ToList();
+            var exclusions = Data.Exclusions.ToList();
+            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
+            var processedInclusions = inclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member)
                 .Select(i => type.GetMember(i, BindingFlags.NonPublic | BindingFlags.Instance).Single()).ToList();
-            var exclusions = result.Where(m => Data.Exclusions.ToList()
+            var processedExclusions = result.Where(m => exclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(m.Name)).ToList();
-            result.AddRange(inclusions);
-            return result.Except(exclusions).ToList();
+            result.AddRange(processedInclusions);
+            return result.Except(processedExclusions).ToList();
         }
         
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization);
-            var included = properties.Where(p => Data.Inclusions.ToList()
+            var inclusions = Data.Inclusions.ToList();
+            var exclusions = Data.Exclusions.ToList();
+            inclusions = inclusions.Where(i => exclusions.All(e => i.Key.SafeNotEquals(e.Key))).ToList();
+            var processedInclusions = properties.Where(p => inclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            var excluded = properties.Where(p => Data.Exclusions.ToList()
+            var processedExclusions = properties.Where(p => exclusions
                 .Where(i => i.Value.type.SafeEquals(type)).Select(i => i.Value.member).Contains(p.PropertyName)).ToList();
-            foreach (var p in included)
+            foreach (var p in processedInclusions)
             {
                 p.Readable = true;
                 p.Writable = true;
             }
-            foreach (var p in excluded)
+            foreach (var p in processedExclusions)
             {
                 p.Readable = false;
                 p.Writable = false;

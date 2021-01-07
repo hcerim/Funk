@@ -11,12 +11,15 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => Customer.New,
-                c => c
-                    .With(
-                        (cc => cc.Name, "John"),
-                        (cc => cc.Age, 40)
-                    )
-                    .Build(),
+                c =>
+                {
+                    return c
+                        .With(
+                            (cc => cc.Name, "John"),
+                            (cc => cc.Age, 40)
+                        )
+                        .Build();
+                },
                 c =>
                 {
                     Assert.Equal("John", c.Name);
@@ -110,7 +113,8 @@ namespace Funk.Tests
             Include(
                 c => c.One,
                 c => c.Two,
-                c => c.Four
+                c => c.Four,
+                c => c.Account.Description
             );
         }
 
