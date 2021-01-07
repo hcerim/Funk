@@ -16,13 +16,35 @@ namespace Funk
     /// </summary>
     public abstract class Data<T> where T : Data<T>
     {
-        protected void Include(Expression<Func<T, object>> expression) => expression.ToImmutableList().Include();
-
-        protected void Include(params Expression<Func<T, object>>[] expressions) => expressions.Map().Include();
+        protected Data()
+        {
+            Configure();
+            Update();
+        }
         
-        protected void Exclude(Expression<Func<T, object>> expression) => expression.ToImmutableList().Exclude();
+        protected void Include(Expression<Func<T, object>> expression) => inclusions.AddRange(expression.ToImmutableList());
 
-        protected void Exclude(params Expression<Func<T, object>>[] expressions) => expressions.Map().Exclude();
+        protected void Include(params Expression<Func<T, object>>[] expressions) => inclusions.AddRange(expressions.Map());
+        
+        protected void Exclude(Expression<Func<T, object>> expression) => exclusions.AddRange(expression.ToImmutableList());
+
+        protected void Exclude(params Expression<Func<T, object>>[] expressions) => exclusions.AddRange(expressions.Map());
+
+        protected virtual void Configure()
+        {
+        }
+
+        private void Update()
+        {
+            inclusions.Include();
+            exclusions.Exclude();
+        }
+        
+        private readonly List<Expression<Func<T, object>>> inclusions =
+            new List<Expression<Func<T, object>>>();
+        
+        private readonly List<Expression<Func<T, object>>> exclusions =
+            new List<Expression<Func<T, object>>>();
     }
 
     public static class Data
@@ -96,7 +118,7 @@ namespace Funk
 
         internal static void Include<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
         {
-            foreach (var e in expressions)
+            foreach (var e in expressions.ExceptNulls())
             {
                 var member = e.GetMember();
                 Inclusions.TryAdd($"{member.type.FullName}.{member.member}", member);
@@ -105,7 +127,7 @@ namespace Funk
         
         internal static void Exclude<T>(this IEnumerable<Expression<Func<T, object>>> expressions) where T : Data<T>
         {
-            foreach (var e in expressions)
+            foreach (var e in expressions.ExceptNulls())
             {
                 var member = e.GetMember();
                 Exclusions.TryAdd($"{member.type.FullName}.{member.member}", member);

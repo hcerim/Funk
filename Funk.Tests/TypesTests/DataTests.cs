@@ -55,7 +55,7 @@ namespace Funk.Tests
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
                     })
-                    .Build().Configure().GetUpdated(),
+                    .Build().GetUpdated(),
                 c =>
                 {
                     var middle = GetMiddle(c).Build();
@@ -100,11 +100,7 @@ namespace Funk.Tests
 
     public class Customer : Data<Customer>
     {
-        private Customer()
-        {
-        }
-
-        public Customer Configure()
+        protected override void Configure()
         {
             Exclude(
                 c => c.Account.Description,
@@ -116,7 +112,6 @@ namespace Funk.Tests
                 c => c.Two,
                 c => c.Four
             );
-            return this;
         }
 
         public Customer GetUpdated() =>
