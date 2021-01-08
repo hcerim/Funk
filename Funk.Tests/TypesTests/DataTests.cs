@@ -98,6 +98,63 @@ namespace Funk.Tests
             // implicit conversion
             static Builder<Customer> GetMiddle(Customer data) => data.WithBuild(cc => cc.Age, 35);
         }
+        
+        [Fact]
+        public void Update_With_Default()
+        {
+            UnitTest(
+                _ => Customer.New.WithConfiguration(true)
+                    .With(cc => cc.Name, "John")
+                    .With(cc => cc.Age, 40)
+                    .With(cc => cc.Account, new Account
+                    {
+                        Number = 1234567890,
+                        Description = "Desc",
+                        CreditCard = new CreditCard
+                        {
+                            ExpirationDate = DateTime.Parse("12-12-2021")
+                        }
+                    })
+                    .Build().GetUpdated(),
+                c =>
+                {
+                    var middle = GetMiddle(c).Build();
+                    var updated = Customer.From(middle, true)
+                        .With(cc => cc.Surname, "Doe")
+                        .With(cc => cc.Account.CreditCard.Contract, new Contract
+                        {
+                            Document = "Example"
+                        })
+                        .WithBuild(
+                            (cc => cc.Account2, new Account
+                            {
+                                Description = "Desc",
+                                Number = 1234567891,
+                                CreditCard = new CreditCard
+                                {
+                                    ExpirationDate = DateTime.Parse("12-12-2022")
+                                }
+                            }),
+                            (u => u.Account2.Amount, 200)
+                        );
+                    return (c, updated);
+                },
+                c =>
+                {
+                    Assert.NotSame(c.c.Account, c.updated.Account);
+                    Assert.NotNull(c.updated.Account.Description);
+                    Assert.Equal("Desc", c.updated.Account2.Description);
+                    Assert.Null(c.c.Account.CreditCard.Contract);
+                    Assert.NotNull(c.updated.Account.CreditCard.Contract.Document);
+                    Assert.Equal("Doe", c.updated.Surname);
+                    Assert.Equal(35, c.updated.Age);
+                    Assert.True(c.c.PrivateEqual(c.updated));
+                }
+            );
+
+            // implicit conversion
+            static Builder<Customer> GetMiddle(Customer data) => data.WithBuild(cc => cc.Age, 35);
+        }
     }
 
     public class Customer : Data<Customer>

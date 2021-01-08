@@ -20,12 +20,30 @@ namespace Funk
             Update();
         }
 
+        internal bool WithDefaultBehavior => defaultConfigurationActivated || Exclusions.IsEmpty();
+
+        internal bool defaultConfigurationActivated;
+
         /// <summary>
         /// Override when desired exclusions are intended.
         /// Exclusions can be specified only in this method.
         /// </summary>
         protected virtual void Configure()
         {
+        }
+
+        /// <summary>
+        /// Returns new Data object from the provided one.
+        /// </summary>
+        public static T From(T other, bool withDefaultConfiguration = false) => other.WithBuild().WithConfiguration(withDefaultConfiguration);
+
+        /// <summary>
+        /// Specify true if the default configuration is desired.
+        /// </summary>
+        public T WithConfiguration(bool withDefaultConfiguration = false)
+        {
+            defaultConfigurationActivated = withDefaultConfiguration;
+            return (T)this;
         }
         
         /// <summary>
@@ -110,14 +128,20 @@ namespace Funk
         /// </summary>
         public static T Build<T>(this Builder<T> builder) where T : Data<T>
         {
-            var exclusions = builder.Item.Exclusions;
             var reduced = builder.Expressions.Aggregate(builder.Item.Copy(),
                 (item, expressions) => item.Map(expressions.expression, expressions.value)
             );
-            exclusions.ForEach(e => Exc.Create(_ => reduced.Map(e.expression, e.value)));
-            var copy = reduced.Copy();
-            copy.Exclusions = exclusions;
-            return copy;
+            builder.Item.WithDefaultBehavior.Match(
+                _ => builder.Item.Exclusions.ForEach(e => Exc.Create(__ => reduced.Map(e.expression, e.value)))
+            );
+            (builder.Expressions.IsEmpty() && builder.Item.WithDefaultBehavior).Match(
+                _ =>
+                {
+                    reduced = reduced.Copy();
+                }
+            );
+            reduced.Exclusions = builder.Item.Exclusions;
+            return reduced;
         }
 
         private static T Copy<T>(this Data<T> data) where T : Data<T> =>
