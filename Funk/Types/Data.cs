@@ -20,10 +20,18 @@ namespace Funk
             Update();
         }
 
+        /// <summary>
+        /// Override when desired exclusions are intended.
+        /// Exclusions can be specified only in this method.
+        /// </summary>
         protected virtual void Configure()
         {
         }
         
+        /// <summary>
+        /// Excludes specified field/property.
+        /// Specify exclusions in Configure method.
+        /// </summary>
         protected void Exclude<TKey>(Expression<Func<T, TKey>> expression) =>
             exclusions.Add((Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), default(TKey)));
 
