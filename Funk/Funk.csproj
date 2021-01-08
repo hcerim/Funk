@@ -7,7 +7,7 @@
     <Version>2.0.0-alpha</Version>
     <Authors>Harun Ćerim</Authors>
     <Company />
-    <Description>Functional library for C#</Description>
+    <Description>Functional C#</Description>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/hcerim/Funk</PackageProjectUrl>
     <PackageIcon>vinyl.png</PackageIcon>
