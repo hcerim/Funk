@@ -32,7 +32,7 @@ Or add it directly in package references:
 Funk is licensed under the [MIT](/Files/license.txt) license.
 
 
-### Master's Thesis
+## Master's Thesis
 
 This project initially started as a Master's Thesis at Charles University.
 
