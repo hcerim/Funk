@@ -22,7 +22,7 @@ namespace Funk
 
         internal bool WithDefaultBehavior => defaultConfigurationActivated.Or(_ => Exclusions.IsEmpty());
 
-        internal bool defaultConfigurationActivated;
+        private bool defaultConfigurationActivated;
 
         /// <summary>
         /// Override when desired exclusions are intended.
