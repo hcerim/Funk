@@ -29,8 +29,7 @@ Or add it directly in package references:
 
 ## License
 
-Funk is licensed under the [MIT](/Files/license.txt) license.
-
+Funk is licensed under the [MIT](/Files/LICENSE) license.
 
 ## Master's Thesis
 
