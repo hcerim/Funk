@@ -168,6 +168,8 @@ namespace Funk.Tests
         protected override void Configure()
         {
             Exclude(c => c.Account.Description);
+            Exclude(c => c.Account.Description);
+            Exclude(c => c.Account.Description);
             Exclude(c => c.Account.CreditCard.Contract.Document);
         }
 

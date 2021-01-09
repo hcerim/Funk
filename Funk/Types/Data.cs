@@ -53,7 +53,7 @@ namespace Funk
         protected void Exclude<TKey>(Expression<Func<T, TKey>> expression) =>
             exclusions.Add((Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), default(TKey)));
 
-        private void Update() => Exclusions = Exclusions.Concat(exclusions).Distinct().ToList();
+        private void Update() => Exclusions = Exclusions.Concat(exclusions.DistinctBy(e => e.ToString())).ToList();
 
         [JsonIgnore]
         internal List<(Expression<Func<T, object>> expression, object value)> Exclusions =

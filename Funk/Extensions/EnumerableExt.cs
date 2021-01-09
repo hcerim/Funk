@@ -154,6 +154,18 @@ namespace Funk
         }
 
         /// <summary>
+        /// Returns unique items specified by a selector.
+        /// </summary>
+        public static IImmutableList<T> DistinctBy<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> selector) =>
+            sequence.Map().GroupBy(selector).Select(g => g.First()).Map();
+        
+        /// <summary>
+        /// Returns unique items specified by a selector.
+        /// </summary>
+        public static IImmutableList<T> DistinctBy<T, TKey>(this IEnumerable<T> sequence, Func<T, TKey> selector, IEqualityComparer<TKey> comparer) =>
+            sequence.Map().GroupBy(selector, comparer).Select(g => g.First()).Map();
+
+        /// <summary>
         /// Creates an immutable dictionary of key as a discriminator and corresponding immutable sequence. Handles null sequence.
         /// </summary>
         public static IImmutableDictionary<TKey, IImmutableList<TSource>> ToDictionary<TSource, TKey>(this IEnumerable<TSource> enumerable, Func<TSource, TKey> keySelector)
