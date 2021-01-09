@@ -163,6 +163,9 @@ namespace Funk
             );
     }
 
+    /// <summary>
+    /// Represents builder object for Data type.
+    /// </summary>
     public sealed class Builder<T> where T : Data<T>
     {
         internal Builder(Data<T> item, IEnumerable<(Expression<Func<T, object>> expression, object value)> expressions)
