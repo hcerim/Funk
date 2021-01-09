@@ -1,5 +1,5 @@
 
-<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/funk-logo.png" width="310"/></h1>
+<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/banner.png"/></h1>
 
 [![Version](https://img.shields.io/nuget/vpre/Funk.svg)](https://www.nuget.org/packages/Funk)
 ![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
@@ -10,8 +10,6 @@
 Funk implements many concepts from functional programming languages to reduce code size and most importantly help developers write **honest** bug-free code.
 
 Many agree that code is a liability where each line is a **commitment** and an **asset**. By using Funk you reduce the code size, end up with less commitment and keep all the good parts. Funk helps developers write code in a declarative rather than in an imperative way. It offers structures for representing and working with objects in a functional way. It introduces pattern matching for earlier versions of C#. It also provides extensions for working with immutable types painlessly. Expressions become a natural way of writing code where statements can be completely omitted.
-
-For a detailed guide check out the [Thesis paper](/Files/Funk.pdf).
 
 ## Installation
 
@@ -33,10 +31,13 @@ Or add it directly in package references:
 
 Funk is licensed under the [MIT](/Files/license.txt) license.
 
-## Master Thesis
+
+### Master's Thesis
+
+This project initially started as a Master's Thesis at Charles University.
 
 **Topic**: Extending C# with a Library of Functional Programming Concepts
 
 **Advisor**: [doc. RNDr. Pavel Parízek, Ph.D.](https://d3s.mff.cuni.cz/people/pavelparizek/)
 
-<h1 style="color:#f15a24; font-family:Roboto"><img src="Files/mff_uk.png" width="210"/></h1>
+The paper can be found [here](/Files/Funk.pdf).
