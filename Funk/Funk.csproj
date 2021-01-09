@@ -11,7 +11,7 @@
     <Description>Functional programming library for C#</Description>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/hcerim/Funk</PackageProjectUrl>
-    <PackageIcon>vinyl.png</PackageIcon>
+    <PackageIcon>Funk.png</PackageIcon>
     <RepositoryUrl>https://github.com/hcerim/Funk</RepositoryUrl>
     <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Oriented-Programming, Asynchronous-Programming, Extensions, Builders</PackageTags>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -31,7 +31,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\Files\vinyl.png">
+    <None Include="..\Files\Funk.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
