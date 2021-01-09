@@ -7,16 +7,18 @@
     <Version>2.0.0-alpha</Version>
     <Authors>Harun Ćerim</Authors>
     <Company />
-    <Description>Functional C#</Description>
+    <Title>Functional C#</Title>
+    <Description>Functional programming library for C#</Description>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/hcerim/Funk</PackageProjectUrl>
     <PackageIcon>vinyl.png</PackageIcon>
     <RepositoryUrl>https://github.com/hcerim/Funk</RepositoryUrl>
-    <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Oriented-Programming, Asynchronous-Programming, Extensions</PackageTags>
+    <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Oriented-Programming, Asynchronous-Programming, Extensions, Builders</PackageTags>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <Copyright>Copyright © 2021 Harun Ćerim</Copyright>
     <RepositoryType>git</RepositoryType>
+    <PackageVersion>2.0.0-beta</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
