@@ -20,7 +20,7 @@ namespace Funk
             Update();
         }
 
-        internal bool WithDefaultBehavior => defaultConfigurationActivated || Exclusions.IsEmpty();
+        internal bool WithDefaultBehavior => defaultConfigurationActivated.Or(_ => Exclusions.IsEmpty());
 
         internal bool defaultConfigurationActivated;
 
@@ -134,7 +134,7 @@ namespace Funk
             builder.Item.WithDefaultBehavior.Match(
                 _ => builder.Item.Exclusions.ForEach(e => Exc.Create(__ => reduced.Map(e.expression, e.value)))
             );
-            (builder.Expressions.IsEmpty() && builder.Item.WithDefaultBehavior).Match(
+            builder.Expressions.IsEmpty().And(_ => builder.Item.WithDefaultBehavior).Match(
                 _ =>
                 {
                     reduced = reduced.Copy();

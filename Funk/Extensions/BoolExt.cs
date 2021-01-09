@@ -21,5 +21,25 @@ namespace Funk
         /// </summary>
         [Pure]
         public static Maybe<bool> AsTrue(this bool? item) => item.IsNull() ? empty : AsTrue(item.Value);
+
+        /// <summary>
+        /// Performs conditional AND operation.
+        /// </summary>
+        public static bool And(this bool item, bool other) => item && other;
+
+        /// <summary>
+        /// Performs conditional AND operation.
+        /// </summary>
+        public static bool And(this bool item, Func<Unit, bool> function) => item || function(Unit.Value);
+
+        /// <summary>
+        /// Performs conditional OR operation.
+        /// </summary>
+        public static bool Or(this bool item, bool other) => item || other;
+
+        /// <summary>
+        /// Performs conditional OR operation.
+        /// </summary>
+        public static bool Or(this bool item, Func<Unit, bool> function) => item || function(Unit.Value);
     }
 }
