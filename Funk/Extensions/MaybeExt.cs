@@ -71,17 +71,17 @@ namespace Funk
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
-        public static Maybe<T> Or<T>(this Maybe<T> maybe, Func<Unit, Maybe<T>> ifEmpty) => maybe.Match(_ => ifEmpty(Unit.Value), Maybe.Create);
+        public static Maybe<R> Or<T, R>(this Maybe<T> maybe, Func<Unit, Maybe<R>> ifEmpty) where T : R => maybe.Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v));
 
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
-        public static Task<Maybe<T>> OrAsync<T>(this Maybe<T> maybe, Func<Unit, Task<Maybe<T>>> ifEmpty) => maybe.ToTask().OrAsync(ifEmpty);
+        public static Task<Maybe<R>> OrAsync<T, R>(this Maybe<T> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => maybe.ToTask().OrAsync(ifEmpty);
 
         /// <summary>
         /// Returns either not empty Maybe or a Maybe specified by the selector.
         /// </summary>
-        public static async Task<Maybe<T>> OrAsync<T>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<T>>> ifEmpty) => await (await maybe).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create(v).ToTask()).ConfigureAwait(false);
+        public static async Task<Maybe<R>> OrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => await (await maybe).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v).ToTask()).ConfigureAwait(false);
 
         /// <summary>
         /// Creates Exc from Maybe with the specified Exception if Maybe is empty.
