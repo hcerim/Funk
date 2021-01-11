@@ -1,0 +1,20 @@
+title: Funk
+
+remote_theme: "just-the-docs"
+
+search_enabled: true
+
+search:
+  heading_level: 2
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 10
+  tokenizer_separator: /[\s/]+/
+  rel_url: true
+  button: false
+
+aux_links:
+  "View on GitHub":
+    - "https://github.com/hcerim/Funk"
+
+aux_links_new_tab: true

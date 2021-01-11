@@ -1,4 +1,4 @@
-![Funk](Files/banner.png)
+![Funk](docs/Files/banner.png)
 [![Version](https://img.shields.io/nuget/vpre/Funk.svg)](https://www.nuget.org/packages/Funk)
 ![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
 ![Tests](https://github.com/cerimharun/Funk/workflows/Tests/badge.svg)
@@ -25,4 +25,4 @@ Or add it directly in package references:
 
 ## License
 
-Funk is licensed under the [MIT](/Files/LICENSE.md) license.
+Funk is licensed under the [MIT](docs/Files/LICENSE.md) license.
