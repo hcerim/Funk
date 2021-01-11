@@ -27,11 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\Files\LICENSE.md">
+    <None Include="..\docs\Files\LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\Files\Funk.png">
+    <None Include="..\docs\Files\Funk.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
