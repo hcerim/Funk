@@ -69,7 +69,7 @@ namespace Funk
         /// <summary>
         /// Creates a Builder object for the specified Data type.
         /// </summary>
-        public static Builder<T> With<T, TKey>(this Data<T> item, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
+        public static Builder<T> With<T>(this Data<T> item, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
             new Builder<T>(
                 item,
                 new List<(Expression<Func<T, object>> expression, object value)>
@@ -90,7 +90,7 @@ namespace Funk
         /// <summary>
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
+        public static T WithBuild<T>(this Data<T> item, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
             item.With(expression, value).Build();
         
         /// <summary>
@@ -102,7 +102,7 @@ namespace Funk
         /// <summary>
         /// Creates a Builder object from the provided one for the specified Data type.
         /// </summary>
-        public static Builder<T> With<T, TKey>(this Builder<T> builder, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
+        public static Builder<T> With<T>(this Builder<T> builder, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
             builder.With(expression, value);
         
         /// <summary>
@@ -114,7 +114,7 @@ namespace Funk
         /// <summary>
         /// Creates a new object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, object>> expression, TKey value) where T : Data<T> =>
+        public static T WithBuild<T>(this Builder<T> builder, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
             builder.With(expression, value).Build();
         
         /// <summary>

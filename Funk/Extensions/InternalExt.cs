@@ -58,7 +58,7 @@ namespace Funk.Internal
 
         internal static IImmutableList<T> GetOrEmpty<T>(this Maybe<IImmutableList<T>> maybe) => maybe.GetOr(_ => ImmutableList<T>.Empty.Map());
         
-        internal static T Map<T, TKey>(this T data, Expression<Func<T, TKey>> expression, TKey value)
+        internal static T Map<T>(this T data, Expression<Func<T, object>> expression, object value)
         {
             var memberExpression = expression.GetMemberExpression();
             new TypePattern<Unit>
@@ -109,7 +109,7 @@ namespace Funk.Internal
             return data;
         }
 
-        private static MemberExpression GetMemberExpression<T, TKey>(this Expression<Func<T, TKey>> expression) =>
+        private static MemberExpression GetMemberExpression<T>(this Expression<Func<T, object>> expression) =>
             expression == null ? throw new ArgumentNullException(nameof(expression)) :
             expression.Body is UnaryExpression u && u.Operand is MemberExpression m1 ? m1 :
             expression.Body is MemberExpression m2 ? m2 :
