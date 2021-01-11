@@ -10,7 +10,7 @@
     <Title>Functional C#</Title>
     <Description>Functional programming library for C#</Description>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/hcerim/Funk</PackageProjectUrl>
+    <PackageProjectUrl>https://hcerim.github.io/Funk</PackageProjectUrl>
     <PackageIcon>Funk.png</PackageIcon>
     <RepositoryUrl>https://github.com/hcerim/Funk</RepositoryUrl>
     <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Oriented-Programming, Asynchronous-Programming, Extensions, Builders</PackageTags>
