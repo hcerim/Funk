@@ -115,29 +115,21 @@ namespace Funk
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(1))
-            {
-                throw GetException("First", otherwiseThrow);
-            }
-
-            return (T1)Value;
-        }
+        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                1, _ => (T1)Value,
+                otherwiseThrow: _ => GetException("First", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(2))
-            {
-                throw GetException("Second", otherwiseThrow);
-            }
-
-            return (T2)Value;
-        }
+        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                2, _ => (T2)Value,
+                otherwiseThrow: _ => GetException("Second", otherwiseThrow)
+            );
 
         public static implicit operator OneOf<T1, T2>(T1 t1) => new OneOf<T1, T2>(t1);
 
@@ -256,43 +248,31 @@ namespace Funk
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(1))
-            {
-                throw GetException("First", otherwiseThrow);
-            }
-
-            return (T1)Value;
-        }
+        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                1, _ => (T1)Value,
+                otherwiseThrow: _ => GetException("First", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(2))
-            {
-                throw GetException("Second", otherwiseThrow);
-            }
-
-            return (T2)Value;
-        }
+        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                2, _ => (T2)Value,
+                otherwiseThrow: _ => GetException("Second", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns third item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(3))
-            {
-                throw GetException("Third", otherwiseThrow);
-            }
-
-            return (T3)Value;
-        }
+        public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                3, _ => (T3)Value,
+                otherwiseThrow: _ => GetException("Third", otherwiseThrow)
+            );
 
         public static implicit operator OneOf<T1, T2, T3>(T1 t1) => new OneOf<T1, T2, T3>(t1);
 
@@ -430,57 +410,41 @@ namespace Funk
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(1))
-            {
-                throw GetException("First", otherwiseThrow);
-            }
-
-            return (T1)Value;
-        }
+        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                1, _ => (T1)Value,
+                otherwiseThrow: _ => GetException("First", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(2))
-            {
-                throw GetException("Second", otherwiseThrow);
-            }
-
-            return (T2)Value;
-        }
+        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                2, _ => (T2)Value,
+                otherwiseThrow: _ => GetException("Second", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns third item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(3))
-            {
-                throw GetException("Third", otherwiseThrow);
-            }
-
-            return (T3)Value;
-        }
+        public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                3, _ => (T3)Value,
+                otherwiseThrow: _ => GetException("Third", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns fourth item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(4))
-            {
-                throw GetException("Fourth", otherwiseThrow);
-            }
-
-            return (T4)Value;
-        }
+        public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                4, _ => (T4)Value,
+                otherwiseThrow: _ => GetException("Fourth", otherwiseThrow)
+            );
 
         public static implicit operator OneOf<T1, T2, T3, T4>(T1 t1) => new OneOf<T1, T2, T3, T4>(t1);
 
@@ -637,71 +601,51 @@ namespace Funk
         /// Returns first item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(1))
-            {
-                throw GetException("First", otherwiseThrow);
-            }
-
-            return (T1)Value;
-        }
+        public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                1, _ => (T1)Value,
+                otherwiseThrow: _ => GetException("First", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns second item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(2))
-            {
-                throw GetException("Second", otherwiseThrow);
-            }
-
-            return (T2)Value;
-        }
+        public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                2, _ => (T2)Value,
+                otherwiseThrow: _ => GetException("Second", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns third item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(3))
-            {
-                throw GetException("Third", otherwiseThrow);
-            }
-
-            return (T3)Value;
-        }
+        public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                3, _ => (T3)Value,
+                otherwiseThrow: _ => GetException("Third", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns fourth item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(4))
-            {
-                throw GetException("Fourth", otherwiseThrow);
-            }
-
-            return (T4)Value;
-        }
+        public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                4, _ => (T4)Value,
+                otherwiseThrow: _ => GetException("Fourth", otherwiseThrow)
+            );
 
         /// <summary>
         /// Returns fifth item or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T5 UnsafeGetFifth(Func<Unit, Exception> otherwiseThrow = null)
-        {
-            if (Discriminator.SafeNotEquals(5))
-            {
-                throw GetException("Fifth", otherwiseThrow);
-            }
-
-            return (T5)Value;
-        }
+        public T5 UnsafeGetFifth(Func<Unit, Exception> otherwiseThrow = null) =>
+            Discriminator.Match(
+                5, _ => (T5)Value,
+                otherwiseThrow: _ => GetException("Fifth", otherwiseThrow)
+            );
 
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T1 t1) => new OneOf<T1, T2, T3, T4, T5>(t1);
 

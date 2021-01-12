@@ -119,7 +119,7 @@ namespace Funk
         /// Returns not empty value of Maybe or throws EmptyValueException (unless specified explicitly).
         /// </summary>
         /// <exception cref="EmptyValueException"></exception>
-        public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null) => Match(_ => throw GetException(otherwiseThrow), v => v);
+        public T UnsafeGet(Func<Unit, Exception> otherwiseThrow = null) => Match(v => v, _ => GetException(otherwiseThrow));
 
         public static implicit operator Maybe<T>(Unit unit) => Maybe.Empty<T>();
 
