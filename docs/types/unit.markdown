@@ -8,9 +8,9 @@ nav_order: 1
 
 # Unit -> Empty value
 
-Representing an empty value in OOP languages like C# has led to many unexpected behaviors and runtime errors. In C#, value type variables can't be empty or more accurately saying, the default value of value type variables is always some value. However, with reference types, it is different as the default value of reference type variable is nothing or more accurately it points to nothing.
+Representing an empty value in OOP languages like C# has led to many unexpected behaviors and runtime errors. In C#, value type variables can't be empty or more accurately, the default value of value type variables is always some value. However, with reference types, it is different as the default value of reference type variable is nothing or more accurately it points to nothing.
 
-`Unit` exactly addresses this issue by providing a proper representation of an empty value. It is a value type and therefore can't be `null`. It actually can be only in one form and its only value is `Unit` (set with one value -> itself). Other types provided by Funk use `Unit` extensively and especially the `Maybe` type that represents a possible absence of data, so understanding what `Unit` represents is crucial to working with this library.
+`Unit` exactly addresses this issue by providing a proper representation of an empty value. **It is a value type and therefore can't be `null`.** It actually can be only in one form and its only value is `Unit` (set with one value -> itself). Other types provided by Funk use `Unit` extensively and especially the `Maybe` type that represents a possible absence of data, so understanding what `Unit` represents is crucial to working with this library.
 
 The following method is a simple function that formats and prints a message to the console.
 
@@ -53,4 +53,4 @@ using static Funk.Prelude;
 
 We will see later other declaration shortcuts available in `Prelude` as well.
 
-Two `Unit` objects are always equal and calling the `ToString()` function on `Unit` produces an `"empty"` value which is especially helpful during debugging.
+Two `Unit` objects are always equal and calling the `ToString` function on `Unit` produces an `"empty"` value which is especially helpful during debugging.
