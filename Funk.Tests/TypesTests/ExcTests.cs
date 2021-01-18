@@ -193,6 +193,21 @@ namespace Funk.Tests
                 s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
             );
         }
+        
+        [Fact]
+        public void Deconstruct_Exc()
+        {
+            UnitTest(
+                _ => "Funk123",
+                s =>
+                {
+                    var (success, failure) = Exc.Create<string, ArgumentException>(_ => GetNameById(s))
+                        .Map(ss => ss.Concat(GetNameById(s)));
+                    return (success, failure);
+                },
+                s => Assert.Equal("HarunHarun", s.success.UnsafeGet())
+            );
+        }
 
         [Fact]
         public async Task Create_Exceptional_Continue_When_Failure()

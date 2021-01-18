@@ -131,6 +131,12 @@ namespace Funk
                 otherwiseThrow: _ => GetException("Second", otherwiseThrow)
             );
 
+        public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second)
+        {
+            first = First;
+            second = Second;
+        }
+
         public static implicit operator OneOf<T1, T2>(T1 t1) => new OneOf<T1, T2>(t1);
 
         public static implicit operator OneOf<T1, T2>(T2 t2) => new OneOf<T1, T2>(t2);
@@ -273,6 +279,13 @@ namespace Funk
                 3, _ => (T3)Value,
                 otherwiseThrow: _ => GetException("Third", otherwiseThrow)
             );
+        
+        public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second, out Maybe<T3> third)
+        {
+            first = First;
+            second = Second;
+            third = Third;
+        }
 
         public static implicit operator OneOf<T1, T2, T3>(T1 t1) => new OneOf<T1, T2, T3>(t1);
 
@@ -445,6 +458,14 @@ namespace Funk
                 4, _ => (T4)Value,
                 otherwiseThrow: _ => GetException("Fourth", otherwiseThrow)
             );
+        
+        public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second, out Maybe<T3> third, out Maybe<T4> fourth)
+        {
+            first = First;
+            second = Second;
+            third = Third;
+            fourth = Fourth;
+        }
 
         public static implicit operator OneOf<T1, T2, T3, T4>(T1 t1) => new OneOf<T1, T2, T3, T4>(t1);
 
@@ -646,6 +667,15 @@ namespace Funk
                 5, _ => (T5)Value,
                 otherwiseThrow: _ => GetException("Fifth", otherwiseThrow)
             );
+        
+        public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second, out Maybe<T3> third, out Maybe<T4> fourth, out Maybe<T5> fifth)
+        {
+            first = First;
+            second = Second;
+            third = Third;
+            fourth = Fourth;
+            fifth = Fifth;
+        }
 
         public static implicit operator OneOf<T1, T2, T3, T4, T5>(T1 t1) => new OneOf<T1, T2, T3, T4, T5>(t1);
 
