@@ -87,6 +87,23 @@ namespace Funk.Tests
                 }
             );
         }
+        
+        [Fact]
+        public void Deconstruct_Record()
+        {
+            UnitTest(
+                _ => Record.Create("John", "Doe"),
+                r =>
+                {
+                    var (name, surname) = r;
+                    return (name, surname);
+                },
+                s =>
+                {
+                    Assert.Equal("John", s.name);
+                }
+            );
+        }
 
         [Fact]
         public void Execute_Operation_On_Record_With_2_Items()

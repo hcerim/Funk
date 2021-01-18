@@ -103,6 +103,11 @@ namespace Funk
         /// </summary>
         public void Match(Action<T1> operation) => operation(Item1);
 
+        public void Deconstruct(out T1 item1)
+        {
+            item1 = Item1;
+        }
+
         public static implicit operator Record<T1>(T1 t1) => new Record<T1>(t1);
 
         public static bool operator ==(Record<T1> record, Record<T1> other) => record.Equals(other);
@@ -171,6 +176,12 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2> operation) => operation(Item1, Item2);
+
+        public void Deconstruct(out T1 item1, out T2 item2)
+        {
+            item1 = Item1;
+            item2 = Item2;
+        }
 
         public static implicit operator Record<T1, T2>((T1 t1, T2 t2) tuple) => new Record<T1, T2>(tuple);
 
@@ -243,6 +254,13 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2, T3> operation) => operation(Item1, Item2, Item3);
+        
+        public void Deconstruct(out T1 item1, out T2 item2, out T3 item3)
+        {
+            item1 = Item1;
+            item2 = Item2;
+            item3 = Item3;
+        }
 
         public static implicit operator Record<T1, T2, T3>((T1 t1, T2 t2, T3 t3) tuple) => new Record<T1, T2, T3>(tuple);
 
@@ -318,6 +336,14 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2, T3, T4> operation) => operation(Item1, Item2, Item3, Item4);
+        
+        public void Deconstruct(out T1 item1, out T2 item2, out T3 item3, out T4 item4)
+        {
+            item1 = Item1;
+            item2 = Item2;
+            item3 = Item3;
+            item4 = Item4;
+        }
 
         public static implicit operator Record<T1, T2, T3, T4>((T1 t1, T2 t2, T3 t3, T4 t4) tuple) => new Record<T1, T2, T3, T4>(tuple);
 
@@ -396,6 +422,15 @@ namespace Funk
         /// Executes operation provided with record items.
         /// </summary>
         public void Match(Action<T1, T2, T3, T4, T5> operation) => operation(Item1, Item2, Item3, Item4, Item5);
+        
+        public void Deconstruct(out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5)
+        {
+            item1 = Item1;
+            item2 = Item2;
+            item3 = Item3;
+            item4 = Item4;
+            item5 = Item5;
+        }
 
         public static implicit operator Record<T1, T2, T3, T4, T5>((T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) tuple) => new Record<T1, T2, T3, T4, T5>(tuple);
 
