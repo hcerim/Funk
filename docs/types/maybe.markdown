@@ -37,7 +37,7 @@ Here, the `Get` function returns a `Customer` object which is implicitly convert
 
 `Maybe` is a concept present in FP languages. In F#, it is called an `Option` same as in Scala. In Haskell, it is called `Maybe` the same as in Funk. In OOP, we have a pattern that tries to accomplish a similar thing called `Optional pattern`.
 
-In Funk, the `Maybe` type is a construct that is a `functor`, an `applicative`, and a `monad` (actually, once you satisfy the rules of being a `monad` you satisfy the rules for being the first two automatically as the `monad` is the most complex and powerful of the three). Object-oriented programmers may be unfamiliar with these terms as they come from the `Category Theory`. To get familiar with these concepts, the best resource is Bartosz Milewski's [Category Theory for Programmers](https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/).
+In Funk, the `Maybe` type is a construct that is a `functor`, an `applicative`, and a `monad` (actually, once you satisfy the rules of being a `monad` you can easily satisfy the rules for being the first two as the `monad` is the most complex and powerful of the three). Object-oriented programmers may be unfamiliar with these terms as they come from the `Category Theory`. To get familiar with these concepts, the best resource is Bartosz Milewski's [Category Theory for Programmers](https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/).
 
 To use Funk, you don't have to know these concepts as you will get to know them through various examples. However, learning these concepts will open a whole new world for you and will change the way you think about the software in general.
 
@@ -246,4 +246,4 @@ var account = customers.Get(id).SelectMany(
 ).Where(a => a.Balance > 100);
 ```
 
-After all, the `query syntax` is a **syntactic sugar** and it uses the `fluent API` methods underneath, so why not use it when it makes sense :)
+After all, the `query syntax` is a **syntactic sugar** and it uses the `fluent API` methods underneath, so why not use it in situations when it makes your code more readable :)
