@@ -9,7 +9,7 @@
     <Company />
     <Title>Functional C#</Title>
     <Description>Functional programming library for C#</Description>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://hcerim.github.io/Funk</PackageProjectUrl>
     <PackageIcon>Funk.png</PackageIcon>
     <RepositoryUrl>https://github.com/hcerim/Funk</RepositoryUrl>
@@ -27,11 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\docs\Files\LICENSE.md">
+    <None Include="..\docs\Files\Funk.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\docs\Files\Funk.png">
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
