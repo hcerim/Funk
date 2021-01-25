@@ -73,12 +73,7 @@ The `Match` function provides a fluent way of extracting all the inner values of
 The `Record` type provides the `Map` function to easily transform one `Record` object to another of the same arity. We could have two related accounts, from which we would like to retrieve corresponding contracts.
 
 ```c#
-public Record<Account, Account> GetAccountWithSubAccount(Guid id)
-{
-    // .. implementation ..
-}
-
-// ..
+public Record<Account, Account> GetAccountWithSubAccount(Guid id) => /* implementation */;
 
 var account = GetAccountWithSubAccount(id);
 var (accountContract, subAccountContract) = account.Map((a, s) =>
@@ -95,7 +90,7 @@ Here, we are mapping the underlying values and retrieving the `ValueTuple` objec
 The `Record` type also provides the `FlatMap` function in case we need to flatten the result to avoid object nesting. When the function provided as an argument inside the `Map` function returns the `Record` object instead of the `ValueTuple`, we need to use the `FlatMap` function instead.
 
 ```c#
-var (registrationContract, accountContract) = await customer.GetWithAccountAsync(id).FlatMapAsync(async (c, a) =>
+var (registrationContract, accountContract) = await customers.GetWithAccountAsync(id).FlatMapAsync(async (c, a) =>
     rec
     (
         await customers.GetContract(c.ContractId),
@@ -106,6 +101,6 @@ var (registrationContract, accountContract) = await customer.GetWithAccountAsync
 
 Here, the `GetWithAccountAsync` function is returning the `Task<Record<Customer, Account>>`. We are then using the `async` version of the `FlatMap` to execute this operation asynchronously.
 
-## Records with single value
+## Records with a single value
 
 The `Record` type supports the creation of the `Record` object of **one** value whereas the `ValueTuple` must comprise at least **two** objects. So, even when you don't have more values that should be somehow connected, you can still use the features that the `Record` type provides (**immutability**, **mapping** and **flattening** features, and **pattern-matching**) by simply lifting the object to the elevated world of the `Record` type.
