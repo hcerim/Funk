@@ -137,7 +137,7 @@ namespace Funk.Tests
                         return result.OnFailure(e => GetNullString()).OnEmpty(_ => GetNameById("Funk123"));
                     }));
                 },
-                e => Assert.Equal("Harun", e.UnsafeGetFirst())
+                e => Assert.Equal("Harun", e.UnsafeGetSuccess())
             );
         }
 
@@ -190,7 +190,7 @@ namespace Funk.Tests
                     return Exc.Create<string, ArgumentException>(_ => GetNameById(s))
                         .Map(ss => ss.Concat(GetNameById(s)));
                 },
-                s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
+                s => Assert.Equal("HarunHarun", s.UnsafeGetSuccess())
             );
         }
         
@@ -224,7 +224,7 @@ namespace Funk.Tests
                 {
                     var root = e.RootFailure.UnsafeGet();
                     Assert.Equal("Invalid id", root.Message);
-                    Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetSecond());
+                    Assert.IsType<EnumerableException<ArgumentException>>(e.UnsafeGetFailure());
                 }
             );
         }
@@ -241,7 +241,7 @@ namespace Funk.Tests
                         .OnEmptyAsync(_ => GetNameByIdAsync("Funk123"))
                         .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")));
                 },
-                s => Assert.Equal("HarunHarun", s.UnsafeGetFirst())
+                s => Assert.Equal("HarunHarun", s.UnsafeGetSuccess())
             );
         }
 
@@ -301,8 +301,8 @@ namespace Funk.Tests
                         .MapAsync(async ss => ss.Concat(await GetNameByIdAsync("Funk123")).ToString());
 
                     var second = failure<string, ArgumentException>(new ArgumentException("Error occured")).ToImmutableList()
-                        .SafeConcat(failure<string, ArgumentException>(new ArgumentException("Another occured")).ToImmutableList())
-                        .SafeConcat(Exc.Empty<string, ArgumentException>().ToImmutableList());
+                        .Concat(failure<string, ArgumentException>(new ArgumentException("Another occured")).ToImmutableList())
+                        .Concat(Exc.Empty<string, ArgumentException>().ToImmutableList());
                     return first.MergeRange(second);
                 },
                 r =>
@@ -359,7 +359,7 @@ namespace Funk.Tests
                 },
                 s =>
                 {
-                    Assert.Equal(new List<string> { "1", "2", "3" }.Map(), s.UnsafeGetFirst());
+                    Assert.Equal(new List<string> { "1", "2", "3" }.Map(), s.UnsafeGetSuccess());
                 }
             );
         }

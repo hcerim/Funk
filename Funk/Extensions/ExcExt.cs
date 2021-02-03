@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Prelude;
@@ -181,7 +182,7 @@ namespace Funk
         /// </summary>
         public static Exc<IImmutableList<T>, E> MergeRange<T, E>(this Exc<T, E> item, IEnumerable<Exc<T, E>> items, string errorMessage = null) where E : Exception
         {
-            return item.ToImmutableList().SafeConcat(items).ConditionalSplit(e => e.IsSuccess).Match(
+            return item.ToImmutableList().Concat(items).ConditionalSplit(e => e.IsSuccess).Match(
                 (success, other) =>
                 {
                     return other.AsNotEmptyList().Match(

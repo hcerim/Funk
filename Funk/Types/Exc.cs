@@ -68,38 +68,70 @@ namespace Funk
     /// Type that represents a possible failure.
     /// Can represent successful result, error (in a form of EnumerableException of a specified exception type) or empty value.
     /// </summary>
-    public sealed class Exc<T, E> : OneOf<T, EnumerableException<E>>, IEquatable<Exc<T, E>> where E : Exception
+    public readonly struct Exc<T, E> : IEquatable<Exc<T, E>> where E : Exception
     {
-        internal Exc()
-        {
-        }
-
         internal Exc(T result)
-            : base(result)
         {
+            if (result.IsNull())
+            {
+                NotEmpty = false;
+                Discriminator = 0;
+            }
+            else
+            {
+                NotEmpty = true;
+                Discriminator = 1;
+            }
+            Value = result;
         }
 
         internal Exc(E exception)
-            : base(exception.AsMaybe().Map(e => e.ToEnumerableException(e.Message)).GetOrDefault())
         {
+            if (exception.IsNull())
+            {
+                NotEmpty = false;
+                Discriminator = 0;
+            }
+            else
+            {
+                NotEmpty = true;
+                Discriminator = 2;
+            }
+            Value = exception.ToEnumerableException(exception.Message);
         }
 
         internal Exc(EnumerableException<E> exception)
-            : base(exception)
         {
+            if (exception.IsNull())
+            {
+                NotEmpty = false;
+                Discriminator = 0;
+            }
+            else
+            {
+                NotEmpty = true;
+                Discriminator = 2;
+            }
+            Value = exception;
         }
+        
+        private int Discriminator { get; }
+        private object Value { get; }
 
+        public bool IsEmpty => !NotEmpty;
+        public bool NotEmpty { get; }
+        
         /// <summary>
         /// Maybe of Success. If it is not success, Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<T> Success => First;
+        public Maybe<T> Success => Discriminator.SafeEquals(1) ? Maybe.Create((T)Value) : empty;
 
         /// <summary>
         /// Maybe of Failure. If it is not failure, Maybe will be empty.
         /// </summary>
         [Pure]
-        public Maybe<EnumerableException<E>> Failure => Second;
+        public Maybe<EnumerableException<E>> Failure => Discriminator.SafeEquals(2) ? Maybe.Create((EnumerableException<E>)Value) : empty;
 
         /// <summary>
         /// If Failure, Maybe contains the root exception inside EnumerableException if there is one. Otherwise, Maybe will be empty.
@@ -113,9 +145,9 @@ namespace Funk
         [Pure]
         public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
-        public bool IsSuccess => IsFirst;
+        public bool IsSuccess => Success.NotEmpty;
 
-        public bool IsFailure => IsSecond;
+        public bool IsFailure => Failure.NotEmpty;
 
         /// <summary>
         /// Structure-preserving map.
@@ -146,6 +178,78 @@ namespace Funk
         /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
         /// </summary>
         public Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> selector) => Match(_ => result(Exc.Empty<R, E>()), selector, e => result(Exc.Failure<R, E>(e)));
+        
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector.
+        /// </summary>
+        public R Match<R>(Func<Unit, R> ifEmpty, Func<T, R> ifSuccess, Func<EnumerableException<E>, R> ifFailure)
+        {
+            var value = Value;
+            return Discriminator.Match(
+                0, _ => ifEmpty(Unit.Value),
+                1, _ => ifSuccess((T)value),
+                2, _ => ifFailure((EnumerableException<E>)value)
+            );
+        }
+
+        /// <summary>
+        /// Maps available item to the result of the corresponding selector or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
+        public R Match<R>(Func<T, R> ifSuccess, Func<EnumerableException<E>, R> ifFailure, Func<Unit, Exception> otherwiseThrow = null)
+        {
+            var value = Value;
+            return Discriminator.Match(
+                1, _ => ifSuccess((T)value),
+                2, _ => ifFailure((EnumerableException<E>)value),
+                otherwiseThrow: _ => GetException("Every", otherwiseThrow)
+            );
+        }
+
+        /// <summary>
+        /// Executes operation provided with available item.
+        /// </summary>
+        public void Match(Action<Unit> ifEmpty = null, Action<T> ifSuccess = null, Action<EnumerableException<E>> ifFailure = null)
+        {
+            var value = Value;
+            Discriminator.Match(
+                0, _ => ifEmpty?.Apply(Unit.Value),
+                1, _ => ifSuccess?.Apply((T)value),
+                2, _ => ifFailure?.Apply((EnumerableException<E>)value)
+            );
+        }
+
+        /// <summary>
+        /// Returns success or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
+        public T UnsafeGetSuccess(Func<Unit, Exception> otherwiseThrow = null)
+        {
+            var value = Value;
+            return Discriminator.Match(
+                1, _ => (T)value,
+                otherwiseThrow: _ => GetException("First", otherwiseThrow)
+            );
+        }
+
+        /// <summary>
+        /// Returns failure or throws EmptyValueException (unless specified explicitly).
+        /// </summary>
+        /// <exception cref="EmptyValueException"></exception>
+        public EnumerableException<E> UnsafeGetFailure(Func<Unit, Exception> otherwiseThrow = null)
+        {
+            var value = Value;
+            return Discriminator.Match(
+                2, _ => (EnumerableException<E>)value,
+                otherwiseThrow: _ => GetException("Second", otherwiseThrow)
+            );
+        }
+
+        public void Deconstruct(out Maybe<T> success, out Maybe<EnumerableException<E>> failure)
+        {
+            success = Success;
+            failure = Failure;
+        }
 
         public static implicit operator Exc<T, E>(Unit unit) => Exc.Empty<T, E>();
 
@@ -161,7 +265,8 @@ namespace Funk
 
         public bool Equals(Exc<T, E> other)
         {
-            return other.AsMaybe().FlatMap(o => Match(
+            var value = this;
+            return other.AsMaybe().FlatMap(o => value.Match(
                 _ => o.IsEmpty.AsMaybe(),
                 v => o.Success.Map(s => v.SafeEquals(s)),
                 e => o.Failure.Map(e.SafeEquals)
@@ -173,5 +278,13 @@ namespace Funk
         public override int GetHashCode() => Match(_ => _.GetHashCode(), v => v.GetHashCode(), e => e.GetHashCode());
 
         public override string ToString() => Match(_ => _.ToString(), v => v.ToString(), e => e.ToString());
+        
+        private static Exception GetException(string itemName, Func<Unit, Exception> otherwiseThrow = null)
+        {
+            return otherwiseThrow.AsMaybe().Match(
+                _ => new EmptyValueException($"{itemName} item is empty."),
+                o => o(Unit.Value)
+            );
+        }
     }
 }
