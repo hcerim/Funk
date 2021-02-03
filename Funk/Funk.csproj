@@ -18,7 +18,7 @@
     <FileVersion>2.0.0.0</FileVersion>
     <Copyright>Copyright © 2021 Harun Ćerim</Copyright>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>2.0.0-beta</PackageVersion>
+    <PackageVersion>2.0.0-beta02</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
