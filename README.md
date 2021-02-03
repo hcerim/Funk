@@ -22,7 +22,3 @@ Or through **.NET CLI**:
 Or add it directly in package references:
 
 `<PackageReference Include="Funk" Version="1.1.3" />`
-
-## License
-
-Funk is licensed under the [MIT](docs/Files/LICENSE.md) license.
