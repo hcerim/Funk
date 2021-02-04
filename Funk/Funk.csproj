@@ -19,8 +19,9 @@
     <Copyright>Copyright © 2021 Harun Ćerim</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageVersion>2.0.0-beta02</PackageVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
