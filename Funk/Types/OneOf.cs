@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using static Funk.Prelude;
 
@@ -31,7 +32,10 @@ namespace Funk
             );
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         protected int Discriminator { get; }
+        
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         protected object Value { get; }
 
         public bool IsEmpty => !NotEmpty;

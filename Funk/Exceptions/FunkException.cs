@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using static Funk.Prelude;
 
@@ -116,6 +117,7 @@ namespace Funk
         /// </summary>
         public Maybe<IImmutableList<E>> Nested => nested.AsNotEmptyList();
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly IImmutableList<E> nested;
 
         /// <summary>

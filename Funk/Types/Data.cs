@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using Funk.Internal;
@@ -20,8 +21,10 @@ namespace Funk
             Update();
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool WithDefaultBehavior => defaultConfigurationActivated.Or(_ => Exclusions.IsEmpty());
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private bool defaultConfigurationActivated;
 
         /// <summary>
@@ -56,10 +59,12 @@ namespace Funk
         private void Update() => Exclusions = exclusions.DistinctBy(e => e.ToString()).ToList();
 
         [JsonIgnore]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal List<(Expression<Func<T, object>> expression, object value)> Exclusions =
             new List<(Expression<Func<T, object>> expression, object value)>();
         
         [JsonIgnore]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly List<(Expression<Func<T, object>> expression, object value)> exclusions =
             new List<(Expression<Func<T, object>> expression, object value)>();
     }
@@ -180,8 +185,10 @@ namespace Funk
         internal Builder<T> With(IEnumerable<(Expression<Func<T, object>> expression, object value)> expressions) =>
             new Builder<T>(Item, Expressions.Concat(expressions));
         
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal Data<T> Item { get; }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
             new List<(Expression<Func<T, object>>, object)>();
 

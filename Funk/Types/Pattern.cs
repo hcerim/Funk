@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Prelude;
@@ -9,6 +10,7 @@ namespace Funk
 {
     public struct Pattern<R> : IEnumerable
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private List<Record<Func<object, bool>, Func<object, R>>> patterns;
 
         public void Add<T>((T @case, Func<T, R> function) item)
@@ -40,6 +42,7 @@ namespace Funk
 
     public struct AsyncPattern<R> : IEnumerable
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private List<Record<Func<object, bool>, Func<object, Task<R>>>> patterns;
 
         public void Add<T>((T @case, Func<T, Task<R>> function) item)
@@ -71,6 +74,7 @@ namespace Funk
 
     public struct TypePattern<R> : IEnumerable
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private List<Record<Func<object, bool>, Func<object, R>>> patterns;
 
         public void Add<T>(Func<T, R> function)
@@ -91,6 +95,7 @@ namespace Funk
 
     public struct AsyncTypePattern<R> : IEnumerable
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private List<Record<Func<object, bool>, Func<object, Task<R>>>> patterns;
 
         public void Add<T>(Func<T, Task<R>> function)

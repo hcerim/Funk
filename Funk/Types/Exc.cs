@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Funk.Internal;
@@ -115,7 +116,10 @@ namespace Funk
             Value = exception;
         }
         
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int Discriminator { get; }
+        
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private object Value { get; }
 
         public bool IsEmpty => !NotEmpty;
