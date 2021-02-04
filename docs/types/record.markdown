@@ -100,7 +100,3 @@ var (registrationContract, accountContract) = await customers.GetWithAccountAsyn
 ```
 
 Here, the `GetWithAccountAsync` function is returning the `Task<Record<Customer, Account>>`. We are then using the `async` version of the `FlatMap` to execute this operation asynchronously.
-
-## Records with a single value
-
-The `Record` type supports the creation of the `Record` object of **one** value whereas the `ValueTuple` must comprise at least **two** objects. So, even when you don't have more values that should be somehow connected, you can still use the features that the `Record` type provides (**immutability**, **mapping** and **flattening** features, and **pattern-matching**) by simply lifting the object to the elevated world of the `Record` type.
