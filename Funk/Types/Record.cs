@@ -66,7 +66,7 @@ namespace Funk
 
     /// <summary>
     /// Record with arity of 1.
-    /// Represents a product of a single value.
+    /// Type that represents a product of a single value.
     /// </summary>
     public readonly struct Record<T1> : IEquatable<Record<T1>>
     {
@@ -93,7 +93,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 1.
-        /// In case the selector returns the Record, use FlatMap instead.
+        /// In case the specified function returns the Record, use FlatMap instead.
         /// </summary>
         public Record<R1> Map<R1>(Func<T1, R1> selector) => Record.Create(selector(Item1));
 
@@ -104,7 +104,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 1.
-        /// In case the selector returns the Record, use FlatMapAsync instead.
+        /// In case the specified function returns the Record, use FlatMapAsync instead.
         /// </summary>
         public async Task<Record<R1>> MapAsync<R1>(Func<T1, Task<R1>> selector) => Record.Create(await selector(Item1).ConfigureAwait(false));
 
@@ -123,7 +123,7 @@ namespace Funk
         }
 
         /// <summary>
-        /// Lifts the value to the Record of 1. 
+        /// Lifts the object to the Record of 1. 
         /// </summary>
         [Pure]
         public static implicit operator Record<T1>(T1 t1) => new Record<T1>(t1);
@@ -170,7 +170,7 @@ namespace Funk
 
     /// <summary>
     /// Record with arity of 2.
-    /// Represents a product of two values.
+    /// Type that represents a product of two values.
     /// </summary>
     public readonly struct Record<T1, T2> : IEquatable<Record<T1, T2>>
     {
@@ -210,7 +210,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 2.
-        /// In case the selector returns the Record, use FlatMap instead.
+        /// In case the specified function returns the Record, use FlatMap instead.
         /// </summary>
         public Record<R1, R2> Map<R1, R2>(Func<T1, T2, (R1, R2)> selector) => Record.Create(selector(Item1, Item2));
 
@@ -221,7 +221,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 2.
-        /// In case the selector returns the Record, use FlatMapAsync instead.
+        /// In case the specified function returns the Record, use FlatMapAsync instead.
         /// </summary>
         public async Task<Record<R1, R2>> MapAsync<R1, R2>(Func<T1, T2, Task<(R1, R2)>> selector) => Record.Create(await selector(Item1, Item2).ConfigureAwait(false));
 
@@ -288,7 +288,7 @@ namespace Funk
 
     /// <summary>
     /// Record with arity of 3.
-    /// Represents a product of three values.
+    /// Type that represents a product of three values.
     /// </summary>
     public readonly struct Record<T1, T2, T3> : IEquatable<Record<T1, T2, T3>>
     {
@@ -336,7 +336,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 3.
-        /// In case the selector returns the Record, use FlatMap instead.
+        /// In case the specified function returns the Record, use FlatMap instead.
         /// </summary>
         public Record<R1, R2, R3> Map<R1, R2, R3>(Func<T1, T2, T3, (R1, R2, R3)> selector) => Record.Create(selector(Item1, Item2, Item3));
 
@@ -347,7 +347,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 3.
-        /// In case the selector returns the Record, use FlatMapAsync instead.
+        /// In case the specified function returns the Record, use FlatMapAsync instead.
         /// </summary>
         public async Task<Record<R1, R2, R3>> MapAsync<R1, R2, R3>(Func<T1, T2, T3, Task<(R1, R2, R3)>> selector) => Record.Create(await selector(Item1, Item2, Item3).ConfigureAwait(false));
 
@@ -415,7 +415,7 @@ namespace Funk
 
     /// <summary>
     /// Record with arity of 4.
-    /// Represents a product of four values.
+    /// Type that represents a product of four values.
     /// </summary>
     public readonly struct Record<T1, T2, T3, T4> : IEquatable<Record<T1, T2, T3, T4>>
     {
@@ -471,7 +471,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 4.
-        /// In case the selector returns the Record, use FlatMap instead.
+        /// In case the specified function returns the Record, use FlatMap instead.
         /// </summary>
         public Record<R1, R2, R3, R4> Map<R1, R2, R3, R4>(Func<T1, T2, T3, T4, (R1, R2, R3, R4)> selector) => Record.Create(selector(Item1, Item2, Item3, Item4));
 
@@ -482,7 +482,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 4.
-        /// In case the selector returns the Record, use FlatMapAsync instead.
+        /// In case the specified function returns the Record, use FlatMapAsync instead.
         /// </summary>
         public async Task<Record<R1, R2, R3, R4>> MapAsync<R1, R2, R3, R4>(Func<T1, T2, T3, T4, Task<(R1, R2, R3, R4)>> selector) => Record.Create(await selector(Item1, Item2, Item3, Item4).ConfigureAwait(false));
 
@@ -551,7 +551,7 @@ namespace Funk
 
     /// <summary>
     /// Record with arity of 5.
-    /// Represents a product of five values.
+    /// Type that represents a product of five values.
     /// </summary>
     public readonly struct Record<T1, T2, T3, T4, T5> : IEquatable<Record<T1, T2, T3, T4, T5>>
     {
@@ -615,7 +615,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 5.
-        /// In case the selector returns the Record, use FlatMap instead.
+        /// In case the specified function returns the Record, use FlatMap instead.
         /// </summary>
         public Record<R1, R2, R3, R4, R5> Map<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, (R1, R2, R3, R4, R5)> selector) => Record.Create(selector(Item1, Item2, Item3, Item4, Item5));
 
@@ -626,7 +626,7 @@ namespace Funk
 
         /// <summary>
         /// Structure-preserving map. Maps this Record to the new Record of 5.
-        /// In case the selector returns the Record, use FlatMapAsync instead.
+        /// In case the specified function returns the Record, use FlatMapAsync instead.
         /// </summary>
         public async Task<Record<R1, R2, R3, R4, R5>> MapAsync<R1, R2, R3, R4, R5>(Func<T1, T2, T3, T4, T5, Task<(R1, R2, R3, R4, R5)>> selector) => Record.Create(await selector(Item1, Item2, Item3, Item4, Item5).ConfigureAwait(false));
 
