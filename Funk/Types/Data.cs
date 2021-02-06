@@ -10,11 +10,14 @@ using static Funk.Prelude;
 namespace Funk
 {
     /// <summary>
-    /// Provides fluent way of creating new immutable objects with updated fields/properties using builders.
+    /// Type that provides fluent way of creating new immutable objects through the Builder type.
     /// </summary>
     [JsonObject(MemberSerialization.Fields)]
     public abstract class Data<T> where T : Data<T>
     {
+        /// <summary>
+        /// Creates a new Data object with configuration specified in the Configure method.
+        /// </summary>
         protected Data()
         {
             Configure();
@@ -28,7 +31,8 @@ namespace Funk
         private bool defaultConfigurationActivated;
 
         /// <summary>
-        /// Override when desired exclusions are intended.
+        /// Called during the Data object construction.
+        /// Override when desired exclusions are intended using the Exclude method.
         /// Exclusions can be specified only in this method.
         /// </summary>
         protected virtual void Configure()
@@ -36,12 +40,16 @@ namespace Funk
         }
 
         /// <summary>
-        /// Returns new Data object from the provided one.
+        /// Returns the new Data object from the provided one.
+        /// By default, takes the configuration specified in the Configure method.
+        /// If the default configuration is desired, specified 'withDefaultConfiguration' parameter must be true.
         /// </summary>
-        public static T From(T other, bool withDefaultConfiguration = false) => other.WithBuild().WithConfiguration(withDefaultConfiguration);
+        public static T From(T other, bool withDefaultConfiguration = false) =>
+            new Builder<T>(other).Build().WithConfiguration(withDefaultConfiguration);
 
         /// <summary>
-        /// Specify true if the default configuration is desired.
+        /// Modifies the Data configuration.
+        /// If the default configuration is desired, specified 'withDefaultConfiguration' parameter must be true.
         /// </summary>
         public T WithConfiguration(bool withDefaultConfiguration = false)
         {
@@ -50,8 +58,8 @@ namespace Funk
         }
         
         /// <summary>
-        /// Excludes specified field/property.
-        /// Specify exclusions in Configure method.
+        /// Excludes the field/property specified in the expression.
+        /// Only exclusions specified in the Configure method are valid.
         /// </summary>
         protected void Exclude<TKey>(Expression<Func<T, TKey>> expression) =>
             exclusions.Add((Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), default(TKey)));
@@ -69,67 +77,105 @@ namespace Funk
             new List<(Expression<Func<T, object>> expression, object value)>();
     }
 
+    /// <summary>
+    /// Provides modification functions for the Data type.
+    /// </summary>
     public static class Data
     {
         /// <summary>
-        /// Creates a Builder object for the specified Data type.
+        /// Creates a Builder object of the new Data object with the modified field/property specified in the expression.
+        /// Modification takes place once the Build method is called.
+        /// If the immediate modification is desired, use WithBuild instead.
         /// </summary>
-        public static Builder<T> With<T>(this Data<T> item, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
+        public static Builder<T> With<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             new Builder<T>(
                 item,
                 new List<(Expression<Func<T, object>> expression, object value)>
                 {
-                    (expression, value)
+                    (Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value)
                 }
             );
-        
+
         /// <summary>
-        /// Creates a Builder object for the specified Data type.
+        /// Creates the new Data object with the modified field/property specified in the expression.
         /// </summary>
-        public static Builder<T> With<T>(this Data<T> item, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
-            new Builder<T>(
-                item,
-                expressions
-            );
-        
-        /// <summary>
-        /// Creates a new object with the modified field/property specified in the expression.
-        /// </summary>
-        public static T WithBuild<T>(this Data<T> item, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
+        public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             item.With(expression, value).Build();
+
+        internal static T Copy<T>(this Data<T> data) where T : Data<T> =>
+            Exc.Create(
+                _ => JsonConvert.DeserializeObject<T>
+                (
+                    JsonConvert.SerializeObject
+                    (
+                        data,
+                        new JsonSerializerSettings
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        }
+                    )
+                )
+            ).Match(
+                v => v,
+                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
+            );
+    }
+    
+    /// <summary>
+    /// Type that provides fluent way of creating new immutable objects.
+    /// Contains underlying modification expressions.
+    /// </summary>
+    public sealed class Builder<T> where T : Data<T>
+    {
+        internal Builder(Data<T> item)
+        {
+            Item = item;
+        }
         
-        /// <summary>
-        /// Creates a Builder object for the specified Data type.
-        /// </summary>
-        public static T WithBuild<T>(this Data<T> item, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
-            item.With(expressions).Build();
+        internal Builder(Data<T> item, IEnumerable<(Expression<Func<T, object>> expression, object value)> expressions)
+        {
+            Item = item;
+            Expressions.AddRange(expressions.Map());
+        }
+
+        internal Builder<T> With(Expression<Func<T, object>> expression, object value) =>
+            new Builder<T>(Item, Expressions.Concat(list((expression, value))));
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal Data<T> Item { get; }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
+            new List<(Expression<Func<T, object>>, object)>();
 
         /// <summary>
-        /// Creates a Builder object from the provided one for the specified Data type.
+        /// Lifts the Data to the Builder. 
         /// </summary>
-        public static Builder<T> With<T>(this Builder<T> builder, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
-            builder.With(expression, value);
-        
+        public static implicit operator Builder<T>(Data<T> data) =>
+            new Builder<T>(data, list<(Expression<Func<T, object>>, object)>());
+    }
+    
+    /// <summary>
+    /// Provides modification functions for the Builder type.
+    /// </summary>
+    public static class Builder
+    {
         /// <summary>
-        /// Creates a Builder object from the provided one for the specified Data type.
+        /// Creates a Builder object of the new Data object with the modified field/property specified in the expression.
+        /// Modification takes place once the Build method is called.
+        /// If the immediate modification is desired, use WithBuild instead.
         /// </summary>
-        public static Builder<T> With<T>(this Builder<T> builder, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
-            builder.With(expressions);
-        
+        public static Builder<T> With<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
+            builder.With(Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value);
+
         /// <summary>
-        /// Creates a new object with the modified field/property specified in the expression.
+        /// Creates the new Data object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T>(this Builder<T> builder, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
+        public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             builder.With(expression, value).Build();
-        
-        /// <summary>
-        /// Creates a Builder object from the provided one for the specified Data type.
-        /// </summary>
-        public static T WithBuild<T>(this Builder<T> builder, params (Expression<Func<T, object>> expression, object value)[] expressions) where T : Data<T> =>
-            builder.With(expressions).Build();
 
         /// <summary>
-        /// Creates a new Data object from the specified Builder.
+        /// Creates the new Data object with modified field/properties specified in the underlying expressions.
         /// </summary>
         public static T Build<T>(this Builder<T> builder) where T : Data<T>
         {
@@ -148,51 +194,5 @@ namespace Funk
             reduced.Exclusions = builder.Item.Exclusions;
             return reduced;
         }
-
-        private static T Copy<T>(this Data<T> data) where T : Data<T> =>
-            Exc.Create(
-                _ => JsonConvert.DeserializeObject<T>
-                (
-                    JsonConvert.SerializeObject
-                    (
-                        data,
-                        new JsonSerializerSettings
-                        {
-                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                        }
-                    )
-                )
-            ).Match(
-                v => v,
-                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
-            );
-    }
-
-    /// <summary>
-    /// Represents builder object for Data type.
-    /// </summary>
-    public sealed class Builder<T> where T : Data<T>
-    {
-        internal Builder(Data<T> item, IEnumerable<(Expression<Func<T, object>> expression, object value)> expressions)
-        {
-            Item = item;
-            Expressions.AddRange(expressions.Map());
-        }
-
-        internal Builder<T> With(Expression<Func<T, object>> expression, object value) =>
-            new Builder<T>(Item, Expressions.Concat(list((expression, value))));
-        
-        internal Builder<T> With(IEnumerable<(Expression<Func<T, object>> expression, object value)> expressions) =>
-            new Builder<T>(Item, Expressions.Concat(expressions));
-        
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal Data<T> Item { get; }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
-            new List<(Expression<Func<T, object>>, object)>();
-
-        public static implicit operator Builder<T>(Data<T> data) =>
-            new Builder<T>(data, list<(Expression<Func<T, object>>, object)>());
     }
 }

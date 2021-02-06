@@ -14,10 +14,8 @@ namespace Funk.Tests
                 c =>
                 {
                     return c
-                        .With(
-                            (cc => cc.Name, "John"),
-                            (cc => cc.Age, 40)
-                        )
+                        .With(cc => cc.Name, "John")
+                        .With(cc => cc.Age, 40)
                         .Build();
                 },
                 c =>
@@ -68,8 +66,8 @@ namespace Funk.Tests
                         {
                             Document = "Example"
                         })
-                        .WithBuild(
-                            (cc => cc.Account2, new Account
+                        .With(
+                            cc => cc.Account2, new Account
                             {
                                 Description = "Desc",
                                 Number = 1234567891,
@@ -77,9 +75,9 @@ namespace Funk.Tests
                                 {
                                     ExpirationDate = DateTime.Parse("12-12-2022")
                                 }
-                            }),
-                            (u => u.Account2.Amount, 200)
-                        );
+                            }
+                        )
+                        .WithBuild(u => u.Account2.Amount, 200);
                     return (c, updated);
                 },
                 c =>
@@ -125,8 +123,8 @@ namespace Funk.Tests
                         {
                             Document = "Example"
                         })
-                        .WithBuild(
-                            (cc => cc.Account2, new Account
+                        .With(
+                            cc => cc.Account2, new Account
                             {
                                 Description = "Desc",
                                 Number = 1234567891,
@@ -134,9 +132,9 @@ namespace Funk.Tests
                                 {
                                     ExpirationDate = DateTime.Parse("12-12-2022")
                                 }
-                            }),
-                            (u => u.Account2.Amount, 200)
-                        );
+                            }
+                        )
+                        .WithBuild(u => u.Account2.Amount, 200);
                     return (c, updated);
                 },
                 c =>
