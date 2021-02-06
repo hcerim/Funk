@@ -241,7 +241,7 @@ namespace Funk.Tests
 
         private static OneOf<string, int> GetEmptyOneOf()
         {
-            return new OneOf<string, int>(null);
+            return empty;
         }
 
         private static User GetEmptyUser()
