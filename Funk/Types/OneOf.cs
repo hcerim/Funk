@@ -43,12 +43,14 @@ namespace Funk
         /// Represents the state of the underlying object.
         /// In case the object is empty, it will be 0.
         /// </summary>
+        [Pure]
         protected int Discriminator { get; }
         
         /// <summary>
         /// Underlying value of the coproduct.
         /// It should never be accessed directly without first checking the Discriminator value!
         /// </summary>
+        [Pure]
         protected object Value { get; }
         
         internal static Exception GetException(string itemName, Func<Unit, Exception> otherwiseThrow = null)
