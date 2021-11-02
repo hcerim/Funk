@@ -9,5 +9,7 @@ namespace Funk
 
         [Pure]
         public static bool IsNotNull<T>(this T t) => !t.IsNull();
+
+        public static T Initialize<T>(this T item) where T : new() => item.IsNull() ? new T() : item;
     }
 }
