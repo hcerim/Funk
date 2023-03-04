@@ -1,4 +1,7 @@
-![Funk](docs/Files/Funk.png)
+<p align="center">
+  <img src="https://github.com/hcerim/Funk/blob/master/docs/Files/Funk.png?raw=true" width="300" />
+</p>
+
 [![Version](https://img.shields.io/nuget/vpre/Funk.svg)](https://www.nuget.org/packages/Funk)
 ![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
 ![Tests](https://github.com/cerimharun/Funk/workflows/Tests/badge.svg)
