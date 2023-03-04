@@ -1,4 +1,4 @@
-![Funk](docs/Files/banner.png)
+![Funk](docs/Files/Funk.png)
 [![Version](https://img.shields.io/nuget/vpre/Funk.svg)](https://www.nuget.org/packages/Funk)
 ![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
 ![Tests](https://github.com/cerimharun/Funk/workflows/Tests/badge.svg)
