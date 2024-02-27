@@ -1,4 +1,5 @@
 ﻿using System;
+using Funk;
 using Xunit;
 using static Funk.Prelude;
 
@@ -14,14 +15,14 @@ namespace Funk.Tests
                 c =>
                 {
                     return c
-                        .With(cc => cc.Name, "John")
-                        .With(cc => cc.Age, 40)
+                        .With(cc => cc.FirstName, "Harun")
+                        .With(cc => cc.LastName, "Cerim")
                         .Build();
                 },
                 c =>
                 {
-                    Assert.Equal("John", c.Name);
-                    Assert.Equal(40, c.Age);
+                    Assert.Equal("Harun", c.FirstName);
+                    Assert.Equal("Cerim", c.LastName);
                 }
             );
         }
@@ -32,8 +33,8 @@ namespace Funk.Tests
             UnitTest(
                 _ => Customer.New,
                 c => act(() => c
-                    .With(cc => cc.Name, "John")
-                    .With(cc => cc.Account2.Number, 1234567890)
+                    .With(cc => cc.FirstName, "Harun")
+                    .With(cc => cc.Account.Number, 1234567890)
                     .Build()
                 ),
                 a => Assert.Throws<EmptyValueException>(a)
@@ -45,8 +46,8 @@ namespace Funk.Tests
         {
             UnitTest(
                 _ => Customer.New
-                    .With(cc => cc.Name, "John")
-                    .With(cc => cc.Age, 40)
+                    .With(cc => cc.FirstName, "John")
+                    .With(cc => cc.LastName, "Doe")
                     .With(cc => cc.Account, new Account
                     {
                         Number = 1234567890,
@@ -56,20 +57,21 @@ namespace Funk.Tests
                             ExpirationDate = DateTime.Parse("12-12-2021")
                         }
                     })
-                    .Build().GetUpdated(),
+                    .Build(),
                 c =>
                 {
                     var middle = GetMiddle(c).Build();
+                    middle.SetVersion(3);
                     var updated = middle
-                        .With(cc => cc.Surname, "Doe")
+                        .With(cc => cc.LastName, "Doe")
                         .With(cc => cc.Account.CreditCard.Contract, new Contract
                         {
                             Document = "Example"
                         })
                         .With(
-                            cc => cc.Account2, new Account
+                            cc => cc.Account, new Account
                             {
-                                Description = "Desc",
+                                Description = "Description",
                                 Number = 1234567891,
                                 CreditCard = new CreditCard
                                 {
@@ -77,147 +79,68 @@ namespace Funk.Tests
                                 }
                             }
                         )
-                        .WithBuild(u => u.Account2.Amount, 200);
+                        .Build();
                     return (c, updated);
                 },
                 c =>
                 {
                     Assert.NotSame(c.c.Account, c.updated.Account);
-                    Assert.Null(c.updated.Account.Description);
-                    Assert.Equal("Desc", c.updated.Account2.Description);
+                    Assert.Equal("Desc", c.c.Account.Description);
+                    Assert.Equal("Description", c.updated.Account.Description);
                     Assert.Null(c.c.Account.CreditCard.Contract);
-                    Assert.Null(c.updated.Account.CreditCard.Contract.Document);
-                    Assert.Equal("Doe", c.updated.Surname);
-                    Assert.Equal(35, c.updated.Age);
-                    Assert.True(c.c.PrivateEqual(c.updated));
+                    Assert.Equal(3, c.updated.Version);
+                    Assert.Equal(DateTime.Parse("12-12-2022"), c.updated.Account.CreditCard.ExpirationDate);
+                    Assert.Null(c.updated.Account.CreditCard.Contract);
+                    Assert.Equal("Doe", c.updated.LastName);
+                    Assert.Equal(1234567891, c.updated.Account.Number);
+                    Assert.Equal(DateTime.Parse("12-12-2022"), c.updated.CreatedAt);
                 }
             );
-
-            // implicit conversion
-            static Builder<Customer> GetMiddle(Customer data) => data.WithBuild(cc => cc.Age, 35);
+            return;
+            
+            static Builder<Customer> GetMiddle(Customer data) =>
+                data.WithBuild(cc => cc.CreatedAt, (DateTime?)DateTime.Parse("12-12-2022"));
         }
+    }
+}
+
+public sealed class Customer : Data<Customer>
+{
+    public Guid Id { get; private set; }
+    public string EmailAddress { get; private set; }
+    public bool EmailAddressVerified { get; private set; }
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public Guid SubscriptionId { get; private set; }
+    public Account Account { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public Guid CreatedBy { get; private set; }
+    public DateTime ModifiedAt { get; private set; }
+    public Guid ModifiedBy { get; private set; }
+    private int _version;
+
+    public static Customer New => new();
+    public void SetVersion(int version) => _version = version;
+    public int Version => _version;
+}
+
+public class Account
+{
+    public int Number { get; set; }
         
-        [Fact]
-        public void Update_With_Default()
-        {
-            UnitTest(
-                _ => Customer.New.WithConfiguration(true)
-                    .With(cc => cc.Name, "John")
-                    .With(cc => cc.Age, 40)
-                    .With(cc => cc.Account, new Account
-                    {
-                        Number = 1234567890,
-                        Description = "Desc",
-                        CreditCard = new CreditCard
-                        {
-                            ExpirationDate = DateTime.Parse("12-12-2021")
-                        }
-                    })
-                    .Build().GetUpdated(),
-                c =>
-                {
-                    var middle = GetMiddle(c).Build();
-                    var updated = Customer.From(middle, true)
-                        .With(cc => cc.Surname, "Doe")
-                        .With(cc => cc.Account.CreditCard.Contract, new Contract
-                        {
-                            Document = "Example"
-                        })
-                        .With(
-                            cc => cc.Account2, new Account
-                            {
-                                Description = "Desc",
-                                Number = 1234567891,
-                                CreditCard = new CreditCard
-                                {
-                                    ExpirationDate = DateTime.Parse("12-12-2022")
-                                }
-                            }
-                        )
-                        .WithBuild(u => u.Account2.Amount, 200);
-                    return (c, updated);
-                },
-                c =>
-                {
-                    Assert.NotSame(c.c.Account, c.updated.Account);
-                    Assert.NotNull(c.updated.Account.Description);
-                    Assert.Equal("Desc", c.updated.Account2.Description);
-                    Assert.Null(c.c.Account.CreditCard.Contract);
-                    Assert.NotNull(c.updated.Account.CreditCard.Contract.Document);
-                    Assert.Equal("Doe", c.updated.Surname);
-                    Assert.Equal(35, c.updated.Age);
-                    Assert.True(c.c.PrivateEqual(c.updated));
-                }
-            );
+    public string Description { get; set; }
 
-            // implicit conversion
-            static Builder<Customer> GetMiddle(Customer data) => data.WithBuild(cc => cc.Age, 35);
-        }
-    }
+    public CreditCard CreditCard { get; set; }
+}
 
-    public class Customer : Data<Customer>
-    {
-        public Customer GetUpdated() =>
-            this.With(c => c.One, "One")
-                .With(c => c.Two, "Two")
-                .With(c => c.Three, "Three")
-                .With(c => c.Four, "Four").Build();
+public class CreditCard
+{
+    public DateTime ExpirationDate { get; set; }
 
-        protected override void Configure()
-        {
-            Exclude(c => c.Account.Description);
-            Exclude(c => c.Account.Description);
-            Exclude(c => c.Account.Description);
-            Exclude(c => c.Account.CreditCard.Contract.Document);
-        }
+    public Contract Contract { get; set; }
+}
 
-        public bool PrivateEqual(Customer other) => One == other.One && Two == other.Two && Three == other.Three && Four == other.Four;
-
-        public Account Account { get; private set; }
-
-        public readonly Account Account2;
-
-        private string One;
-
-        protected string Two { private get; set; }
-        
-        internal string Three { get; private set; }
-
-        protected string Four
-        {
-            get => One;
-            private set => One = value;
-        }
-
-        public string Name { get; private set; }
-
-        public int Age { get; private set; }
-
-        public readonly string Surname;
-
-        public static Customer New => new Customer();
-    }
-
-    public class Account
-    {
-        public int Number { get; set; }
-        
-        public string Description { get; set; }
-
-        public readonly int Amount;
-
-        public CreditCard CreditCard { get; set; }
-    }
-
-    public class CreditCard
-    {
-        public DateTime ExpirationDate { get; set; }
-
-        public Contract Contract { get; set; }
-    }
-
-    public class Contract
-    {
-        public string Document { get; set; }
-    }
+public class Contract
+{
+    public string Document { get; set; }
 }

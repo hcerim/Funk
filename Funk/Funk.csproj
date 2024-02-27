@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>2.0.0-alpha</Version>
-    <Authors>Harun Ćerim</Authors>
+    <Version>2.0.0-beta04</Version>
+    <Authors>Harun Cerim</Authors>
     <Company />
     <Title>Functional C#</Title>
     <Description>Functional programming library for C#</Description>
@@ -16,10 +16,11 @@
     <PackageTags>Funk, Functional-Programming, C#, Immutable-Types, Pattern-Matching, Monads, Functors, Applicatives, Railway-Oriented-Programming, Asynchronous-Programming, Extensions, Builders</PackageTags>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
-    <Copyright>Copyright © 2021 Harun Ćerim</Copyright>
+    <Copyright>Copyright © 2024 Harun Cerim</Copyright>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>2.0.0-beta02</PackageVersion>
+    <PackageVersion>2.0.0-beta04</PackageVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   
   <ItemGroup>
@@ -35,6 +36,11 @@
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\">
     </None>
   </ItemGroup>
 
