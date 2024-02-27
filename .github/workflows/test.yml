@@ -17,7 +17,7 @@ jobs:
     - name: Setup
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: 6.0.1
     - uses: actions/checkout@v2
     - name: Test
       run: dotnet test --configuration Release
