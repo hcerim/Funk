@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -33,19 +33,19 @@ namespace Funk
         /// Modification takes place once the Build method is called.
         /// If the immediate modification is desired, use WithBuild instead.
         /// </summary>
-        public static Builder<T> With<T>(this Data<T> item, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
+        public static Builder<T> With<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             new Builder<T>(
                 item,
                 new List<(Expression<Func<T, object>> expression, object value)>
                 {
-                    (expression, value)
+                    (Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value)
                 }
             );
 
         /// <summary>
         /// Creates the new Data object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T>(this Data<T> item, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
+        public static T WithBuild<T, TKey>(this Data<T> item, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             item.With(expression, value).Build();
 
         internal static T Copy<T>(this Data<T> data) where T : Data<T> =>
@@ -111,13 +111,13 @@ namespace Funk
         /// Modification takes place once the Build method is called.
         /// If the immediate modification is desired, use WithBuild instead.
         /// </summary>
-        public static Builder<T> With<T>(this Builder<T> builder, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
-            builder.With(expression, value);
+        public static Builder<T> With<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
+            builder.With(Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value);
 
         /// <summary>
         /// Creates the new Data object with the modified field/property specified in the expression.
         /// </summary>
-        public static T WithBuild<T>(this Builder<T> builder, Expression<Func<T, object>> expression, object value) where T : Data<T> =>
+        public static T WithBuild<T, TKey>(this Builder<T> builder, Expression<Func<T, TKey>> expression, TKey value) where T : Data<T> =>
             builder.With(expression, value).Build();
 
         /// <summary>

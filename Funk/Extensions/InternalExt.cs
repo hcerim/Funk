@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
@@ -111,9 +111,11 @@ namespace Funk.Internal
 
         private static MemberExpression GetMemberExpression<T>(this Expression<Func<T, object>> expression) =>
             expression == null ? throw new ArgumentNullException(nameof(expression)) :
-            expression.Body is UnaryExpression u && u.Operand is MemberExpression m1 ? m1 :
-            expression.Body is MemberExpression m2 ? m2 :
+            Unwrap(expression.Body) is MemberExpression m ? m :
             throw new ArgumentException("The expression does not indicate a valid property or a field.");
+
+        private static Expression Unwrap(Expression expression) =>
+            expression is UnaryExpression u ? Unwrap(u.Operand) : expression;
 
         private static (Type Parent, ImmutableList<(MemberTypes Type, string Name)> Children) GetTarget(this ImmutableList<(MemberTypes, string)> nested, MemberExpression expression) =>
             expression.Expression.NodeType.Match(
