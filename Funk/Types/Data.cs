@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using Funk.Internal;
-using Newtonsoft.Json;
 using static Funk.Prelude;
 
 namespace Funk
@@ -12,7 +14,6 @@ namespace Funk
     /// <summary>
     /// Type that provides fluent way of creating new immutable objects through the Builder type.
     /// </summary>
-    [JsonObject(MemberSerialization.Fields)]
     public abstract class Data<T> where T : Data<T>
     {
         /// <summary>
@@ -50,21 +51,55 @@ namespace Funk
 
         internal static T Copy<T>(this Data<T> data) where T : Data<T> =>
             Exc.Create(
-                _ => JsonConvert.DeserializeObject<T>
-                (
-                    JsonConvert.SerializeObject
-                    (
-                        data,
-                        new JsonSerializerSettings
-                        {
-                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                        }
-                    )
-                )
+                _ => (T)DeepCopy(data, new Dictionary<object, object>(ReferenceComparer.Instance))
             ).Match(
                 v => v,
-                e => throw new SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be serialized."))
+                e => throw new Funk.SerializationException(e.Root.Map(r => r.Message).GetOr(_ => "Item cannot be copied."))
             );
+
+        private static object DeepCopy(object source, Dictionary<object, object> visited)
+        {
+            if (source.IsNull()) return null;
+            var type = source.GetType();
+            if (type.IsPrimitive ||
+                type.IsEnum ||
+                type == typeof(string) ||
+                type.IsValueType ||
+                typeof(Delegate).IsAssignableFrom(type)
+            ) return source;
+            if (visited.TryGetValue(source, out var existing)) return existing;
+            if (type.IsArray)
+            {
+                var sourceArray = (Array)source;
+                var copy = Array.CreateInstance(type.GetElementType(), sourceArray.Length);
+                visited[source] = copy;
+                for (var i = 0; i < sourceArray.Length; i++)
+                {
+                    copy.SetValue(DeepCopy(sourceArray.GetValue(i), visited), i);
+                }
+                return copy;
+            }
+            var target = FormatterServices.GetUninitializedObject(type);
+            visited[source] = target;
+            var currentType = type;
+            while (currentType.IsNotNull())
+            {
+                foreach (var field in currentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    field.SetValue(target, DeepCopy(field.GetValue(source), visited));
+                }
+                currentType = currentType.BaseType;
+            }
+
+            return target;
+        }
+
+        private sealed class ReferenceComparer : IEqualityComparer<object>
+        {
+            internal static readonly ReferenceComparer Instance = new ReferenceComparer();
+            public new bool Equals(object x, object y) => ReferenceEquals(x, y);
+            public int GetHashCode(object obj) => RuntimeHelpers.GetHashCode(obj);
+        }
     }
     
     /// <summary>
