@@ -1,12 +1,6 @@
-﻿namespace Funk.Demo
-{
-    public sealed class Identity
-    {
-        public Maybe<string> Token { get; }
+﻿namespace Funk.Demo;
 
-        public Identity(string token)
-        {
-            Token = token.AsNotEmptyString();
-        }
-    }
+public sealed class Identity(string token)
+{
+    public Maybe<string> Token { get; } = token.AsNotEmptyString();
 }

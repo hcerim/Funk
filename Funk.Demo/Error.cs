@@ -1,36 +1,11 @@
 ﻿using System;
 
-namespace Funk.Demo
-{
-    public class Error : Exception
-    {
-        public Error(string message)
-            : base(message)
-        {
-        }
-    }
+namespace Funk.Demo;
 
-    public class InvalidRequestError : Error
-    {
-        public InvalidRequestError(string message)
-            : base(message)
-        {
-        }
-    }
+public class Error(string message) : Exception(message);
 
-    public class UnauthorizedError : Error
-    {
-        public UnauthorizedError(string message)
-            : base(message)
-        {
-        }
-    }
+public class InvalidRequestError(string message) : Error(message);
 
-    public class ForbiddenError : Error
-    {
-        public ForbiddenError(string message)
-            : base(message)
-        {
-        }
-    }
-}
+public class UnauthorizedError(string message) : Error(message);
+
+public class ForbiddenError(string message) : Error(message);

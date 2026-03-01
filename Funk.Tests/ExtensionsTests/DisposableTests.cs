@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using static Funk.Prelude;
 
 namespace Funk.Tests
 {

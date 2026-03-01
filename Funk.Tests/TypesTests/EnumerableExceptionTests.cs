@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Xunit;
-using static Funk.Prelude;
 
 namespace Funk.Tests
 {

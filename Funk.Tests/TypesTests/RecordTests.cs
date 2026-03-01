@@ -1,6 +1,5 @@
 ﻿using System;
 using Xunit;
-using static Funk.Prelude;
 
 namespace Funk.Tests
 {

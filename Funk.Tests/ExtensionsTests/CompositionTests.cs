@@ -1,7 +1,6 @@
 ﻿using FsCheck.Xunit;
 using Xunit;
 using Xunit.Abstractions;
-using static Funk.Prelude;
 
 namespace Funk.Tests
 {

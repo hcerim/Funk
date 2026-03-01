@@ -1,37 +1,36 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Funk.Demo
+namespace Funk.Demo;
+
+public static class Program
 {
-    internal static class Program
+    public static async Task Main()
     {
-        private static async Task Main()
-        {
-            Console.WriteLine("Enter your token:");
-            var identity = new Identity(Console.ReadLine());
-            Console.WriteLine("See: Info (i), Publications (p), Contributors (c)");
-            var input = Console.ReadLine();
-            var resource = await identity.GetResource(
-                input.Match(
-                    "i", _ => ResourceType.Info,
-                    "p", _ => ResourceType.Publications,
-                    "c", _ => ResourceType.Contributors,
-                    _ => ResourceType.Undefined
-                ),
-                input.SafeEquals("c").AsTrue().Match(
-                    f => default,
-                    t =>
-                    {
-                        Console.WriteLine("Enter publication id:");
-                        return Console.ReadLine();
-                    }
-                )
-            );
-            resource.Match(
-                _ => Console.WriteLine("No information found."),
-                Console.WriteLine,
-                e => Console.WriteLine(e.Root)
-            );
-        }
+        Console.WriteLine("Enter your token:");
+        var identity = new Identity(Console.ReadLine());
+        Console.WriteLine("See: Info (i), Publications (p), Contributors (c)");
+        var input = Console.ReadLine();
+        var resource = await identity.GetResource(
+            input.Match(
+                "i", _ => ResourceType.Info,
+                "p", _ => ResourceType.Publications,
+                "c", _ => ResourceType.Contributors,
+                _ => ResourceType.Undefined
+            ),
+            input.SafeEquals("c").AsTrue().Match(
+                f => default,
+                t =>
+                {
+                    Console.WriteLine("Enter publication id:");
+                    return Console.ReadLine();
+                }
+            )
+        );
+        resource.Match(
+            _ => Console.WriteLine("No information found."),
+            Console.WriteLine,
+            e => Console.WriteLine(e.Root)
+        );
     }
 }

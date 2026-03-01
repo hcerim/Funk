@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FsCheck.Xunit;
 using Xunit;
-using static Funk.Prelude;
 
 namespace Funk.Tests
 {

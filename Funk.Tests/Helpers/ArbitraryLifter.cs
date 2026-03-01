@@ -1,6 +1,5 @@
 ﻿using System;
 using FsCheck;
-using static Funk.Prelude;
 
 namespace Funk.Tests
 {
