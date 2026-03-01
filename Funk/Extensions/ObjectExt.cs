@@ -1,20 +1,22 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Funk.Internal;
 using static Funk.Internal.InternalExt;
 
-namespace Funk
+namespace Funk;
+
+/// <summary>
+/// Provides general-purpose extension methods including piping, safe casting, and pattern matching on objects.
+/// </summary>
+public static class ObjectExt
 {
-    /// <summary>
-    /// Provides general-purpose extension methods including piping, safe casting, and pattern matching on objects.
-    /// </summary>
-    public static class ObjectExt
+    extension<T>(T item)
     {
         /// <summary>
         /// Acts as a pipe that performs the operation and returns the argument that initiated the pipeline.
         /// </summary>
-        public static T Do<T>(this T item, Action<T> action)
+        public T Do(Action<T> action)
         {
             action(item);
             return item;
@@ -23,101 +25,92 @@ namespace Funk
         /// <summary>
         /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
         /// </summary>
-        public static R Do<T, R>(this T item, Func<T, R> function) => function(item);
+        public R Do<R>(Func<T, R> function) => function(item);
 
         /// <summary>
         /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
         /// </summary>
-        public static async Task<T> DoAsync<T>(this T item, Func<T, Task> function)
+        public async Task<T> DoAsync(Func<T, Task> function)
         {
             await function(item).ConfigureAwait(false);
             return item;
         }
+    }
 
-        /// <summary>
-        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
-        /// </summary>
-        public static async Task<T> DoAsync<T>(this Task<T> item, Func<T, Task> function)
+    /// <summary>
+    /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+    /// </summary>
+    public static async Task<T> DoAsync<T>(this Task<T> item, Func<T, Task> function)
+    {
+        var i = await item.ConfigureAwait(false);
+        await function(i);
+        return i;
+    }
+
+    /// <summary>
+    /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+    /// </summary>
+    public static Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => function(item);
+
+    /// <summary>
+    /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
+    /// </summary>
+    public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item).ConfigureAwait(false);
+
+    /// <summary>
+    /// Safely casts object to the specified type. Returns empty maybe if the casting fails.
+    /// </summary>
+    public static Maybe<R> SafeCast<R>(this object item)
+    {
+        if (item is R valid)
         {
-            var i = await item.ConfigureAwait(false);
-            await function(i);
-            return i;
+            return Maybe.Create(valid);
         }
-
-        /// <summary>
-        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
-        /// </summary>
-        public static Task<R> DoAsync<T, R>(this T item, Func<T, Task<R>> function) => function(item);
-
-        /// <summary>
-        /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
-        /// </summary>
-        public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item).ConfigureAwait(false);
-
-        /// <summary>
-        /// Safely casts object to the specified type. Returns empty maybe if the casting fails.
-        /// </summary>
-        public static Maybe<R> SafeCast<R>(this object item)
-        {
-            if (item is R valid)
-            {
-                return Maybe.Create(valid);
-            }
-            return Maybe.Empty<R>();
-        }
+        return Maybe.Empty<R>();
+    }
         
+    extension<T>(T obj)
+    {
         /// <summary>
         /// Pattern-matches on the object against the specified value-selector pairs.
         /// Returns the result of the first matching selector wrapped in Maybe, or an empty Maybe if no match is found.
         /// </summary>
-        public static Maybe<R> Match<T, R>(
-            this T obj,
-            params ValueTuple<T, Func<T, R>>[] patterns
+        public Maybe<R> Match<R>(params ValueTuple<T, Func<T, R>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).Map(p => p.Item2.Apply(obj));
-        
+
         /// <summary>
         /// Pattern-matches on the object against the specified value-action pairs.
         /// Executes the first matching action and returns Unit wrapped in Maybe, or an empty Maybe if no match is found.
         /// </summary>
-        public static Maybe<Unit> Match<T>(
-            this T obj,
-            params ValueTuple<T, Action<T>>[] patterns
+        public Maybe<Unit> Match(params ValueTuple<T, Action<T>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.SafeEquals(obj)).Map(p => p.Item2.Apply(obj));
-        
+
         /// <summary>
         /// Pattern-matches on the object against the specified predicate-selector pairs.
         /// Returns the result of the first matching selector wrapped in Maybe, or an empty Maybe if no match is found.
         /// </summary>
-        public static Maybe<R> Match<T, R>(
-            this T obj,
-            params ValueTuple<Func<T, bool>, Func<T, R>>[] patterns
+        public Maybe<R> Match<R>(params ValueTuple<Func<T, bool>, Func<T, R>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
-        
+
         /// <summary>
         /// Pattern-matches on the object against the specified predicate-action pairs.
         /// Executes the first matching action and returns Unit wrapped in Maybe, or an empty Maybe if no match is found.
         /// </summary>
-        public static Maybe<Unit> Match<T>(
-            this T obj,
-            params ValueTuple<Func<T, bool>, Action<T>>[] patterns
+        public Maybe<Unit> Match(params ValueTuple<Func<T, bool>, Action<T>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.Apply(obj)).Map(p => p.Item2.Apply(obj));
-        
+
         /// <summary>
         /// Pattern-matches on the object against the specified collection-selector pairs.
         /// Returns the result of the first selector whose collection contains the object, wrapped in Maybe, or an empty Maybe if no match is found.
         /// </summary>
-        public static Maybe<R> Match<T, R>(
-            this T obj,
-            params ValueTuple<IEnumerable<T>, Func<T, R>>[] patterns
+        public Maybe<R> Match<R>(params ValueTuple<IEnumerable<T>, Func<T, R>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(obj));
-        
+
         /// <summary>
         /// Pattern-matches on the object against the specified collection-action pairs.
         /// Executes the first action whose collection contains the object and returns Unit wrapped in Maybe, or an empty Maybe if no match is found.
         /// </summary>
-        public static Maybe<Unit> Match<T>(
-            this T obj,
-            params ValueTuple<IEnumerable<T>, Action<T>>[] patterns
+        public Maybe<Unit> Match(params ValueTuple<IEnumerable<T>, Action<T>>[] patterns
         ) => patterns.AsFirstOrDefault(p => p.Item1.SafeAnyEquals(obj)).Map(p => p.Item2.Apply(obj));
 
         /// <summary>
@@ -125,24 +118,20 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             Func<Unit, R> otherwise = null,
             Func<Unit, Exception> otherwiseThrow = null
         )
         {
             return obj.SafeEquals(case1) ? selector1(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 1 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<Unit, R> otherwise = null,
             Func<Unit, Exception> otherwiseThrow = null
         )
@@ -154,9 +143,7 @@ namespace Funk
         /// Pattern-matches on the object against 1 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             Action<Unit> otherwise = null
         )
         {
@@ -169,14 +156,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 1 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Action<Unit> otherwise = null
         )
         {
@@ -195,9 +180,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             Func<Unit, R> otherwise = null,
             Func<Unit, Exception> otherwiseThrow = null
@@ -215,9 +198,7 @@ namespace Funk
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<Unit, R> otherwise = null,
             Func<Unit, Exception> otherwiseThrow = null
@@ -234,9 +215,7 @@ namespace Funk
         /// Pattern-matches on the object against 2 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             Action<Unit> otherwise = null
         )
@@ -255,14 +234,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 2 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Action<Unit> otherwise = null
         )
@@ -287,9 +264,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             Func<Unit, R> otherwise = null,
@@ -306,15 +281,13 @@ namespace Funk
             }
             return obj.SafeEquals(case3) ? selector3(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 3 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<Unit, R> otherwise = null,
@@ -336,9 +309,7 @@ namespace Funk
         /// Pattern-matches on the object against 3 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             Action<Unit> otherwise = null
@@ -363,14 +334,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 3 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Action<Unit> otherwise = null
@@ -401,9 +370,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -425,15 +392,13 @@ namespace Funk
             }
             return obj.SafeEquals(case4) ? selector4(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 4 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -460,9 +425,7 @@ namespace Funk
         /// Pattern-matches on the object against 4 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -493,14 +456,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 4 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,
@@ -537,9 +498,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -566,15 +525,13 @@ namespace Funk
             }
             return obj.SafeEquals(case5) ? selector5(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 5 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -606,9 +563,7 @@ namespace Funk
         /// Pattern-matches on the object against 5 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -645,14 +600,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 5 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,
@@ -695,9 +648,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -729,15 +680,13 @@ namespace Funk
             }
             return obj.SafeEquals(case6) ? selector6(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 6 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -774,9 +723,7 @@ namespace Funk
         /// Pattern-matches on the object against 6 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -819,14 +766,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 6 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,
@@ -875,9 +820,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -914,15 +857,13 @@ namespace Funk
             }
             return obj.SafeEquals(case7) ? selector7(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 7 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -964,9 +905,7 @@ namespace Funk
         /// Pattern-matches on the object against 7 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -1015,14 +954,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 7 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,
@@ -1077,9 +1014,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -1121,15 +1056,13 @@ namespace Funk
             }
             return obj.SafeEquals(case8) ? selector8(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 8 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -1176,9 +1109,7 @@ namespace Funk
         /// Pattern-matches on the object against 8 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -1233,14 +1164,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 8 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,
@@ -1301,9 +1230,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -1350,15 +1277,13 @@ namespace Funk
             }
             return obj.SafeEquals(case9) ? selector9(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 9 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -1410,9 +1335,7 @@ namespace Funk
         /// Pattern-matches on the object against 9 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -1473,14 +1396,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 9 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,
@@ -1547,9 +1468,7 @@ namespace Funk
         /// Returns the result of the matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            T case1, Func<T, R> selector1,
+        public R Match<R>(T case1, Func<T, R> selector1,
             T case2, Func<T, R> selector2,
             T case3, Func<T, R> selector3,
             T case4, Func<T, R> selector4,
@@ -1601,15 +1520,13 @@ namespace Funk
             }
             return obj.SafeEquals(case10) ? selector10(obj) : Otherwise(otherwise, otherwiseThrow);
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 10 specified predicate(s).
         /// Returns the result of the first matching selector, the otherwise fallback, or throws if no match is found.
         /// </summary>
         /// <exception cref="UnhandledValueException"></exception>
-        public static R Match<T, R>(
-            this T obj,
-            Func<T, bool> predicate1, Func<T, R> selector1,
+        public R Match<R>(Func<T, bool> predicate1, Func<T, R> selector1,
             Func<T, bool> predicate2, Func<T, R> selector2,
             Func<T, bool> predicate3, Func<T, R> selector3,
             Func<T, bool> predicate4, Func<T, R> selector4,
@@ -1666,9 +1583,7 @@ namespace Funk
         /// Pattern-matches on the object against 10 specified value(s).
         /// Executes the matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            T case1, Action<T> selector1,
+        public void Match(T case1, Action<T> selector1,
             T case2, Action<T> selector2,
             T case3, Action<T> selector3,
             T case4, Action<T> selector4,
@@ -1735,14 +1650,12 @@ namespace Funk
                 otherwise.Execute();
             }
         }
-        
+
         /// <summary>
         /// Pattern-matches on the object against 10 specified predicate(s).
         /// Executes the first matching action or the otherwise fallback if no match is found.
         /// </summary>
-        public static void Match<T>(
-            this T obj,
-            Func<T, bool> predicate1, Action<T> selector1,
+        public void Match(Func<T, bool> predicate1, Action<T> selector1,
             Func<T, bool> predicate2, Action<T> selector2,
             Func<T, bool> predicate3, Action<T> selector3,
             Func<T, bool> predicate4, Action<T> selector4,

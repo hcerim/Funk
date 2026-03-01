@@ -1,18 +1,20 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using static Funk.Prelude;
 
-namespace Funk
+namespace Funk;
+
+/// <summary>
+/// Provides extension methods for safely working with IDisposable objects.
+/// </summary>
+public static class DisposableExt
 {
-    /// <summary>
-    /// Provides extension methods for safely working with IDisposable objects.
-    /// </summary>
-    public static class DisposableExt
+    extension<D>(D disposable) where D : IDisposable
     {
         /// <summary>
         /// Executes the specified function with the disposable and disposes it afterwards, returning the result.
         /// </summary>
-        public static R DisposeAfter<D, R>(this D disposable, Func<D, R> operation) where D : IDisposable
+        public R DisposeAfter<R>(Func<D, R> operation)
         {
             using (disposable) return operation(disposable);
         }
@@ -20,7 +22,7 @@ namespace Funk
         /// <summary>
         /// Executes the specified asynchronous function with the disposable and disposes it afterwards, returning the result.
         /// </summary>
-        public static Task<R> DisposeAfterAsync<D, R>(this D disposable, Func<D, Task<R>> operation) where D : IDisposable
+        public Task<R> DisposeAfterAsync<R>(Func<D, Task<R>> operation)
         {
             return run(func(async () =>
             {
@@ -34,7 +36,7 @@ namespace Funk
         /// <summary>
         /// Executes the specified action with the disposable and disposes it afterwards.
         /// </summary>
-        public static void DisposeAfter<D>(this D disposable, Action<D> operation) where D : IDisposable
+        public void DisposeAfter(Action<D> operation)
         {
             using (disposable) operation(disposable);
         }
@@ -42,7 +44,7 @@ namespace Funk
         /// <summary>
         /// Executes the specified asynchronous action with the disposable and disposes it afterwards.
         /// </summary>
-        public static Task DisposeAfterAsync<D>(this D disposable, Func<D, Task> operation) where D : IDisposable
+        public Task DisposeAfterAsync(Func<D, Task> operation)
         {
             return run(act(async () =>
             {

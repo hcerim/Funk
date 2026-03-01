@@ -1,17 +1,16 @@
 ﻿using System.Diagnostics.Contracts;
 
-namespace Funk
+namespace Funk;
+
+/// <summary>
+/// Module that simplifies type definitions.
+/// Import it as a static reference to access functions directly. 
+/// </summary>
+public static partial class Prelude
 {
     /// <summary>
-    /// Module that simplifies type definitions.
-    /// Import it as a static reference to access functions directly. 
+    /// Returns newly created Unit.
     /// </summary>
-    public static partial class Prelude
-    {
-        /// <summary>
-        /// Returns newly created Unit.
-        /// </summary>
-        [Pure]
-        public static Unit empty => Unit.Value;
-    }
+    [Pure]
+    public static Unit empty => Unit.Value;
 }
