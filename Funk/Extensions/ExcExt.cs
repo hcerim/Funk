@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,6 +8,9 @@ using static Funk.Prelude;
 
 namespace Funk
 {
+    /// <summary>
+    /// Provides extension methods for the Exc type including recovery, mapping, and merging operations.
+    /// </summary>
     public static class ExcExt
     {
         /// <summary>

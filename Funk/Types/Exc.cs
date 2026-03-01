@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -122,7 +122,13 @@ namespace Funk
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private object Value { get; }
 
+        /// <summary>
+        /// Returns true if the underlying value is empty.
+        /// </summary>
         public bool IsEmpty => !NotEmpty;
+        /// <summary>
+        /// Returns true if the underlying value is not empty.
+        /// </summary>
         public bool NotEmpty { get; }
         
         /// <summary>
@@ -149,8 +155,14 @@ namespace Funk
         [Pure]
         public Maybe<IImmutableList<E>> NestedFailures => Failure.FlatMap(e => e.Nested);
 
+        /// <summary>
+        /// Returns true if the Exc is in a success state.
+        /// </summary>
         public bool IsSuccess => Success.NotEmpty;
 
+        /// <summary>
+        /// Returns true if the Exc is in a failure state.
+        /// </summary>
         public bool IsFailure => Failure.NotEmpty;
 
         /// <summary>
@@ -249,24 +261,48 @@ namespace Funk
             );
         }
 
+        /// <summary>
+        /// Deconstructs the Exc into its success and failure components as Maybe values.
+        /// </summary>
         public void Deconstruct(out Maybe<T> success, out Maybe<EnumerableException<E>> failure)
         {
             success = Success;
             failure = Failure;
         }
 
+        /// <summary>
+        /// Lifts the Unit to the Exc, creating an empty Exc.
+        /// </summary>
         public static implicit operator Exc<T, E>(Unit unit) => Exc.Empty<T, E>();
 
+        /// <summary>
+        /// Lifts the object to the Exc, creating a successful Exc.
+        /// </summary>
         public static implicit operator Exc<T, E>(T result) => new Exc<T, E>(result);
 
+        /// <summary>
+        /// Lifts the exception to the Exc, creating a failed Exc.
+        /// </summary>
         public static implicit operator Exc<T, E>(E exception) => new Exc<T, E>(exception);
 
+        /// <summary>
+        /// Lifts the enumerable exception to the Exc, creating a failed Exc.
+        /// </summary>
         public static implicit operator Exc<T, E>(EnumerableException<E> exception) => new Exc<T, E>(exception);
 
+        /// <summary>
+        /// Underlying types' based equality comparison.
+        /// </summary>
         public static bool operator ==(Exc<T, E> exc, Exc<T, E> other) => exc.AsMaybe().Map(e => e.Equals(other)).GetOrDefault();
 
+        /// <summary>
+        /// Underlying types' based equality comparison.
+        /// </summary>
         public static bool operator !=(Exc<T, E> exc, Exc<T, E> other) => !(exc == other);
 
+        /// <summary>
+        /// Underlying types' based equality comparison.
+        /// </summary>
         public bool Equals(Exc<T, E> other)
         {
             var value = this;
@@ -277,10 +313,19 @@ namespace Funk
             )).GetOrDefault();
         }
 
+        /// <summary>
+        /// Underlying types' based equality comparison. If the other object is not Exc of the same types, returns false.
+        /// </summary>
         public override bool Equals(object obj) => obj.SafeCast<Exc<T, E>>().Map(Equals).GetOrDefault();
 
+        /// <summary>
+        /// Underlying types' based GetHashCode method.
+        /// </summary>
         public override int GetHashCode() => Match(_ => _.GetHashCode(), v => v.GetHashCode(), e => e.GetHashCode());
 
+        /// <summary>
+        /// Underlying types' based ToString method.
+        /// </summary>
         public override string ToString() => Match(_ => _.ToString(), v => v.ToString(), e => e.ToString());
         
         private static Exception GetException(string itemName, Func<Unit, Exception> otherwiseThrow = null)

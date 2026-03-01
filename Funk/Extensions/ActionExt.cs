@@ -1,7 +1,10 @@
-﻿using System;
+using System;
 
 namespace Funk
 {
+    /// <summary>
+    /// Provides extension methods for converting Action delegates to Func delegates.
+    /// </summary>
     public static class ActionExt
     {
         /// <summary>

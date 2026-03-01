@@ -1,7 +1,10 @@
-﻿using System;
+using System;
 
 namespace Funk
 {
+    /// <summary>
+    /// Provides extension methods for function composition.
+    /// </summary>
     public static class CompositionExt
     {
         /// <summary>

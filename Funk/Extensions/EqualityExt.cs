@@ -1,26 +1,47 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Funk
 {
+    /// <summary>
+    /// Provides extension methods for null-safe equality comparisons.
+    /// </summary>
     public static class EqualityExt
     {
+        /// <summary>
+        /// Performs a null-safe equality comparison between two objects.
+        /// </summary>
         [Pure]
         public static bool SafeEquals<T>(this T t, T other) => Equals(t, other);
 
+        /// <summary>
+        /// Performs a null-safe equality comparison between a value and a nullable value.
+        /// </summary>
         [Pure]
         public static bool SafeEquals<T>(this T t, T? other) where T : struct => ((T?)t).SafeEquals(other);
 
+        /// <summary>
+        /// Performs a null-safe equality comparison between a nullable value and a value.
+        /// </summary>
         [Pure]
         public static bool SafeEquals<T>(this T? t, T other) where T : struct => t.SafeEquals((T?)other);
 
+        /// <summary>
+        /// Performs a null-safe inequality comparison between two objects.
+        /// </summary>
         [Pure]
         public static bool SafeNotEquals<T>(this T t, T other) => !t.SafeEquals(other);
 
+        /// <summary>
+        /// Performs a null-safe inequality comparison between a value and a nullable value.
+        /// </summary>
         [Pure]
         public static bool SafeNotEquals<T>(this T t, T? other) where T : struct => !t.SafeEquals(other);
 
+        /// <summary>
+        /// Performs a null-safe inequality comparison between a nullable value and a value.
+        /// </summary>
         [Pure]
         public static bool SafeNotEquals<T>(this T? t, T other) where T : struct => !t.SafeEquals(other);
 

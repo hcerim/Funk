@@ -1,11 +1,22 @@
-﻿using System;
+using System;
 
 namespace Funk
 {
+    /// <summary>
+    /// Provides applicative functor extension methods for Maybe and Exc types.
+    /// </summary>
     public static class ApplicativeExt
     {
+        /// <summary>
+        /// Applies the Maybe argument to the Maybe-lifted function.
+        /// If either is empty, returns an empty Maybe. Otherwise, returns the result wrapped in Maybe.
+        /// </summary>
         public static Maybe<R> Apply<T1, R>(this Maybe<Func<T1, R>> function, Maybe<T1> maybe) => function.FlatMap(maybe.Map);
         
+        /// <summary>
+        /// Applies the Maybe argument to the Maybe-lifted action.
+        /// If either is empty, returns an empty Maybe. Otherwise, executes the action and returns Unit wrapped in Maybe.
+        /// </summary>
         public static Maybe<Unit> Apply<T1>(this Maybe<Action<T1>> function, Maybe<T1> maybe) =>
             function.FlatMap(f => maybe.Map(m =>
             {
@@ -13,24 +24,64 @@ namespace Funk
                 return Unit.Value;
             }));
 
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted function, returning a Maybe of a function with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Func<T2, R>> Apply<T1, T2, R>(this Maybe<Func<T1, T2, R>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted action, returning a Maybe of an action with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Action<T2>> Apply<T1, T2>(this Maybe<Action<T1, T2>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
 
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted function, returning a Maybe of a function with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Func<T2, T3, R>> Apply<T1, T2, T3, R>(this Maybe<Func<T1, T2, T3, R>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted action, returning a Maybe of an action with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Action<T2, T3>> Apply<T1, T2, T3>(this Maybe<Action<T1, T2, T3>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
 
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted function, returning a Maybe of a function with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Func<T2, T3, T4, R>> Apply<T1, T2, T3, T4, R>(this Maybe<Func<T1, T2, T3, T4, R>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted action, returning a Maybe of an action with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Action<T2, T3, T4>> Apply<T1, T2, T3, T4>(this Maybe<Action<T1, T2, T3, T4>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
 
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted function, returning a Maybe of a function with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Func<T2, T3, T4, T5, R>> Apply<T1, T2, T3, T4, T5, R>(this Maybe<Func<T1, T2, T3, T4, T5, R>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Maybe argument to the Maybe-lifted action, returning a Maybe of an action with reduced arity.
+        /// If either is empty, returns an empty Maybe.
+        /// </summary>
         public static Maybe<Action<T2, T3, T4, T5>> Apply<T1, T2, T3, T4, T5>(this Maybe<Action<T1, T2, T3, T4, T5>> function, Maybe<T1> maybe) => function.FlatMap(f => maybe.Map(f.Apply));
 
+        /// <summary>
+        /// Applies the Exc argument to the Exc-lifted function.
+        /// If either is not successful, returns a failed or empty Exc. Otherwise, returns the result wrapped in Exc.
+        /// </summary>
         public static Exc<R, E> Apply<T1, R, E>(this Exc<Func<T1, R>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(exceptional.Map);
 
+        /// <summary>
+        /// Applies the Exc argument to the Exc-lifted action.
+        /// If either is not successful, returns a failed or empty Exc. Otherwise, executes the action and returns Unit wrapped in Exc.
+        /// </summary>
         public static Exc<Unit, E> Apply<T1, E>(this Exc<Action<T1>, E> function, Exc<T1, E> exceptional) where E : Exception =>
             function.FlatMap(f => exceptional.Map(m =>
             {
@@ -84,8 +135,16 @@ namespace Funk
             );
         }
 
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted function, returning an Exc of a function with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Func<T2, R>, E> Apply<T1, T2, R, E>(this Exc<Func<T1, T2, R>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted action, returning an Exc of an action with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Action<T2>, E> Apply<T1, T2, E>(this Exc<Action<T1, T2>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
 
         /// <summary>
@@ -130,8 +189,16 @@ namespace Funk
             );
         }
 
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted function, returning an Exc of a function with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Func<T2, T3, R>, E> Apply<T1, T2, T3, R, E>(this Exc<Func<T1, T2, T3, R>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted action, returning an Exc of an action with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Action<T2, T3>, E> Apply<T1, T2, T3, E>(this Exc<Action<T1, T2, T3>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
 
         /// <summary>
@@ -176,8 +243,16 @@ namespace Funk
             );
         }
 
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted function, returning an Exc of a function with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Func<T2, T3, T4, R>, E> Apply<T1, T2, T3, T4, R, E>(this Exc<Func<T1, T2, T3, T4, R>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted action, returning an Exc of an action with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Action<T2, T3, T4>, E> Apply<T1, T2, T3, T4, E>(this Exc<Action<T1, T2, T3, T4>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
 
         /// <summary>
@@ -222,8 +297,16 @@ namespace Funk
             );
         }
 
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted function, returning an Exc of a function with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Func<T2, T3, T4, T5, R>, E> Apply<T1, T2, T3, T4, T5, R, E>(this Exc<Func<T1, T2, T3, T4, T5, R>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
         
+        /// <summary>
+        /// Partially applies the Exc argument to the Exc-lifted action, returning an Exc of an action with reduced arity.
+        /// If either is not successful, returns a failed or empty Exc.
+        /// </summary>
         public static Exc<Action<T2, T3, T4, T5>, E> Apply<T1, T2, T3, T4, T5, E>(this Exc<Action<T1, T2, T3, T4, T5>, E> function, Exc<T1, E> exceptional) where E : Exception => function.FlatMap(f => exceptional.Map(f.Apply));
 
         /// <summary>

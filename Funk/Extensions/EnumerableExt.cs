@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,6 +7,9 @@ using static Funk.Prelude;
 
 namespace Funk
 {
+    /// <summary>
+    /// Provides extension methods for working with sequences, including null-safe operations, immutable collections, and functional transformations.
+    /// </summary>
     public static class EnumerableExt
     {
         /// <summary>
