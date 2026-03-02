@@ -82,7 +82,11 @@ public static class Data
             }
             return copy;
         }
+#if NETSTANDARD2_0
         var target = FormatterServices.GetUninitializedObject(type);
+#else
+        var target = RuntimeHelpers.GetUninitializedObject(type);
+#endif
         visited[source] = target;
         var currentType = type;
         while (currentType.IsNotNull())

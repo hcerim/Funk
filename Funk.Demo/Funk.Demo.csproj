@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Funk" Version="2.0.0-beta02" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
 </Project>
