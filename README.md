@@ -3,25 +3,27 @@
 </p>
 
 [![Version](https://img.shields.io/nuget/vpre/Funk.svg)](https://www.nuget.org/packages/Funk)
-![Build](https://github.com/cerimharun/Funk/workflows/Build/badge.svg)
-![Tests](https://github.com/cerimharun/Funk/workflows/Tests/badge.svg)
+[![Build & Test](https://github.com/hcerim/Funk/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/hcerim/Funk/actions/workflows/build-and-test.yml)
 
-# Funk -> Functional C#
+# Funk — Functional C#
 
-Funk implements many concepts from the functional programming paradigm to reduce code size and most importantly help developers write **honest** bug-free code.
+A lightweight functional programming library that brings expressive, composable, and safe abstractions to C#. Less ceremony, more clarity.
+
+### Highlights
+
+- **Maybe&lt;T&gt;** — explicit nullability without null reference exceptions
+- **Exc&lt;T, E&gt;** — railway-oriented error handling with success, failure, and empty states
+- **OneOf&lt;T1, …, T5&gt;** — type-safe discriminated unions with exhaustive matching
+- **Record&lt;T1, …, T5&gt;** — immutable products with safe deconstruction and mapping
+- **Pattern&lt;R&gt;** — lazy, expression-based pattern matching (sync and async)
+- **Data&lt;T&gt; & Builder&lt;T&gt;** — fluent immutable object updates
+- **Prelude** — terse factory functions (`may`, `rec`, `list`, …)
+- **Extensions** — functional combinators on objects, tasks, enumerables, and actions
 
 ## Installation
 
 Funk is available as a [**NuGet**](https://www.nuget.org/packages/Funk) package.
 
-You can install it through **Package Manager**:
-
-`Install-Package Funk -Version 1.1.3`
-
-Or through **.NET CLI**:
-
-`dotnet add package Funk --version 1.1.3`
-
-Or add it directly in package references:
-
-`<PackageReference Include="Funk" Version="1.1.3" />`
+```
+dotnet add package Funk
+```

@@ -1,0 +1,46 @@
+name: Pack NuGet
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Funk/Funk.csproj
+
+      - name: Build library
+        run: dotnet build Funk/Funk.csproj --no-restore --configuration Release -warnaserror
+
+      - name: Restore test dependencies
+        run: dotnet restore Funk.Tests/Funk.Tests.csproj
+
+      - name: Build tests
+        run: dotnet build Funk.Tests/Funk.Tests.csproj --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test Funk.Tests/Funk.Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Pack
+        run: dotnet pack Funk/Funk.csproj --no-build --configuration Release --output ./artifacts
+
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts/*.nupkg
