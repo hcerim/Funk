@@ -138,10 +138,10 @@ string status = new Pattern<string>
 // Predicate-based matching
 string range = new Pattern<string>
 {
-    ((Func<int, bool>)(x => x < 200), _ => "Informational"),
-    ((Func<int, bool>)(x => x < 300), _ => "Success"),
-    ((Func<int, bool>)(x => x < 400), _ => "Redirection"),
-    ((Func<int, bool>)(x => x < 500), _ => "Client Error")
+    (x => x < 200, (int _) => "Informational"),
+    (x => x < 300, (int _) => "Success"),
+    (x => x < 400, (int _) => "Redirection"),
+    (x => x < 500, (int _) => "Client Error")
 }.Match(statusCode).GetOr(_ => "Server Error");
 
 // Type-based matching
