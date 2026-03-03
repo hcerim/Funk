@@ -16,7 +16,7 @@ The `Data<T>` type provides a fluent builder pattern for creating **new** immuta
 
 ## Defining Data types
 
-To use `Data`, your class needs to inherit from `Data<T>` where `T` is the class itself. If you are familiar with design patterns, this is sometimes called the CRTP (Curiously Recurring Template Pattern). Properties should be read-only (get-only) to enforce immutability. The class must have public get accessors for properties that you want to modify. The `Data` type handles deep copying internally using reflection, so no serialization framework is required.
+To use `Data`, your class needs to inherit from `Data<T>` where `T` is the class itself. If you are familiar with design patterns, this is sometimes called the CRTP (Curiously Recurring Template Pattern). Properties should have `private set` accessors — this enforces immutability from the outside while allowing the `Data` type to modify them internally via reflection. The class must have public get accessors for properties that you want to modify. The `Data` type handles deep copying internally using reflection, so no serialization framework is required.
 
 ```c#
 public class Customer : Data<Customer>
@@ -28,9 +28,9 @@ public class Customer : Data<Customer>
         Age = age;
     }
 
-    public string Name { get; }
-    public string Email { get; }
-    public int Age { get; }
+    public string Name { get; private set; }
+    public string Email { get; private set; }
+    public int Age { get; private set; }
 }
 ```
 
@@ -109,8 +109,8 @@ public class Order : Data<Order>
         Total = total;
     }
 
-    public Customer Customer { get; }
-    public decimal Total { get; }
+    public Customer Customer { get; private set; }
+    public decimal Total { get; private set; }
 }
 
 var order = new Order(john, 100m);
