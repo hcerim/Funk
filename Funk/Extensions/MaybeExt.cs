@@ -6,7 +6,7 @@ using static Funk.Prelude;
 namespace Funk;
 
 /// <summary>
-/// Provides the Record related extension methods.
+/// Provides the Maybe related extension methods.
 /// </summary>
 public static class MaybeExt
 {

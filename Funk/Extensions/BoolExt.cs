@@ -44,7 +44,7 @@ public static class BoolExt
         /// <summary>
         /// Performs conditional AND operation.
         /// </summary>
-        public bool And(Func<Unit, bool> function) => item || function(Unit.Value);
+        public bool And(Func<Unit, bool> function) => item && function(Unit.Value);
 
         /// <summary>
         /// Performs conditional OR operation.

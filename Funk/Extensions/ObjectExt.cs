@@ -43,7 +43,7 @@ public static class ObjectExt
     public static async Task<T> DoAsync<T>(this Task<T> item, Func<T, Task> function)
     {
         var i = await item.ConfigureAwait(false);
-        await function(i);
+        await function(i).ConfigureAwait(false);
         return i;
     }
 
