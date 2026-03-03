@@ -73,12 +73,12 @@ However, if the object is empty, `EmptyValueException` will be thrown. In case, 
 
 ```c#
 var middleName = customer.Match(
-    c => c.MiddleName // c is a Customer
+    c => c.MiddleName, // c is a Customer
     _ => new CustomException("Customer not found.")
 ); // string
 ```
 
-You can also use `Action` type delegates instead of `Func` in case you don't want to return a value.
+You can also use `Action` delegates (void, no return value) instead of `Func` delegates.
 
 ```c#
 customer.Match(
@@ -93,46 +93,62 @@ We can fix this by using the `Map` function.
 
 ## Functor
 
+`Map` is useful when your functions return **plain values** and you want to transform them while staying in the world of `Maybe`. If the `Maybe` is empty, `Map` will not execute the provided function and will return an empty `Maybe`. Otherwise, it will unwrap the underlying value, apply the function, and wrap the result back into `Maybe` — because the result itself can be empty too.
 
 ```c#
-var middleName = customer.Map(c => c.MiddleName); // results in Maybe<string>
+var middleName = customer.Map(c => c.MiddleName); // Maybe<string>
 ```
 
-`Map` is a function that makes the `Maybe` type a `functor`. It takes an elevated `T` object (`Maybe<T>`) and applies a function to its inner value (if present) and returns an elevated `R` object (`Maybe<R>`). With the `Map` function, we completely solve the issue with the possible absence of data. If the `Customer` object is empty, the `Map` will not execute the provided function and will return an empty `Maybe`. In case it is not empty, it will unwrap the underlying value, execute the provided function, and wrap the result back into `Maybe`. It wraps the result back as the result itself can be empty. This way, we stay in the `elevated world`. And you will see that it is better to stay in the world of elevated values as much as possible.
-
-Even though the `Map` function is powerful, we still need another function that can help us when working with nested `Maybe` objects. Imagine that, instead of returning the middle name, we performed some operation on a `Customer` object that returns another `Maybe` object.
+With `Map`, we completely solve the issue with the possible absence of data. We can chain multiple transformations safely — if any step encounters an absent value, the rest of the pipeline is skipped.
 
 ```c#
-var account = customer.Map(c => accounts.Get(c.AccountId)); // results in Maybe<Maybe<Account>>
+// Chain transformations on data that may be absent at any point
+var bio = config.Map(c => c.UserProfile)          // Maybe<UserProfile>
+    .Map(p => p.Bio)                               // Maybe<string>
+    .Map(b => b.Length > 100 ? b[..100] + "…" : b); // Maybe<string>
 ```
 
-Here, the `GetAccount` function returns the `Maybe<Account>` object. We end up with the nested `Maybe` object and it becomes tricky to unwrap it. What we need here is to somehow **flatten** (in FP, we call this **bind**) the result.
+For a detailed explanation of the `functor` concept, keep reading.
+
+Even though the `Map` function is powerful, we still need another function that can help us when working with nested `Maybe` objects. Imagine that, instead of returning a plain value, our function returns another `Maybe` — for example, looking up an optional setting that may itself be absent.
+
+```c#
+var theme = config.Map(c => c.UserProfile.AsMaybe()); // Maybe<Maybe<UserProfile>>
+```
+
+We end up with a nested `Maybe` that is tricky to unwrap. What we need is to somehow **flatten** (in FP, we call this **bind**) the result.
 
 We can fix this by using the `FlatMap` function.
 
 ## Monad
 
+`FlatMap` is useful when your functions return **elevated values** (`Maybe<T>`). It flattens the result so you don't end up with `Maybe<Maybe<T>>`.
+
 ```c#
-var account = customer.FlatMap(c => accounts.Get(c.AccountId)); // results in Maybe<Account>
+// Each lookup returns Maybe<T> — data may be absent at each step
+Maybe<UserProfile> GetProfile(Guid userId) => profiles.Get(userId);
+Maybe<Preferences> GetPreferences(Guid profileId) => preferences.Get(profileId);
+Maybe<Theme> GetTheme(string themeId) => themes.Get(themeId);
+
+// Chain them with FlatMap — each step receives the previous result
+var theme = GetProfile(userId)
+    .FlatMap(p => GetPreferences(p.Id))
+    .FlatMap(pref => GetTheme(pref.ThemeId)); // Maybe<Theme>
 ```
 
-`FlatMap` is a function that makes the `Maybe` type a `monad` (along with the lifting function that was described earlier). It takes an elevated `T` object (`Maybe<T>`) and applies a function to its inner value (if present) and returns the result of that function (`Maybe<R>`). The `Map` function uses the `FlatMap` function internally with the additional wrapping of the result. This is why a `monad` is more powerful than a `functor` as you can implement the `Map` function using the `FlatMap` function but not vice versa.
+Each `FlatMap` in the chain receives the non-empty result of the previous operation. If any step returns an empty `Maybe`, the entire chain short-circuits and the result is empty. No nesting, no unwrapping — just a flat pipeline.
+
+`FlatMap` is a function that makes the `Maybe` type a `monad` (along with the lifting function that was described earlier). The `Map` function uses the `FlatMap` function internally with the additional wrapping of the result. This is why a `monad` is more powerful than a `functor` as you can implement the `Map` function using the `FlatMap` function but not vice versa.
 
 `Async` versions of `Map` and `FlatMap` are available as well (`MapAsync` and `FlatMapAsync`). `Match`, on the other hand, does not require an `async` version as you can simply return a `Task<R>` as a result of an operation.
 
 ```c#
-var account = customer.FlatMapAsync(c => accounts.GetAsync(c.AccountId)); // results in Task<Maybe<Account>>
+var theme = await GetProfileAsync(userId)
+    .FlatMapAsync(p => GetPreferencesAsync(p.Id))
+    .FlatMapAsync(pref => GetThemeAsync(pref.ThemeId)); // Task<Maybe<Theme>>
 ```
-
-Here, `GetAccountAsync` function returns a `Task<Account>` and we need to use the `async` version of the `FlatMap`. Otherwise, the result would be `Maybe<Task<Account>>` which doesn't make much sense as you wouldn't be able to continue working with it properly.
 
 `Async` versions also support transformations directly on `Task<T>` as long as the `T` is a `Maybe` object.
-
-```c#
-var account = customers.GetAsync(id).FlatMapAsync(c =>
-    accounts.GetAsync(c.AccountId)
-); // results in Task<Maybe<Account>>
-```
 
 ## Other useful functions
 
