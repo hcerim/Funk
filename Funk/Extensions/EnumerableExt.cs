@@ -16,6 +16,7 @@ public static class EnumerableExt
     /// Pattern-matches on the sequence. Handles null sequence.
     /// In case of more items, performs aggregation.
     /// </summary>
+    /// <param name="sequence">The source sequence.</param>
     /// <param name="ifEmpty">The function to execute when the sequence is empty.</param>
     /// <param name="ifSingle">The function to execute when the sequence contains a single element.</param>
     /// <param name="ifMultiple">The aggregation function to execute when the sequence contains multiple elements.</param>
@@ -287,6 +288,7 @@ public static class EnumerableExt
     /// <summary>
     /// Aggregates sequence of not empty Maybes to the specified result as Maybe. Handles null sequence.
     /// </summary>
+    /// <param name="enumerable">The source sequence of Maybe values.</param>
     /// <param name="reducer">The aggregation function to apply to each pair of elements.</param>
     /// <returns>A Maybe containing the aggregated result, or an empty Maybe if no non-empty Maybes exist.</returns>
     public static Maybe<T> Fold<T>(this IEnumerable<Maybe<T>> enumerable, Func<T, T, T> reducer) => enumerable.Flatten().Reduce(reducer);
@@ -294,6 +296,7 @@ public static class EnumerableExt
     /// <summary>
     /// Maps the specified sequence to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
     /// </summary>
+    /// <param name="enumerable">The source sequence.</param>
     /// <param name="mapper">The function to transform each element.</param>
     /// <param name="reducer">The aggregation function to apply to each pair of transformed elements.</param>
     /// <returns>A Maybe containing the aggregated result of the mapped sequence, or an empty Maybe if the sequence is empty.</returns>
@@ -302,6 +305,7 @@ public static class EnumerableExt
     /// <summary>
     /// Maps the specified sequence to an immutable sequence of not empty maybes and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
     /// </summary>
+    /// <param name="enumerable">The source sequence of Maybe values.</param>
     /// <param name="mapper">The function to transform each element.</param>
     /// <param name="reducer">The aggregation function to apply to each pair of transformed elements.</param>
     /// <returns>A Maybe containing the aggregated result of the mapped flattened sequence, or an empty Maybe if empty.</returns>
@@ -310,6 +314,7 @@ public static class EnumerableExt
     /// <summary>
     /// Maps the specified sequence to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
     /// </summary>
+    /// <param name="enumerable">The source sequence.</param>
     /// <param name="mapper">The function to transform each element into a sequence.</param>
     /// <param name="reducer">The aggregation function to apply to each pair of transformed elements.</param>
     /// <returns>A Maybe containing the aggregated result of the flat-mapped sequence, or an empty Maybe if the sequence is empty.</returns>
@@ -318,6 +323,7 @@ public static class EnumerableExt
     /// <summary>
     /// Maps the specified sequence of not empty maybes to an immutable sequence of specified type and aggregates sequence of the new type to the specified result as Maybe. Handles null sequence.
     /// </summary>
+    /// <param name="enumerable">The source sequence of Maybe values.</param>
     /// <param name="mapper">The function to transform each element into a sequence.</param>
     /// <param name="reducer">The aggregation function to apply to each pair of transformed elements.</param>
     /// <returns>A Maybe containing the aggregated result of the flat-mapped flattened sequence, or an empty Maybe if empty.</returns>

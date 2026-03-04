@@ -60,6 +60,7 @@ public static class MaybeExt
     /// </summary>
     /// <typeparam name="T">The type of the Maybe value.</typeparam>
     /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="maybe">The Maybe value.</param>
     /// <param name="selector">The fallback function to execute if the value is empty.</param>
     /// <returns>The underlying value or the result of the fallback function.</returns>
     public static R GetOr<T, R>(this Maybe<T> maybe, Func<Unit, R> selector) where T : R => maybe.Match(_ => selector(Unit.Value), v => v);
@@ -70,6 +71,7 @@ public static class MaybeExt
     /// </summary>
     /// <typeparam name="T">The type of the Maybe value.</typeparam>
     /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="maybe">The Maybe value.</param>
     /// <param name="selector">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the underlying value or the result of the fallback function.</returns>
     public static Task<R> GetOrAsync<T, R>(this Maybe<T> maybe, Func<Unit, Task<R>> selector) where T : R => maybe.ToTask().GetOrAsync(selector);
@@ -80,6 +82,7 @@ public static class MaybeExt
     /// </summary>
     /// <typeparam name="T">The type of the Maybe value.</typeparam>
     /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="maybe">The Task of Maybe value.</param>
     /// <param name="selector">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the underlying value or the result of the fallback function.</returns>
     public static async Task<R> GetOrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<R>> selector) where T : R => await (await maybe).Match(_ => selector(Unit.Value), v => result((R)v)).ConfigureAwait(false);
@@ -122,6 +125,7 @@ public static class MaybeExt
     /// </summary>
     /// <typeparam name="T">The type of the source Maybe value.</typeparam>
     /// <typeparam name="R">The type of the result Maybe value.</typeparam>
+    /// <param name="maybe">The Maybe value.</param>
     /// <param name="ifEmpty">The fallback function to execute if the value is empty.</param>
     /// <returns>The first non-empty Maybe, or an empty Maybe.</returns>
     public static Maybe<R> Or<T, R>(this Maybe<T> maybe, Func<Unit, Maybe<R>> ifEmpty) where T : R => maybe.Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v));
@@ -133,6 +137,7 @@ public static class MaybeExt
     /// </summary>
     /// <typeparam name="T">The type of the source Maybe value.</typeparam>
     /// <typeparam name="R">The type of the result Maybe value.</typeparam>
+    /// <param name="maybe">The Maybe value.</param>
     /// <param name="ifEmpty">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the first non-empty Maybe, or an empty Maybe.</returns>
     public static Task<Maybe<R>> OrAsync<T, R>(this Maybe<T> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => maybe.ToTask().OrAsync(ifEmpty);
@@ -144,6 +149,7 @@ public static class MaybeExt
     /// </summary>
     /// <typeparam name="T">The type of the source Maybe value.</typeparam>
     /// <typeparam name="R">The type of the result Maybe value.</typeparam>
+    /// <param name="maybe">The Task of Maybe value.</param>
     /// <param name="ifEmpty">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the first non-empty Maybe, or an empty Maybe.</returns>
     public static async Task<Maybe<R>> OrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => await (await maybe).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v).ToTask()).ConfigureAwait(false);

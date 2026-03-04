@@ -88,6 +88,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The recovery function.</param>
     /// <returns>The recovered Exc or the original success.</returns>
     public static Exc<R, E> OnFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, R> recoverOperation) where T : R where E : Exception => operationResult.OnFlatFailure(e => Exc.Create<R, E>(_ => recoverOperation(e)));
@@ -99,6 +100,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The recovery function returning an Exc.</param>
     /// <returns>The recovered Exc or the original success.</returns>
     public static Exc<R, E> OnFlatFailure<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Exc<R, E>> recoverOperation) where T : R where E : Exception
@@ -117,6 +119,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function.</param>
     /// <returns>A Task of the recovered Exc or the original success.</returns>
     public static async Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception => await OnFailureAsync(await operationResult, recoverOperation).ConfigureAwait(false);
@@ -128,6 +131,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function returning an Exc.</param>
     /// <returns>A Task of the recovered Exc or the original success.</returns>
     public static async Task<Exc<R, E>> OnFlatFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnFlatFailureAsync(recoverOperation).ConfigureAwait(false);
@@ -139,6 +143,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function.</param>
     /// <returns>A Task of the recovered Exc or the original success.</returns>
     public static Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception => operationResult.OnFlatFailureAsync(e => Exc.CreateAsync<R, E>(_ => recoverOperation(e)));
@@ -150,6 +155,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function returning an Exc.</param>
     /// <returns>A Task of the recovered Exc or the original success.</returns>
     public static Task<Exc<R, E>> OnFlatFailureAsync<T, E, R>(this Exc<T, E> operationResult, Func<EnumerableException<E>, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception
@@ -168,6 +174,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The recovery function.</param>
     /// <returns>The recovered Exc or the original success or failure.</returns>
     public static Exc<R, E> OnEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, R> recoverOperation) where T : R where E : Exception => operationResult.OnFlatEmpty(_ => Exc.Create<R, E>(recoverOperation));
@@ -179,6 +186,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The recovery function returning an Exc.</param>
     /// <returns>The recovered Exc or the original success or failure.</returns>
     public static Exc<R, E> OnFlatEmpty<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Exc<R, E>> recoverOperation) where T : R where E : Exception
@@ -197,6 +205,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function.</param>
     /// <returns>A Task of the recovered Exc or the original success or failure.</returns>
     public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnEmptyAsync(recoverOperation).ConfigureAwait(false);
@@ -208,6 +217,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function returning an Exc.</param>
     /// <returns>A Task of the recovered Exc or the original success or failure.</returns>
     public static async Task<Exc<R, E>> OnFlatEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnFlatEmptyAsync(recoverOperation).ConfigureAwait(false);
@@ -219,6 +229,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function.</param>
     /// <returns>A Task of the recovered Exc or the original success or failure.</returns>
     public static Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => operationResult.OnFlatEmptyAsync(_ => Exc.CreateAsync<R, E>(recoverOperation));
@@ -230,6 +241,7 @@ public static class ExcExt
     /// <typeparam name="T">The original success type.</typeparam>
     /// <typeparam name="E">The exception type.</typeparam>
     /// <typeparam name="R">The recovered success type.</typeparam>
+    /// <param name="operationResult">The Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function returning an Exc.</param>
     /// <returns>A Task of the recovered Exc or the original success or failure.</returns>
     public static Task<Exc<R, E>> OnFlatEmptyAsync<T, E, R>(this Exc<T, E> operationResult, Func<Unit, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception
