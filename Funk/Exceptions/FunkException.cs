@@ -43,6 +43,7 @@ public class FunkException : Exception
     /// <summary>
     /// Initializes a new instance of FunkException with the specified message.
     /// </summary>
+    /// <param name="message">The error message.</param>
     public FunkException(string message)
         : base(message)
     {
@@ -52,6 +53,8 @@ public class FunkException : Exception
     /// <summary>
     /// Initializes a new instance of FunkException with the specified type and message.
     /// </summary>
+    /// <param name="type">The exception category.</param>
+    /// <param name="message">The error message.</param>
     public FunkException(FunkExceptionType type, string message)
         : base(message)
     {
@@ -72,6 +75,7 @@ public sealed class EmptyValueException : FunkException
     /// <summary>
     /// Initializes a new instance of EmptyValueException with the specified message.
     /// </summary>
+    /// <param name="message">The error message.</param>
     public EmptyValueException(string message)
         : base(FunkExceptionType.EmptyValue, message)
     {
@@ -86,6 +90,7 @@ public sealed class SerializationException : FunkException
     /// <summary>
     /// Initializes a new instance of SerializationException with the specified message.
     /// </summary>
+    /// <param name="message">The error message.</param>
     public SerializationException(string message)
         : base(FunkExceptionType.Serialization, message)
     {
@@ -100,6 +105,7 @@ public sealed class UnhandledValueException : FunkException
     /// <summary>
     /// Initializes a new instance of UnhandledValueException with the specified message.
     /// </summary>
+    /// <param name="message">The error message.</param>
     public UnhandledValueException(string message)
         : base(FunkExceptionType.UnhandledValue, message)
     {
@@ -114,12 +120,20 @@ public static class EnumerableException
     /// <summary>
     /// Creates a new EnumerableException with one nested exception if not null.
     /// </summary>
+    /// <typeparam name="E">The exception type.</typeparam>
+    /// <param name="exception">The exception to wrap.</param>
+    /// <param name="message">Optional error message.</param>
+    /// <returns>A new EnumerableException containing the exception.</returns>
     [Pure]
     public static EnumerableException<E> Create<E>(E exception, string message = null) where E : Exception => new EnumerableException<E>(exception, message);
 
     /// <summary>
     /// Creates a new EnumerableException with nested exceptions if not null or empty (removes null exceptions from enumerable).
     /// </summary>
+    /// <typeparam name="E">The exception type.</typeparam>
+    /// <param name="exceptions">The exceptions to wrap.</param>
+    /// <param name="message">Optional error message.</param>
+    /// <returns>A new EnumerableException containing the exceptions.</returns>
     [Pure]
     public static EnumerableException<E> Create<E>(IEnumerable<E> exceptions, string message = null) where E : Exception => new EnumerableException<E>(exceptions, message);
 }
@@ -127,6 +141,7 @@ public static class EnumerableException
 /// <summary>
 /// Immutable exception collection.
 /// </summary>
+/// <typeparam name="E">The exception type.</typeparam>
 public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, IEquatable<EnumerableException<E>> where E : Exception
 {
     private EnumerableException(string message)
@@ -139,6 +154,8 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// <summary>
     /// Initializes a new instance of EnumerableException with a single exception and an optional message.
     /// </summary>
+    /// <param name="exception">The exception to wrap.</param>
+    /// <param name="message">Optional error message.</param>
     public EnumerableException(E exception, string message = null)
         : base(FunkExceptionType.Enumerable, message)
     {
@@ -149,6 +166,8 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// <summary>
     /// Initializes a new instance of EnumerableException with a sequence of exceptions and an optional message.
     /// </summary>
+    /// <param name="exceptions">The exceptions to wrap.</param>
+    /// <param name="message">Optional error message.</param>
     public EnumerableException(IEnumerable<E> exceptions, string message = null)
         : base(FunkExceptionType.Enumerable, message)
     {
@@ -175,12 +194,16 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// Use Bind if you are binding with another EnumerableException.
     /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception.
     /// </summary>
+    /// <param name="exception">The exception to add.</param>
+    /// <returns>A new EnumerableException with the added exception.</returns>
     public EnumerableException<E> Add(E exception) => AddRange(exception.ToImmutableList());
 
     /// <summary>
     /// Use BindRange if you are binding with other EnumerableExceptions.
     /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions.
     /// </summary>
+    /// <param name="sequence">The exceptions to add.</param>
+    /// <returns>A new EnumerableException with the added exceptions.</returns>
     public EnumerableException<E> AddRange(IEnumerable<E> sequence)
     {
         return EnumerableException.Create(Nested.Match(
@@ -192,17 +215,24 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// <summary>
     /// Maps EnumerableException to the new one with aggregated nested exceptions with new exception and its nested ones.
     /// </summary>
+    /// <param name="exception">The enumerable exception to merge with.</param>
+    /// <returns>A new EnumerableException with the merged exceptions.</returns>
     public EnumerableException<E> Merge(EnumerableException<E> exception) => MergeRange(exception.ToImmutableList());
 
     /// <summary>
     /// Maps EnumerableException to the new one with aggregated nested exceptions with new exceptions and their nested ones.
     /// </summary>
+    /// <param name="exceptions">The enumerable exceptions to merge with.</param>
+    /// <returns>A new EnumerableException with the merged exceptions.</returns>
     public EnumerableException<E> MergeRange(IEnumerable<EnumerableException<E>> exceptions) => EnumerableException.Create(list<E>().AddRange(nested).AddRange(exceptions.FlatMap(e => e.nested)), Message);
 
     /// <summary>
     /// Returns a Maybe of an immutable dictionary of key as a discriminator and collection of corresponding exceptions if there are any nested exception.
     /// Handles duplicate key.
     /// </summary>
+    /// <typeparam name="TKey">The dictionary key type.</typeparam>
+    /// <param name="keySelector">The function to extract a key from each exception.</param>
+    /// <returns>A Maybe containing the dictionary, or empty if there are no nested exceptions.</returns>
     public Maybe<IImmutableDictionary<TKey, IImmutableList<E>>> ToDictionary<TKey>(Func<E, TKey> keySelector) => Nested.Map(c => c.ToDictionary(keySelector));
 
     /// <summary>
@@ -231,6 +261,11 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// <summary>
     /// Returns the index of the specified exception within a range using the specified equality comparer.
     /// </summary>
+    /// <param name="item">The exception to locate.</param>
+    /// <param name="index">The starting index for the search.</param>
+    /// <param name="count">The number of elements to search.</param>
+    /// <param name="equalityComparer">The equality comparer to use.</param>
+    /// <returns>The index of the exception, or -1 if not found.</returns>
     public int IndexOf(E item, int index, int count, IEqualityComparer<E> equalityComparer)
     {
         return nested.IndexOf(item, index, count, equalityComparer);
@@ -239,6 +274,11 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// <summary>
     /// Returns the last index of the specified exception within a range using the specified equality comparer.
     /// </summary>
+    /// <param name="item">The exception to locate.</param>
+    /// <param name="index">The starting index for the search.</param>
+    /// <param name="count">The number of elements to search.</param>
+    /// <param name="equalityComparer">The equality comparer to use.</param>
+    /// <returns>The last index of the exception, or -1 if not found.</returns>
     public int LastIndexOf(E item, int index, int count, IEqualityComparer<E> equalityComparer)
     {
         return nested.LastIndexOf(item, index, count, equalityComparer);
@@ -262,11 +302,15 @@ public sealed class EnumerableException<E> : FunkException, IImmutableList<E>, I
     /// <summary>
     /// Determines equality based on the nested exceptions.
     /// </summary>
+    /// <param name="other">The other EnumerableException to compare with.</param>
+    /// <returns>True if the nested exceptions are equal; otherwise, false.</returns>
     public bool Equals(EnumerableException<E> other) => other.AsMaybe().Map(e => nested.SafeEquals(e.nested)).GetOrDefault();
 
     /// <summary>
     /// Determines equality. Returns false if the other object is not an EnumerableException of the same type.
     /// </summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>True if the object is an equal EnumerableException; otherwise, false.</returns>
     public override bool Equals(object obj) => obj.SafeCast<EnumerableException<E>>().Map(Equals).GetOrDefault();
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.Contracts;
 
 namespace Funk;
@@ -19,11 +19,15 @@ public readonly struct Unit : IEquatable<Unit>
     /// <summary>
     /// Executes function and returns its result.
     /// </summary>
+    /// <typeparam name="T">The return type.</typeparam>
+    /// <param name="selector">The function to execute.</param>
+    /// <returns>The result of the function.</returns>
     public T Match<T>(Func<Unit, T> selector) => selector(Value);
 
     /// <summary>
     /// Executes non-returning function.
     /// </summary>
+    /// <param name="operation">The action to execute.</param>
     public void Match(Action<Unit> operation) => operation(Value);
 
     /// <summary>
@@ -50,6 +54,8 @@ public readonly struct Unit : IEquatable<Unit>
     /// Compares two Unit objects.
     /// Always returns true as two Unit objects are always equal.
     /// </summary>
+    /// <param name="other">The other Unit to compare with.</param>
+    /// <returns>Always true.</returns>
     [Pure]
     public bool Equals(Unit other) => true;
 
@@ -57,6 +63,8 @@ public readonly struct Unit : IEquatable<Unit>
     /// Compares two Unit objects.
     /// Returns true if the other object is Unit. Otherwise returns false.
     /// </summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>True if the object is a Unit; otherwise, false.</returns>
     [Pure]
     public override bool Equals(object obj) => obj is Unit;
 

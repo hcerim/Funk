@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,6 +11,7 @@ namespace Funk;
 /// <summary>
 /// Type that represents the lazy pattern-matching expression.
 /// </summary>
+/// <typeparam name="R">The result type of the pattern match.</typeparam>
 public struct Pattern<R> : IEnumerable
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -20,6 +21,8 @@ public struct Pattern<R> : IEnumerable
     /// Adds a new case-expression.
     /// If either the case or the expression is null, case-expression is ignored.
     /// </summary>
+    /// <typeparam name="T">The type of the case value.</typeparam>
+    /// <param name="item">A tuple of the case value and the function to execute if matched.</param>
     public void Add<T>((T @case, Func<T, R> function) item)
     {
         patterns = patterns.Initialize();
@@ -32,6 +35,8 @@ public struct Pattern<R> : IEnumerable
     /// Adds a new predicate-expression.
     /// If either the predicate or the expression is null, predicate-expression is ignored.
     /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="item">A tuple of the predicate and the function to execute if satisfied.</param>
     public void Add<T>((Func<T, bool> predicate, Func<T, R> function) item)
     {
         patterns = patterns.Initialize();
@@ -47,6 +52,8 @@ public struct Pattern<R> : IEnumerable
     /// If the specified value is null, the result will be empty.
     /// The default case can be provided using the GetOr or Or functions after this call.
     /// </summary>
+    /// <param name="value">The value to match against.</param>
+    /// <returns>A Maybe containing the result of the first matching expression, or an empty Maybe.</returns>
     public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).Map(r => r.Item2.Apply(value));
 
     IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
@@ -55,6 +62,7 @@ public struct Pattern<R> : IEnumerable
 /// <summary>
 /// Type that represents the lazy asynchronous pattern-matching expression.
 /// </summary>
+/// <typeparam name="R">The result type of the pattern match.</typeparam>
 public struct AsyncPattern<R> : IEnumerable
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -64,6 +72,8 @@ public struct AsyncPattern<R> : IEnumerable
     /// Adds a new case-expression.
     /// If either the case or the expression is null, case-expression is ignored.
     /// </summary>
+    /// <typeparam name="T">The type of the case value.</typeparam>
+    /// <param name="item">A tuple of the case value and the function to execute if matched.</param>
     public void Add<T>((T @case, Func<T, Task<R>> function) item)
     {
         patterns = patterns.Initialize();
@@ -76,6 +86,8 @@ public struct AsyncPattern<R> : IEnumerable
     /// Adds a new predicate-expression.
     /// If either the predicate or the expression is null, predicate-expression is ignored.
     /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="item">A tuple of the predicate and the function to execute if satisfied.</param>
     public void Add<T>((Func<T, bool> predicate, Func<T, Task<R>> function) item)
     {
         patterns = patterns.Initialize();
@@ -91,6 +103,8 @@ public struct AsyncPattern<R> : IEnumerable
     /// If the specified value is null, the result will be empty.
     /// The default case can be provided using the GetOrAsync or OrAsync functions after this call.
     /// </summary>
+    /// <param name="value">The value to match against.</param>
+    /// <returns>A Maybe containing the result of the first matching expression, or an empty Maybe.</returns>
     public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).MapAsync(r => r.Item2.Apply(value));
 
     IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
@@ -99,6 +113,7 @@ public struct AsyncPattern<R> : IEnumerable
 /// <summary>
 /// Type that represents the lazy type pattern-matching expression.
 /// </summary>
+/// <typeparam name="R">The result type of the pattern match.</typeparam>
 public struct TypePattern<R> : IEnumerable
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -108,6 +123,8 @@ public struct TypePattern<R> : IEnumerable
     /// Adds a new expression.
     /// If the expression is null, it is ignored.
     /// </summary>
+    /// <typeparam name="T">The type to match against.</typeparam>
+    /// <param name="function">The function to execute if the value is of type T.</param>
     public void Add<T>(Func<T, R> function)
     {
         patterns = patterns.Initialize();
@@ -123,6 +140,8 @@ public struct TypePattern<R> : IEnumerable
     /// If the specified value is null, the result will be empty.
     /// The default case can be provided using the GetOr or Or functions after this call.
     /// </summary>
+    /// <param name="value">The value to match against.</param>
+    /// <returns>A Maybe containing the result of the first matching expression, or an empty Maybe.</returns>
     public Maybe<R> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).Map(r => r.Item2.Apply(value));
 
     IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();
@@ -131,6 +150,7 @@ public struct TypePattern<R> : IEnumerable
 /// <summary>
 /// Type that represents the lazy asynchronous type pattern-matching expression.
 /// </summary>
+/// <typeparam name="R">The result type of the pattern match.</typeparam>
 public struct AsyncTypePattern<R> : IEnumerable
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -140,6 +160,8 @@ public struct AsyncTypePattern<R> : IEnumerable
     /// Adds a new expression.
     /// If the expression is null, it is ignored.
     /// </summary>
+    /// <typeparam name="T">The type to match against.</typeparam>
+    /// <param name="function">The function to execute if the value is of type T.</param>
     public void Add<T>(Func<T, Task<R>> function)
     {
         patterns = patterns.Initialize();
@@ -155,6 +177,8 @@ public struct AsyncTypePattern<R> : IEnumerable
     /// If the specified value is null, the result will be empty.
     /// The default case can be provided using the GetOrAsync or OrAsync functions after this call.
     /// </summary>
+    /// <param name="value">The value to match against.</param>
+    /// <returns>A Maybe containing the result of the first matching expression, or an empty Maybe.</returns>
     public Task<Maybe<R>> Match(object value) => patterns.AsFirstOrDefault(i => i.Item1(value)).MapAsync(r => r.Item2.Apply(value));
 
     IEnumerator IEnumerable.GetEnumerator() => patterns.GetEnumerator();

@@ -14,6 +14,7 @@ namespace Funk;
 /// <summary>
 /// Type that provides fluent way of creating new immutable objects through the Builder type.
 /// </summary>
+/// <typeparam name="T">The concrete type that extends Data.</typeparam>
 public abstract class Data<T> where T : Data<T>
 {
     /// <summary>
@@ -21,6 +22,8 @@ public abstract class Data<T> where T : Data<T>
     /// By default, takes the configuration specified in the Configure method.
     /// If the default configuration is desired, specified 'withDefaultConfiguration' parameter must be true.
     /// </summary>
+    /// <param name="other">The source object to copy from.</param>
+    /// <returns>A new copy of the object.</returns>
     public static T From(T other) => new Builder<T>(other).Build();
 }
 
@@ -36,6 +39,10 @@ public static class Data
         /// Modification takes place once the Build method is called.
         /// If the immediate modification is desired, use WithBuild instead.
         /// </summary>
+        /// <typeparam name="TKey">The type of the property or field.</typeparam>
+        /// <param name="expression">An expression identifying the property or field to modify.</param>
+        /// <param name="value">The new value.</param>
+        /// <returns>A Builder with the pending modification.</returns>
         public Builder<T> With<TKey>(Expression<Func<T, TKey>> expression, TKey value) =>
             new Builder<T>(
                 item,
@@ -48,6 +55,10 @@ public static class Data
         /// <summary>
         /// Creates the new Data object with the modified field/property specified in the expression.
         /// </summary>
+        /// <typeparam name="TKey">The type of the property or field.</typeparam>
+        /// <param name="expression">An expression identifying the property or field to modify.</param>
+        /// <param name="value">The new value.</param>
+        /// <returns>A new object with the modification applied.</returns>
         public T WithBuild<TKey>(Expression<Func<T, TKey>> expression, TKey value) =>
             item.With(expression, value).Build();
 
@@ -113,6 +124,7 @@ public static class Data
 /// Type that provides fluent way of creating new immutable objects.
 /// Contains underlying modification expressions.
 /// </summary>
+/// <typeparam name="T">The concrete type that extends Data.</typeparam>
 public sealed class Builder<T> where T : Data<T>
 {
     internal Builder(Data<T> item)
@@ -155,18 +167,27 @@ public static class Builder
         /// Modification takes place once the Build method is called.
         /// If the immediate modification is desired, use WithBuild instead.
         /// </summary>
+        /// <typeparam name="TKey">The type of the property or field.</typeparam>
+        /// <param name="expression">An expression identifying the property or field to modify.</param>
+        /// <param name="value">The new value.</param>
+        /// <returns>A Builder with the pending modification.</returns>
         public Builder<T> With<TKey>(Expression<Func<T, TKey>> expression, TKey value) =>
             builder.With(Expression.Lambda<Func<T, object>>(Expression.Convert(expression.Body, typeof(object)), expression.Parameters), value);
 
         /// <summary>
         /// Creates the new Data object with the modified field/property specified in the expression.
         /// </summary>
+        /// <typeparam name="TKey">The type of the property or field.</typeparam>
+        /// <param name="expression">An expression identifying the property or field to modify.</param>
+        /// <param name="value">The new value.</param>
+        /// <returns>A new object with the modification applied.</returns>
         public T WithBuild<TKey>(Expression<Func<T, TKey>> expression, TKey value) =>
             builder.With(expression, value).Build();
 
         /// <summary>
         /// Creates the new Data object with modified field/properties specified in the underlying expressions.
         /// </summary>
+        /// <returns>A new object with all pending modifications applied.</returns>
         public T Build() =>
             builder.Expressions.Aggregate(builder.Item.Copy(),
                 (item, expressions) => item.Map(expressions.expression, expressions.value)

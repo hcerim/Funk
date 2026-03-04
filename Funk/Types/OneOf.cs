@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.Contracts;
 using static Funk.Prelude;
 
@@ -13,6 +13,8 @@ public abstract class OneOf
     /// Creates a new OneOf object.
     /// In case the specified object is empty, discriminator will default to 0.
     /// </summary>
+    /// <param name="item">The underlying value.</param>
+    /// <param name="discriminator">The state identifier.</param>
     protected OneOf(object item, int discriminator)
     {
         if (item.IsNull())
@@ -67,6 +69,8 @@ public abstract class OneOf
 /// Type that represents a coproduct of three values (including an empty value -> Unit).
 /// Defaults to an empty value.
 /// </summary>
+/// <typeparam name="T1">The first type.</typeparam>
+/// <typeparam name="T2">The second type.</typeparam>
 public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
 {
     /// <summary>
@@ -81,6 +85,7 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Creates the OneOf object in the first state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="first">The value to set as the first state.</param>
     public OneOf(T1 first)
         : base(first, 1)
     {
@@ -90,6 +95,7 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Creates the OneOf object in the second state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="second">The value to set as the second state.</param>
     public OneOf(T2 second)
         : base(second, 2)
     {
@@ -126,6 +132,11 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Depending on the state of the underlying object,
     /// corresponding function provided with the underlying value will be executed and its result will be returned.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifEmpty">Function to execute if the value is empty.</param>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <returns>The result of the matched function.</returns>
     public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond)
     {
         return Discriminator.Match(
@@ -142,6 +153,11 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// In case the underlying value is empty, the last function (if specified) returns the exception that is then thrown.
     /// In case the last function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw if empty.</param>
+    /// <returns>The result of the matched function.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<Unit, Exception> otherwiseThrow = null)
     {
@@ -157,6 +173,9 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Depending on the state of the underlying object,
     /// corresponding function (if specified) provided with the underlying value will be executed.
     /// </summary>
+    /// <param name="ifEmpty">Action to execute if the value is empty.</param>
+    /// <param name="ifFirst">Action to execute if in the first state.</param>
+    /// <param name="ifSecond">Action to execute if in the second state.</param>
     public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null)
     {
         Discriminator.Match(
@@ -171,6 +190,8 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Returns the underlying value in the first state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the first state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -183,6 +204,8 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Returns the underlying value in the second state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the second state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -195,6 +218,8 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// In case the underlying value is empty, deconstructed values will be empty.
     /// Otherwise, one of the deconstructed values will be in a non-empty state.
     /// </summary>
+    /// <param name="first">The first state value as Maybe.</param>
+    /// <param name="second">The second state value as Maybe.</param>
     [Pure]
     public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second)
     {
@@ -235,6 +260,8 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// <summary>
     /// Underlying types' based equality comparison.
     /// </summary>
+    /// <param name="other">The other OneOf to compare with.</param>
+    /// <returns>true if both OneOf values are equal; otherwise, false.</returns>
     [Pure]
     public bool Equals(OneOf<T1, T2> other)
     {
@@ -249,6 +276,8 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
     /// Underlying types' based equality comparison.
     /// If the other object is not OneOf of same types, returns false.
     /// </summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>true if the object is a OneOf of the same types and is equal; otherwise, false.</returns>
     [Pure]
     public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2>>().Map(Equals).GetOrDefault();
 
@@ -268,6 +297,9 @@ public class OneOf<T1, T2> : OneOf, IEquatable<OneOf<T1, T2>>
 /// Type that represents a coproduct of four values (including an empty value -> Unit).
 /// Defaults to an empty value.
 /// </summary>
+/// <typeparam name="T1">The first type.</typeparam>
+/// <typeparam name="T2">The second type.</typeparam>
+/// <typeparam name="T3">The third type.</typeparam>
 public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
 {
     /// <summary>
@@ -282,6 +314,7 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Creates the OneOf object in the first state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="first">The value to set as the first state.</param>
     public OneOf(T1 first)
         : base(first, 1)
     {
@@ -291,6 +324,7 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Creates the OneOf object in the second state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="second">The value to set as the second state.</param>
     public OneOf(T2 second)
         : base(second, 2)
     {
@@ -300,6 +334,7 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Creates the OneOf object in the third state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="third">The value to set as the third state.</param>
     public OneOf(T3 third)
         : base(third, 3)
     {
@@ -349,6 +384,12 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Depending on the state of the underlying object,
     /// corresponding function provided with the underlying value will be executed and its result will be returned.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifEmpty">Function to execute if the value is empty.</param>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="ifThird">Function to execute if in the third state.</param>
+    /// <returns>The result of the matched function.</returns>
     public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird)
     {
         return Discriminator.Match(
@@ -366,6 +407,12 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// In case the underlying value is empty, the last function (if specified) returns the exception that is then thrown.
     /// In case the last function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="ifThird">Function to execute if in the third state.</param>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw if empty.</param>
+    /// <returns>The result of the matched function.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<Unit, Exception> otherwiseThrow = null)
     {
@@ -382,6 +429,10 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Depending on the state of the underlying object,
     /// corresponding function (if specified) provided with the underlying value will be executed.
     /// </summary>
+    /// <param name="ifEmpty">Action to execute if the value is empty.</param>
+    /// <param name="ifFirst">Action to execute if in the first state.</param>
+    /// <param name="ifSecond">Action to execute if in the second state.</param>
+    /// <param name="ifThird">Action to execute if in the third state.</param>
     public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null)
     {
         Discriminator.Match(
@@ -397,6 +448,8 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Returns the underlying value in the first state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the first state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -409,6 +462,8 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Returns the underlying value in the second state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the second state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -421,6 +476,8 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Returns the underlying value in the third state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the third state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -433,6 +490,9 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// In case the underlying value is empty, deconstructed values will be empty.
     /// Otherwise, one of the deconstructed values will be in a non-empty state.
     /// </summary>
+    /// <param name="first">The first state value as Maybe.</param>
+    /// <param name="second">The second state value as Maybe.</param>
+    /// <param name="third">The third state value as Maybe.</param>
     [Pure]
     public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second, out Maybe<T3> third)
     {
@@ -480,6 +540,8 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// <summary>
     /// Underlying types' based equality comparison.
     /// </summary>
+    /// <param name="other">The other OneOf to compare with.</param>
+    /// <returns>true if both OneOf values are equal; otherwise, false.</returns>
     [Pure]
     public bool Equals(OneOf<T1, T2, T3> other)
     {
@@ -495,6 +557,8 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
     /// Underlying types' based equality comparison.
     /// If the other object is not OneOf of same types, returns false.
     /// </summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>true if the object is a OneOf of the same types and is equal; otherwise, false.</returns>
     [Pure]
     public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2, T3>>().Map(Equals).GetOrDefault();
 
@@ -514,6 +578,10 @@ public class OneOf<T1, T2, T3> : OneOf, IEquatable<OneOf<T1, T2, T3>>
 /// Type that represents a coproduct of five values (including an empty value -> Unit).
 /// Defaults to an empty value.
 /// </summary>
+/// <typeparam name="T1">The first type.</typeparam>
+/// <typeparam name="T2">The second type.</typeparam>
+/// <typeparam name="T3">The third type.</typeparam>
+/// <typeparam name="T4">The fourth type.</typeparam>
 public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
 {
     /// <summary>
@@ -528,6 +596,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Creates the OneOf object in the first state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="first">The value to set as the first state.</param>
     public OneOf(T1 first)
         : base(first, 1)
     {
@@ -537,6 +606,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Creates the OneOf object in the second state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="second">The value to set as the second state.</param>
     public OneOf(T2 second)
         : base(second, 2)
     {
@@ -546,6 +616,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Creates the OneOf object in the third state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="third">The value to set as the third state.</param>
     public OneOf(T3 third)
         : base(third, 3)
     {
@@ -555,6 +626,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Creates the OneOf object in the fourth state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="fourth">The value to set as the fourth state.</param>
     public OneOf(T4 fourth)
         : base(fourth, 4)
     {
@@ -617,6 +689,13 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Depending on the state of the underlying object,
     /// corresponding function provided with the underlying value will be executed and its result will be returned.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifEmpty">Function to execute if the value is empty.</param>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="ifThird">Function to execute if in the third state.</param>
+    /// <param name="ifFourth">Function to execute if in the fourth state.</param>
+    /// <returns>The result of the matched function.</returns>
     public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth)
     {
         return Discriminator.Match(
@@ -635,6 +714,13 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// In case the underlying value is empty, the last function (if specified) returns the exception that is then thrown.
     /// In case the last function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="ifThird">Function to execute if in the third state.</param>
+    /// <param name="ifFourth">Function to execute if in the fourth state.</param>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw if empty.</param>
+    /// <returns>The result of the matched function.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<Unit, Exception> otherwiseThrow = null)
     {
@@ -652,6 +738,11 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Depending on the state of the underlying object,
     /// corresponding function (if specified) provided with the underlying value will be executed.
     /// </summary>
+    /// <param name="ifEmpty">Action to execute if the value is empty.</param>
+    /// <param name="ifFirst">Action to execute if in the first state.</param>
+    /// <param name="ifSecond">Action to execute if in the second state.</param>
+    /// <param name="ifThird">Action to execute if in the third state.</param>
+    /// <param name="ifFourth">Action to execute if in the fourth state.</param>
     public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null)
     {
         Discriminator.Match(
@@ -668,6 +759,8 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Returns the underlying value in the first state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the first state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -680,6 +773,8 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Returns the underlying value in the second state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the second state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -692,6 +787,8 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Returns the underlying value in the third state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the third state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -704,6 +801,8 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Returns the underlying value in the fourth state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the fourth state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -716,6 +815,10 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// In case the underlying value is empty, deconstructed values will be empty.
     /// Otherwise, one of the deconstructed values will be in a non-empty state.
     /// </summary>
+    /// <param name="first">The first state value as Maybe.</param>
+    /// <param name="second">The second state value as Maybe.</param>
+    /// <param name="third">The third state value as Maybe.</param>
+    /// <param name="fourth">The fourth state value as Maybe.</param>
     [Pure]
     public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second, out Maybe<T3> third, out Maybe<T4> fourth)
     {
@@ -770,6 +873,8 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// <summary>
     /// Underlying types' based equality comparison.
     /// </summary>
+    /// <param name="other">The other OneOf to compare with.</param>
+    /// <returns>true if both OneOf values are equal; otherwise, false.</returns>
     [Pure]
     public bool Equals(OneOf<T1, T2, T3, T4> other)
     {
@@ -786,6 +891,8 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
     /// Underlying types' based equality comparison.
     /// If the other object is not OneOf of same types, returns false.
     /// </summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>true if the object is a OneOf of the same types and is equal; otherwise, false.</returns>
     [Pure]
     public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2, T3, T4>>().Map(Equals).GetOrDefault();
 
@@ -805,6 +912,11 @@ public class OneOf<T1, T2, T3, T4> : OneOf, IEquatable<OneOf<T1, T2, T3, T4>>
 /// Type that represents a coproduct of six values (including an empty value -> Unit).
 /// Defaults to an empty value.
 /// </summary>
+/// <typeparam name="T1">The first type.</typeparam>
+/// <typeparam name="T2">The second type.</typeparam>
+/// <typeparam name="T3">The third type.</typeparam>
+/// <typeparam name="T4">The fourth type.</typeparam>
+/// <typeparam name="T5">The fifth type.</typeparam>
 public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4, T5>>
 {
     /// <summary>
@@ -819,6 +931,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Creates the OneOf object in the first state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="first">The value to set as the first state.</param>
     public OneOf(T1 first)
         : base(first, 1)
     {
@@ -828,6 +941,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Creates the OneOf object in the second state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="second">The value to set as the second state.</param>
     public OneOf(T2 second)
         : base(second, 2)
     {
@@ -837,6 +951,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Creates the OneOf object in the third state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="third">The value to set as the third state.</param>
     public OneOf(T3 third)
         : base(third, 3)
     {
@@ -846,6 +961,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Creates the OneOf object in the fourth state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="fourth">The value to set as the fourth state.</param>
     public OneOf(T4 fourth)
         : base(fourth, 4)
     {
@@ -855,6 +971,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Creates the OneOf object in the fifth state.
     /// In case the specified value is empty, defaults to an empty OneOf (default state).
     /// </summary>
+    /// <param name="fifth">The value to set as the fifth state.</param>
     public OneOf(T5 fifth)
         : base(fifth, 5)
     {
@@ -930,6 +1047,14 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Depending on the state of the underlying object,
     /// corresponding function provided with the underlying value will be executed and its result will be returned.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifEmpty">Function to execute if the value is empty.</param>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="ifThird">Function to execute if in the third state.</param>
+    /// <param name="ifFourth">Function to execute if in the fourth state.</param>
+    /// <param name="ifFifth">Function to execute if in the fifth state.</param>
+    /// <returns>The result of the matched function.</returns>
     public R Match<R>(Func<Unit, R> ifEmpty, Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth)
     {
         return Discriminator.Match(
@@ -949,6 +1074,14 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// In case the underlying value is empty, the last function (if specified) returns the exception that is then thrown.
     /// In case the last function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <typeparam name="R">The return type.</typeparam>
+    /// <param name="ifFirst">Function to execute if in the first state.</param>
+    /// <param name="ifSecond">Function to execute if in the second state.</param>
+    /// <param name="ifThird">Function to execute if in the third state.</param>
+    /// <param name="ifFourth">Function to execute if in the fourth state.</param>
+    /// <param name="ifFifth">Function to execute if in the fifth state.</param>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw if empty.</param>
+    /// <returns>The result of the matched function.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public R Match<R>(Func<T1, R> ifFirst, Func<T2, R> ifSecond, Func<T3, R> ifThird, Func<T4, R> ifFourth, Func<T5, R> ifFifth, Func<Unit, Exception> otherwiseThrow = null)
     {
@@ -967,6 +1100,12 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Depending on the state of the underlying object,
     /// corresponding function (if specified) provided with the underlying value will be executed.
     /// </summary>
+    /// <param name="ifEmpty">Action to execute if the value is empty.</param>
+    /// <param name="ifFirst">Action to execute if in the first state.</param>
+    /// <param name="ifSecond">Action to execute if in the second state.</param>
+    /// <param name="ifThird">Action to execute if in the third state.</param>
+    /// <param name="ifFourth">Action to execute if in the fourth state.</param>
+    /// <param name="ifFifth">Action to execute if in the fifth state.</param>
     public void Match(Action<Unit> ifEmpty = null, Action<T1> ifFirst = null, Action<T2> ifSecond = null, Action<T3> ifThird = null, Action<T4> ifFourth = null, Action<T5> ifFifth = null)
     {
         Discriminator.Match(
@@ -984,6 +1123,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Returns the underlying value in the first state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the first state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T1 UnsafeGetFirst(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -996,6 +1137,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Returns the underlying value in the second state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the second state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T2 UnsafeGetSecond(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -1008,6 +1151,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Returns the underlying value in the third state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the third state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T3 UnsafeGetThird(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -1020,6 +1165,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Returns the underlying value in the fourth state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the fourth state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T4 UnsafeGetFourth(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -1032,6 +1179,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Returns the underlying value in the fifth state or throws exception returned in the specified function.
     /// In case the function is not specified, EmptyValueException is thrown.
     /// </summary>
+    /// <param name="otherwiseThrow">Optional function returning the exception to throw.</param>
+    /// <returns>The underlying value in the fifth state.</returns>
     /// <exception cref="EmptyValueException"></exception>
     public T5 UnsafeGetFifth(Func<Unit, Exception> otherwiseThrow = null) =>
         Discriminator.Match(
@@ -1044,6 +1193,11 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// In case the underlying value is empty, deconstructed values will be empty.
     /// Otherwise, one of the deconstructed values will be in a non-empty state.
     /// </summary>
+    /// <param name="first">The first state value as Maybe.</param>
+    /// <param name="second">The second state value as Maybe.</param>
+    /// <param name="third">The third state value as Maybe.</param>
+    /// <param name="fourth">The fourth state value as Maybe.</param>
+    /// <param name="fifth">The fifth state value as Maybe.</param>
     [Pure]
     public void Deconstruct(out Maybe<T1> first, out Maybe<T2> second, out Maybe<T3> third, out Maybe<T4> fourth, out Maybe<T5> fifth)
     {
@@ -1105,6 +1259,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// <summary>
     /// Underlying types' based equality comparison.
     /// </summary>
+    /// <param name="other">The other OneOf to compare with.</param>
+    /// <returns>true if both OneOf values are equal; otherwise, false.</returns>
     [Pure]
     public bool Equals(OneOf<T1, T2, T3, T4, T5> other)
     {
@@ -1122,6 +1278,8 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf, IEquatable<OneOf<T1, T2, T3, T4,
     /// Underlying types' based equality comparison.
     /// If the other object is not OneOf of same types, returns false.
     /// </summary>
+    /// <param name="obj">The object to compare with.</param>
+    /// <returns>true if the object is a OneOf of the same types and is equal; otherwise, false.</returns>
     [Pure]
     public override bool Equals(object obj) => obj.SafeCast<OneOf<T1, T2, T3, T4, T5>>().Map(Equals).GetOrDefault();
 
