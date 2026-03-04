@@ -19,50 +19,46 @@ The `Data<T>` type provides a fluent builder pattern for creating **new** immuta
 To use `Data`, your class needs to inherit from `Data<T>` where `T` is the class itself. If you are familiar with design patterns, this is sometimes called the CRTP (Curiously Recurring Template Pattern). Properties should have `private set` accessors — this enforces immutability from the outside while allowing the `Data` type to modify them internally via reflection. The class must have public get accessors for properties that you want to modify. The `Data` type handles deep copying internally using reflection, so no serialization framework is required.
 
 ```c#
-public class Customer : Data<Customer>
+public sealed class Account : Data<Account>
 {
-    public Customer(string name, string email, int age)
-    {
-        Name = name;
-        Email = email;
-        Age = age;
-    }
-
-    public string Name { get; private set; }
-    public string Email { get; private set; }
-    public int Age { get; private set; }
+    public string EmailAddress { get; private set; }
+    public string Status { get; private set; }
+    public string Type { get; private set; }
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    private Account() { }
+    public static Account New => new();
 }
 ```
 
-As you see, there is nothing special here. You define your class as you normally would, but instead of inheriting from `object`, you inherit from `Data<Customer>`. That single change gives you the ability to create modified copies of your objects in a fluent and type-safe way.
+As you see, there is nothing special here. You define your class as you normally would, but instead of inheriting from `object`, you inherit from `Data<Account>`. That single change gives you the ability to create modified copies of your objects in a fluent and type-safe way.
 
 ## Creating modified copies
 
 Once your class inherits from `Data<T>`, you get access to the `WithBuild` function. It creates a new object with the specified property changed while leaving the original object untouched — this is true immutability.
 
 ```c#
-var john = new Customer("John Doe", "john@example.com", 30);
+var account = Account.New
+    .WithBuild(a => a.EmailAddress, "alice@example.com"); // Account with EmailAddress set
 
-// Using WithBuild - creates a new object immediately
-var jane = john.WithBuild(c => c.Name, "Jane Doe"); // Customer with Name = "Jane Doe"
-
-// john is unchanged - immutability preserved
-Console.WriteLine(john.Name); // "John Doe"
-Console.WriteLine(jane.Name); // "Jane Doe"
+// account is unchanged when we create a new copy
+var updated = account.WithBuild(a => a.Status, "Active"); // new Account with Status = "Active"
 ```
 
-The expression `c => c.Name` is a **type-safe** property selector — the compiler ensures you can only pass a value of the matching type. If you tried to pass an `int` where a `string` is expected, you would get a compile-time error. No runtime surprises.
+The expression `a => a.EmailAddress` is a **type-safe** property selector — the compiler ensures you can only pass a value of the matching type. If you tried to pass an `int` where a `string` is expected, you would get a compile-time error. No runtime surprises.
 
 ## Fluent builder
 
 When you need to modify multiple properties, creating intermediate objects with `WithBuild` for each change is wasteful. Each call deep-copies the entire object just to change one property. The `Builder<T>` type solves this by batching modifications.
 
 ```c#
-var updated = john
-    .With(c => c.Name, "Jane Doe")
-    .With(c => c.Email, "jane@example.com")
-    .With(c => c.Age, 28)
-    .Build(); // Customer
+var account = Account.New
+    .With(a => a.EmailAddress, "alice@example.com")
+    .With(a => a.Status, "Active")
+    .With(a => a.Type, "Personal")
+    .With(a => a.FirstName, "Alice")
+    .With(a => a.LastName, "Smith")
+    .Build(); // Account
 ```
 
 `With` returns a `Builder<T>` object that accumulates the modifications. No copying happens until `Build` is called. This is more efficient when modifying multiple properties as the object is only deep-copied once.
@@ -70,20 +66,20 @@ var updated = john
 `Builder<T>` also has `WithBuild` as a shortcut for the last modification in the chain. Instead of calling `With` followed by `Build`, you can use `WithBuild` as the final call.
 
 ```c#
-var updated = john
-    .With(c => c.Name, "Jane Doe")
-    .With(c => c.Email, "jane@example.com")
-    .WithBuild(c => c.Age, 28); // Customer
+var account = Account.New
+    .With(a => a.EmailAddress, "alice@example.com")
+    .With(a => a.Status, "Active")
+    .WithBuild(a => a.Type, "Personal"); // Account
 ```
 
-The result is the same — a new `Customer` object with all three properties modified. It just saves you the extra `Build` call.
+The result is the same — a new `Account` object with all three properties modified. It just saves you the extra `Build` call.
 
 ## Copying objects
 
 Sometimes you just need an exact copy of an object without modifying anything. The `From` function does exactly that.
 
 ```c#
-var copy = Customer.From(john); // deep copy of john
+var copy = Account.From(account); // deep copy of account
 ```
 
 `From` creates a deep copy of the object. The deep copy handles:
@@ -98,34 +94,101 @@ If the copy operation fails, a `SerializationException` is thrown. This is a Fun
 
 ## Nested properties
 
-The expression selector supports nested properties and fields. Imagine you have an `Order` that contains a `Customer`.
+The expression selector supports nested properties and fields. Imagine you have an `Order` that contains an `Account`.
 
 ```c#
 public class Order : Data<Order>
 {
-    public Order(Customer customer, decimal total)
+    public Order(Account account, decimal total)
     {
-        Customer = customer;
+        Account = account;
         Total = total;
     }
 
-    public Customer Customer { get; private set; }
+    public Account Account { get; private set; }
     public decimal Total { get; private set; }
 }
 
-var order = new Order(john, 100m);
-var updated = order.WithBuild(o => o.Customer.Email, "new@example.com"); // Order
+var order = new Order(account, 100m);
+var updated = order.WithBuild(o => o.Account.LastName, "Johnson"); // Order
 ```
 
-You can target nested properties through the expression tree. The `Data` type will traverse the object graph to find and modify the correct property. The original `Order` and its `Customer` remain unchanged — a completely new object graph is created.
+You can target nested properties through the expression tree. The `Data` type will traverse the object graph to find and modify the correct property. The original `Order` and its `Account` remain unchanged — a completely new object graph is created.
+
+## F-bounded polymorphism (type hierarchies)
+
+When building type hierarchies with `Data<T>`, use **F-bounded polymorphism** — make the base class generic in its derived type so that `With`/`Build` always return the concrete type:
+
+```c#
+public interface IEntity
+{
+    Guid Id { get; }
+}
+
+public abstract class Entity<T> : Data<T>, IEntity where T : Entity<T>
+{
+    [Key] public Guid Id { get; private set; } = Guid.NewGuid();
+    [Required] public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    [Required] public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    [Required] public Guid CreatedBy { get; private set; }
+    [Required] public Guid ModifiedBy { get; private set; }
+    [Required, Min(1)] public uint Version { get; private set; } = 1;
+    public IEntity WithVersion(uint version)
+    {
+        Version = version;
+        return this;
+    }
+}
+
+public sealed class Account : Entity<Account>
+{
+    [Required, MaxLength(255)] public string EmailAddress { get; private set; }
+    [Required, MaxLength(50)] public string Status { get; private set; }
+    [Required, MaxLength(50)] public string Type { get; private set; }
+    private Account() { }
+    public static Account New => new();
+}
+```
+
+Because `Account : Entity<Account>`, the type parameter `T` resolves to `Account`, so `With`/`Build` returns `Account` — not `Entity`:
+
+```c#
+var account = Account.New
+    .With(a => a.EmailAddress, "alice@example.com")
+    .With(a => a.Status, "Active")
+    .With(a => a.Type, "Personal")
+    .With(a => a.CreatedBy, adminId)
+    .With(a => a.ModifiedBy, adminId)
+    .Build(); // Account — not Entity
+```
+
+### A note on the generic constraint
+
+The constraint `where T : Entity<T>` is stricter than `where T : Data<T>`. While both work in practice — since `Entity<T>` extends `Data<T>`, any `T` satisfying `Entity<T>` automatically satisfies `Data<T>` through inheritance — they communicate different intent:
+
+- `where T : Data<T>` is the **minimum** required by the `With`/`Build` mechanism. It allows any `Data<T>` subclass as the type parameter.
+- `where T : Entity<T>` is **stricter** — it ensures the type parameter is specifically part of the `Entity` hierarchy, not just any `Data<T>`. This is the right choice when the base class introduces domain-specific members (like `Id`, `CreatedAt`, `Version`) that derived types must inherit.
+
+When you write `Account : Entity<Account>`, `Account` satisfies both `Data<Account>` and `Entity<Account>`. The `With`/`Build` mechanism works unchanged because it is defined on `Data<T>`.
+
+### The non-generic interface pattern
+
+Since `Entity<T>` is generic, you can't use it for polymorphic collections like `List<Entity>`. The non-generic `IEntity` interface solves this:
+
+```c#
+List<IEntity> entities = new() { account, otherEntity };
+var ids = entities.Map(e => e.Id); // IImmutableList<Guid>
+```
+
+This gives you the best of both worlds — type-safe `With`/`Build` on concrete types, and polymorphism through the interface.
 
 ## Implicit conversion
 
 There is an implicit conversion from `Data<T>` to `Builder<T>`, enabling seamless integration into fluent pipelines.
 
 ```c#
-Builder<Customer> builder = john; // implicit from Data<T> to Builder<T>
-var result = builder.WithBuild(c => c.Name, "Jane"); // Customer
+Builder<Account> builder = account; // implicit from Data<T> to Builder<T>
+var result = builder.WithBuild(a => a.Status, "Active"); // Account
 ```
 
 This can be useful when you want to pass a `Data<T>` object into a function that expects a `Builder<T>` or when you want to start building from an existing object in a more flexible way.
@@ -139,4 +202,5 @@ To summarize, the `Data<T>` type provides:
 - **Type-safe modifications**: Expression-based selectors ensure compile-time type checking
 - **Fluent API**: Chain multiple modifications before building
 - **Nested property support**: Modify deeply nested properties through expression trees
+- **F-bounded polymorphism**: Type hierarchies work correctly with generic base classes
 - **No external dependencies**: Deep copy is implemented using reflection — no serialization framework required

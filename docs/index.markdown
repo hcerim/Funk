@@ -169,30 +169,54 @@ string info = await new AsyncTypePattern<string>
 
 ### Data&lt;T&gt; & Builder&lt;T&gt;
 
-Fluent immutable updates — create modified copies without mutation. Ideal for domain models as well as ORM entities:
+Fluent immutable updates — create modified copies without mutation. Ideal for domain models and ORM entities.
+
+`Data<T>` uses the CRTP (Curiously Recurring Template Pattern). For type hierarchies, use F-bounded polymorphism — make the base class generic in its derived type so that `With`/`Build` return the concrete type:
 
 ```csharp
-public class User : Data<User>
-{
-    public string Name { get; private set; }
-    public int Age { get; private set; }
+public interface IEntity { Guid Id { get; } }
 
-    public User(string name, int age)
+public abstract class Entity<T> : Data<T>, IEntity where T : Entity<T>
+{
+    [Key] public Guid Id { get; private set; } = Guid.NewGuid();
+    [Required] public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    [Required] public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    [Required] public Guid CreatedBy { get; private set; }
+    [Required] public Guid ModifiedBy { get; private set; }
+    [Required, Min(1)] public uint Version { get; private set; } = 1;
+    public IEntity WithVersion(uint version)
     {
-        Name = name;
-        Age = age;
+        Version = version;
+        return this;
     }
 }
 
-var alice = new User("Alice", 30);
+public sealed class Account : Entity<Account>
+{
+    [Required, MaxLength(255)] public string EmailAddress { get; private set; }
+    [Required, MaxLength(50)] public string Status { get; private set; }
+    [Required, MaxLength(50)] public string Type { get; private set; }
+    private Account() { }
+    public static Account New => new();
+}
+```
+
+The constraint `where T : Entity<T>` is stricter than `where T : Data<T>`. While `Data<T>` is the minimum required for `With`/`Build` to work, using `Entity<T>` as the bound ensures that `T` is specifically part of the `Entity` hierarchy — not just any `Data<T>`. Since `Entity<T>` extends `Data<T>`, any `T` satisfying `Entity<T>` automatically satisfies `Data<T>` through inheritance, so the `With`/`Build` mechanism works unchanged.
+
+```csharp
+// Build a new entity — With/Build returns Account, not Entity
+var account = Account.New
+    .With(a => a.EmailAddress, "alice@example.com")
+    .With(a => a.Status, "Active")
+    .With(a => a.Type, "Personal")
+    .With(a => a.CreatedBy, adminId)
+    .With(a => a.ModifiedBy, adminId)
+    .Build(); // Account — not Entity
 
 // Create a modified copy — original is unchanged
-var older = alice.With(u => u.Age, 31).Build();
-
-// Chain multiple modifications
-var renamed = alice
-    .With(u => u.Name, "Bob")
-    .With(u => u.Age, 25)
+var updated = account
+    .With(a => a.Status, "Suspended")
+    .With(a => a.ModifiedAt, DateTime.UtcNow)
     .Build();
 ```
 
