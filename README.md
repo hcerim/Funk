@@ -34,7 +34,7 @@ dotnet add package Funk
 
 Add the namespace and optionally import the Prelude for terse factory functions:
 
-```csharp
+```c#
 using Funk;
 using static Funk.Prelude;
 ```
@@ -43,7 +43,7 @@ using static Funk.Prelude;
 
 Represent the possible absence of a value — no more nulls.
 
-```csharp
+```c#
 // Create from a value or null
 Maybe<string> name = may("Funk");     // NotEmpty
 Maybe<string> none = may<string>(null); // IsEmpty
@@ -73,7 +73,7 @@ string value = name.GetOr(_ => "default");
 
 Railway-oriented error handling — operations that can succeed, fail, or be empty.
 
-```csharp
+```c#
 // Wrap an operation that might throw
 Exc<int, FormatException> parsed = Exc.Create<int, FormatException>(
     _ => int.Parse("42")
@@ -124,7 +124,7 @@ var asyncResult = await Exc.CreateAsync<string, HttpRequestException>(
 
 Lazy, expression-based matching with collection initializer syntax:
 
-```csharp
+```c#
 int statusCode = 404;
 
 // Value-based matching
@@ -174,7 +174,7 @@ Fluent immutable updates — create modified copies without mutation. Ideal for 
 
 `Data<T>` uses the CRTP (Curiously Recurring Template Pattern). For type hierarchies, use F-bounded polymorphism — make the base class generic in its derived type so that `With`/`Build` return the concrete type:
 
-```csharp
+```c#
 public interface IEntity { Guid Id { get; } }
 
 public abstract class Entity<T> : Data<T>, IEntity where T : Entity<T>
@@ -204,7 +204,7 @@ public sealed class Account : Entity<Account>
 
 The constraint `where T : Entity<T>` is stricter than `where T : Data<T>`. While `Data<T>` is the minimum required for `With`/`Build` to work, using `Entity<T>` as the bound ensures that `T` is specifically part of the `Entity` hierarchy — not just any `Data<T>`. Since `Entity<T>` extends `Data<T>`, any `T` satisfying `Entity<T>` automatically satisfies `Data<T>` through inheritance, so the `With`/`Build` mechanism works unchanged.
 
-```csharp
+```c#
 // Build a new entity — With/Build returns Account, not Entity
 var account = Account.New
     .With(a => a.EmailAddress, "alice@example.com")
@@ -225,7 +225,7 @@ var updated = account
 
 Type-safe discriminated unions:
 
-```csharp
+```c#
 // A value that is either a string or an int
 var result = new OneOf<string, int>("hello");
 
@@ -248,7 +248,7 @@ var (first, second) = result;
 
 Immutable products with safe deconstruction and mapping:
 
-```csharp
+```c#
 // Create a record using the Prelude
 var person = rec("Alice", 30);
 
@@ -266,7 +266,7 @@ string description = person.Match((n, a) => $"{n} is {a} years old");
 
 Maybe and Exc support C# query expressions for composing operations naturally:
 
-```csharp
+```c#
 // Maybe — compose multiple lookups
 Maybe<string> city =
     from user in FindUser("alice")
@@ -285,7 +285,7 @@ Exc<decimal, Exception> total =
 
 Transform values through fluent pipelines:
 
-```csharp
+```c#
 var result = "hello"
     .Do(s => s.ToUpper())
     .Do(s => $"{s}!");    // "HELLO!"
