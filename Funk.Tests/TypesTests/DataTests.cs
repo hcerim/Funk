@@ -10,17 +10,19 @@ namespace Funk.Tests
         public void Create()
         {
             UnitTest(
-                _ => Customer.New,
+                _ => NewCustomer.New,
                 c =>
                 {
                     return c
                         .With(cc => cc.FirstName, "Harun")
+                        .With(cc => cc.MiddleName, "Ahmed")
                         .With(cc => cc.LastName, "Cerim")
                         .Build();
                 },
                 c =>
                 {
                     Assert.Equal("Harun", c.FirstName);
+                    Assert.Equal("Ahmed", c.MiddleName);
                     Assert.Equal("Cerim", c.LastName);
                 }
             );
@@ -30,7 +32,7 @@ namespace Funk.Tests
         public void Create_Failure()
         {
             UnitTest(
-                _ => Customer.New,
+                _ => NewCustomer.New,
                 c => act(() => c
                     .With(cc => cc.FirstName, "Harun")
                     .With(cc => cc.Account.Number, 1234567890)
@@ -44,7 +46,7 @@ namespace Funk.Tests
         public void Update()
         {
             UnitTest(
-                _ => Customer.New
+                _ => NewCustomer.New
                     .With(cc => cc.FirstName, "John")
                     .With(cc => cc.LastName, "Doe")
                     .With(cc => cc.Account, new Account
@@ -97,13 +99,19 @@ namespace Funk.Tests
             );
             return;
             
-            static Builder<Customer> GetMiddle(Customer data) =>
+            static Builder<NewCustomer> GetMiddle(NewCustomer data) =>
                 data.WithBuild(cc => cc.CreatedAt, (DateTime?)DateTime.Parse("12-12-2022"));
         }
     }
 }
 
-public sealed class Customer : Data<Customer>
+public class NewCustomer : Customer<NewCustomer>
+{
+    public string MiddleName { get; private set; }
+    public new static NewCustomer New => new();
+}
+
+public class Customer<T> : Data<T> where T : Customer<T>
 {
     public Guid Id { get; private set; }
     public string EmailAddress { get; private set; }
@@ -118,7 +126,7 @@ public sealed class Customer : Data<Customer>
     public Guid ModifiedBy { get; private set; }
     private int _version;
 
-    public static Customer New => new();
+    public static Customer<T> New => new();
     public void SetVersion(int version) => _version = version;
     public int Version => _version;
 }
