@@ -243,3 +243,73 @@ Other notable operations include:
 - `Match` — pattern-matches on the sequence based on its count (empty, single, multiple)
 
 These operations work together with the Funk types to enable fully functional pipelines over collections — no statements, no null checks, no surprises.
+
+## Boolean extensions
+
+Funk provides pattern matching and lifting for boolean values.
+
+`Match` on booleans provides a concise way to branch on `true` and `false` without `if-else` statements.
+
+```c#
+var label = isActive.Match(
+    _ => "Inactive",
+    _ => "Active"
+); // string
+```
+
+`AsTrue` lifts a boolean into a `Maybe<bool>`. If the value is `true`, it returns a non-empty `Maybe`. If `false` (or `null` for nullable booleans), it returns an empty `Maybe`. This enables integration with the rest of the `Maybe` pipeline.
+
+```c#
+var authorized = user.IsAdmin.AsTrue()
+    .Map(_ => LoadAdminPanel()); // Maybe<Panel> — empty if not admin
+
+bool? consent = null;
+var hasConsent = consent.AsTrue(); // Maybe<bool> — empty
+```
+
+Logical combinators `And` and `Or` provide fluent, lazy boolean composition.
+
+```c#
+var allowed = user.IsAdmin.Or(_ => user.HasPermission("write")); // lazy — second check only if first is false
+var valid = input.NotEmpty.And(_ => input.IsWellFormed); // lazy — second check only if first is true
+```
+
+## Exc extensions
+
+Beyond the core `Exc` operations documented in [Exc](/Funk/types/exc/), Funk provides additional extension methods.
+
+### AsSuccess
+
+Converts an `Exc` to a `Maybe`, keeping only the success value. Failure and empty states both become an empty `Maybe`.
+
+```c#
+var result = Exc.Create<int, FormatException>(_ => int.Parse("42"));
+var maybe = result.AsSuccess(); // Maybe<int> — 42
+```
+
+### Flatten
+
+Flattens a nested `Exc<Exc<T, E>, E>` into a single `Exc<T, E>`.
+
+```c#
+Exc<Exc<int, Exception>, Exception> nested = GetNestedResult();
+var flat = nested.Flatten(); // Exc<int, Exception>
+```
+
+## Applicative functions (Apply and Validate)
+
+Funk provides applicative functor operations for both `Maybe` and `Exc`. These are documented in detail on their respective type pages — see [Maybe applicative](/Funk/types/maybe/#applicative-applicative-functor) and [Exc applicative](/Funk/types/exc/#applicative-applicative-functor).
+
+In summary:
+
+- **`Apply`** (monadic) — short-circuits on the first empty/failed value. Use when later arguments depend on earlier ones.
+- **`Validate`** (applicative) — accumulates all errors. Use for validation scenarios where you want to report all problems at once.
+
+```c#
+// Validate — accumulates ALL errors
+var customer = success<Func<string, int, Customer>, ValidationException>(createCustomer)
+    .Validate(ValidateName(input))
+    .Validate(ValidateAge(input)); // collects both errors if both fail
+```
+
+`Apply` and `Validate` are available for arities 1 through 5 for both `Func` and `Action` delegates.

@@ -291,6 +291,56 @@ var result = "hello"
     .Do(s => $"{s}!");    // "HELLO!"
 ```
 
+### Currying
+
+Transform multi-parameter functions into chains of single-parameter functions:
+
+```csharp
+Func<int, int, int> add = (a, b) => a + b;
+var curriedAdd = add.Curry(); // Func<int, Func<int, int>>
+
+var addFive = curriedAdd(5); // Func<int, int>
+var result = addFive(3);     // 8
+```
+
+### Partial application
+
+Apply arguments one at a time, reducing arity at each step:
+
+```csharp
+Func<string, int, string> repeat = (s, n) => string.Concat(Enumerable.Repeat(s, n));
+var repeatHello = repeat.Apply("hello "); // Func<int, string>
+var result = repeatHello(3);              // "hello hello hello "
+```
+
+### Function composition
+
+Combine functions into pipelines with `ComposeLeft` (left-to-right) and `ComposeRight` (right-to-left):
+
+```csharp
+Func<string, int> parse = int.Parse;
+Func<int, string> format = n => $"Number: {n}";
+
+var pipeline = parse.ComposeLeft(format); // Func<string, string>
+var result = pipeline("42");              // "Number: 42"
+```
+
+### Applicative validation
+
+Accumulate all errors instead of short-circuiting on the first failure:
+
+```csharp
+// Apply — short-circuits on first failure (monadic)
+success<Func<string, int, User>, ValidationException>(createUser)
+    .Apply(ValidateName(input))   // fails → stops
+    .Apply(ValidateAge(input));   // never checked
+
+// Validate — collects ALL failures (applicative)
+success<Func<string, int, User>, ValidationException>(createUser)
+    .Validate(ValidateName(input))  // fails → keeps going
+    .Validate(ValidateAge(input));  // also checked → both errors merged
+```
+
 ## Documentation
 
 For full API documentation, visit the [**Funk documentation site**](https://hcerim.github.io/Funk).
