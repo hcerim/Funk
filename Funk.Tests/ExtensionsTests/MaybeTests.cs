@@ -67,5 +67,55 @@ namespace Funk.Tests
                 s => Assert.True(s.IsEmpty)
             );
         }
+
+        [Fact]
+        public void Merge_All_NonEmpty()
+        {
+            UnitTest(
+                _ => may(1),
+                m => m.Merge(may(2)),
+                r =>
+                {
+                    Assert.True(r.NotEmpty);
+                    Assert.Equal(2, r.UnsafeGet().Count);
+                    Assert.Equal(1, r.UnsafeGet()[0]);
+                    Assert.Equal(2, r.UnsafeGet()[1]);
+                }
+            );
+        }
+
+        [Fact]
+        public void Merge_One_Empty()
+        {
+            UnitTest(
+                _ => may(1),
+                m => m.Merge(Maybe.Empty<int>()),
+                r => Assert.True(r.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public void MergeRange_All_NonEmpty()
+        {
+            UnitTest(
+                _ => may("a"),
+                m => m.MergeRange([may("b"), may("c")]),
+                r =>
+                {
+                    Assert.True(r.NotEmpty);
+                    Assert.Equal(3, r.UnsafeGet().Count);
+                }
+            );
+        }
+
+        [Fact]
+        public void MergeRange_Any_Empty()
+        {
+            UnitTest(
+                _ => may("a"),
+                m => m.MergeRange([may("b"), may<string>(null)]),
+                r => Assert.True(r.IsEmpty)
+            );
+        }
     }
 }

@@ -145,8 +145,7 @@ public sealed class Builder<T> where T : Data<T>
     internal Data<T> Item { get; }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions =
-        new List<(Expression<Func<T, object>>, object)>();
+    internal readonly List<(Expression<Func<T, object>> expression, object value)> Expressions = [];
 
     /// <summary>
     /// Lifts the Data to the Builder. 

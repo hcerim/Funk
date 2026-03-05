@@ -287,7 +287,7 @@ public static class ExcExt
         /// <param name="second">The other Exc to merge with.</param>
         /// <param name="errorMessage">Optional error message for the merged failure.</param>
         /// <returns>An Exc containing a list of results or a merged failure.</returns>
-        public Exc<IImmutableList<T>, E> Merge(Exc<T, E> second, string errorMessage = null) => MergeRange(first, second.ToImmutableList(), errorMessage);
+        public Exc<IImmutableList<T>, E> Merge(Exc<T, E> second, string errorMessage = null) => first.MergeRange(second.ToImmutableList(), errorMessage);
 
         /// <summary>
         /// Aggregates Exc with the sequence of Exc. If all are success the result will be Success of Collection of results.

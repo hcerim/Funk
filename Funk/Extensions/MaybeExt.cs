@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading.Tasks;
 using static Funk.Prelude;
 
@@ -153,6 +156,29 @@ public static class MaybeExt
     /// <param name="ifEmpty">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the first non-empty Maybe, or an empty Maybe.</returns>
     public static async Task<Maybe<R>> OrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => await (await maybe).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v).ToTask()).ConfigureAwait(false);
+
+    extension<T>(Maybe<T> first)
+    {
+        /// <summary>
+        /// Aggregates Maybe with another Maybe. If both are not empty the result will be a non-empty Maybe of an immutable list of results.
+        /// If any is empty, the result will be an empty Maybe.
+        /// </summary>
+        /// <param name="second">The other Maybe to merge with.</param>
+        /// <returns>A Maybe containing a list of values, or an empty Maybe if any is empty.</returns>
+        public Maybe<IImmutableList<T>> Merge(Maybe<T> second) => first.MergeRange(ImmutableList.Create(second));
+
+        /// <summary>
+        /// Aggregates Maybe with the sequence of Maybes. If all are not empty the result will be a non-empty Maybe of an immutable list of results.
+        /// If any is empty, the result will be an empty Maybe.
+        /// </summary>
+        /// <param name="items">The sequence of Maybe values to merge with.</param>
+        /// <returns>A Maybe containing a list of values, or an empty Maybe if any is empty.</returns>
+        public Maybe<IImmutableList<T>> MergeRange(IEnumerable<Maybe<T>> items)
+        {
+            var all = ImmutableList.Create(first).AddRange(items.Map());
+            return all.Any(m => m.IsEmpty) ? Maybe.Empty<IImmutableList<T>>() : Maybe.Create(all.Flatten());
+        }
+    }
 
     extension<T>(Maybe<T> maybe)
     {

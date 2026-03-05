@@ -6,7 +6,7 @@ namespace Funk.Tests
 {
     public class ApplicativeTests : Test
     {
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void ApplicativeLawForMaybe(Maybe<int> first, Maybe<int> second)
         {
             UnitTest(
@@ -16,7 +16,7 @@ namespace Funk.Tests
             );
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void ApplicativeLawForExc(Exc<int, DivideByZeroException> first, Exc<int, DivideByZeroException> second)
         {
             UnitTest(
@@ -26,7 +26,7 @@ namespace Funk.Tests
             );
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void ApplicativeContractLawForExc(Exc<int, Exception> first, Exc<int, Exception> second, Exc<int, Exception> third)
         {
             UnitTest(

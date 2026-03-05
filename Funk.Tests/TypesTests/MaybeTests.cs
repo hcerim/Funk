@@ -125,7 +125,7 @@ namespace Funk.Tests
             );
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void RightIdentity(Maybe<object> maybe)
         {
             UnitTest(
@@ -145,7 +145,7 @@ namespace Funk.Tests
             );
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void Associativity(Maybe<int> maybe)
         {
             UnitTest(

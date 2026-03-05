@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -315,6 +315,50 @@ namespace Funk.Tests
         }
 
         [Fact]
+        public void Merge_All_Success()
+        {
+            UnitTest(
+                _ => success<int, Exception>(1),
+                e => e.Merge(success<int, Exception>(2)),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal(2, r.Success.UnsafeGet().Count);
+                    Assert.Equal(1, r.Success.UnsafeGet()[0]);
+                    Assert.Equal(2, r.Success.UnsafeGet()[1]);
+                }
+            );
+        }
+
+        [Fact]
+        public void MergeRange_All_Success()
+        {
+            UnitTest(
+                _ => success<string, Exception>("a"),
+                e => e.MergeRange([success<string, Exception>("b"), success<string, Exception>("c")]),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal(3, r.Success.UnsafeGet().Count);
+                }
+            );
+        }
+
+        [Fact]
+        public void MergeRange_Any_Failure()
+        {
+            UnitTest(
+                _ => success<string, Exception>("a"),
+                e => e.MergeRange([success<string, Exception>("b"), failure<string, Exception>(new Exception("fail"))]),
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.Equal(1, r.NestedFailures.UnsafeGet().Count);
+                }
+            );
+        }
+
+        [Fact]
         public async Task Create_Exceptional_MapFailureAsync()
         {
             await UnitTestAsync(
@@ -363,7 +407,7 @@ namespace Funk.Tests
             );
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void RightIdentity(Exc<object, Exception> exc)
         {
             UnitTest(
@@ -383,7 +427,7 @@ namespace Funk.Tests
             );
         }
 
-        [Property(Arbitrary = new[] { typeof(ArbitraryLifter) })]
+        [Property(Arbitrary = [typeof(ArbitraryLifter)])]
         public void Associativity(Exc<int, Exception> exc)
         {
             UnitTest(
