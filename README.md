@@ -39,6 +39,12 @@ using Funk;
 using static Funk.Prelude;
 ```
 
+### A note on Nullable Reference Types
+
+Funk deliberately does not adopt nullable reference types (NRTs). Unlike nullable value types — where `int?` is `Nullable<int>`, a real generic struct enforced at both compile time and runtime — `string?` is not a distinct type. It is `string` at the IL level, with erasable compiler annotations that produce warnings but no runtime guarantees. `null` can still flow into a `string` parameter through reflection, interop, older libraries, or explicit suppression with `null!`.
+
+`Maybe<T>` is the type-level solution: a `readonly struct` that forces the caller to `Match` or `Map` to extract the value. The empty case is structurally irrepresentable as a bare `T` — you must handle it. This is encoding invariants in the type system, not relying on advisory compiler hints.
+
 ### Maybe&lt;T&gt;
 
 Represent the possible absence of a value — no more nulls.

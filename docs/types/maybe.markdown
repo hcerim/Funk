@@ -12,7 +12,19 @@ We all know about the one-billion-dollar mistake that the invention of the `null
 
 In C#, the default value for reference type variables is `null`. So the object is laying somewhere on the heap (or maybe there is no object) but the variable holds no reference to it. So, when we try to do something with that object, not knowing that there is no reference to it, we get the notorious `NullReferenceException` saying `"Object reference not set to an instance of an object"`.
 
-In C#, we also have nullable value types (`Nullable<T> where T : struct` or simply `T?`) which is a type constructor for value types that tells us that the underlying value may not be present. From C# 8 onwards, we also have nullable reference types that can be used to warn us that the corresponding reference type object may be `null`, however, we are not forced by the compiler to handle it in any way. With `Maybe`, you will be able to address these issues with ease and have clean code without repetitive null checks, guards, etc. Additionally, you will be forced by the compiler to resolve the value before using it. **It is a value type (`struct`) and therefore can't be null and its default value is simply an empty `Maybe` object.**
+In C#, we also have nullable value types (`Nullable<T> where T : struct` or simply `T?`) which is a type constructor for value types that tells us that the underlying value may not be present. With `Maybe`, you will be able to address these issues with ease and have clean code without repetitive null checks, guards, etc. Additionally, you will be forced by the compiler to resolve the value before using it. **It is a value type (`struct`) and therefore can't be null and its default value is simply an empty `Maybe` object.**
+
+### Why not Nullable Reference Types?
+
+C# 8 introduced nullable reference types (NRTs) — annotations like `string?` that produce compiler warnings when a potentially-null reference is dereferenced without a check. However, NRTs are fundamentally different from nullable value types and are **not** a substitute for `Maybe<T>`.
+
+Nullable value types are a **real type**. `int?` is `Nullable<int>` — a distinct generic struct at the IL level. It wraps the value, provides `.HasValue` and `.Value`, and both the compiler and runtime enforce the contract. You cannot silently treat an `int?` as an `int`.
+
+`string?` is **not** a real type. It is `string` at runtime — same IL, same type, same memory layout. The `?` annotation is erasable compiler metadata that produces warnings. Nothing prevents `null` from flowing into a `string` parameter at runtime: reflection, interop, older libraries, dynamic code, explicit suppression with `null!`, or simply ignoring the warning. There is no structural enforcement. NRTs are a lint-level mechanism, not a type-level guarantee.
+
+`Maybe<T>` solves this at the type system level. It is a `readonly struct` that forces the caller to `Match`, `Map`, or `FlatMap` to extract the value. The empty case is structurally irrepresentable as a bare `T` — you **must** handle it. This is the difference between encoding invariants in the type system and hoping the compiler catches everything.
+
+Funk deliberately does not adopt NRTs. `null` inputs are valid and handled structurally — `may<string>(null)` returns an empty `Maybe<string>`, which is the correct, type-safe representation of absence.
 
 ## Lifting functions
 
