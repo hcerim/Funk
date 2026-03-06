@@ -193,6 +193,156 @@ var result = builder.WithBuild(a => a.Status, "Active"); // Account
 
 This can be useful when you want to pass a `Data<T>` object into a function that expects a `Builder<T>` or when you want to start building from an existing object in a more flexible way.
 
+## Data&lt;T&gt; vs C# records and `with` for EF Core entities
+
+C# 9 introduced records with `with` expressions — the language's native answer to creating modified copies. While records work well for simple DTOs, configuration objects, and value types where shallow copy is sufficient, they fall short for EF Core entity modeling where object graph integrity, deep copying, type hierarchies, and controlled mutation matter.
+
+### Shallow copy vs deep copy
+
+The C# `with` expression performs a **shallow member-wise copy**. For an entity with navigation properties, this is dangerous:
+
+```c#
+public record Order(Guid Id, string Status, List<OrderItem> Items);
+
+var order = db.Orders.Include(o => o.Items).First();
+var updated = order with { Status = "Shipped" };
+
+// PROBLEM: updated.Items is the SAME LIST REFERENCE as order.Items.
+// Mutating one mutates the other. Adding updated to the DbContext
+// while order is tracked creates duplicate tracking conflicts.
+```
+
+`Data<T>` performs **deep copying** — the entire object graph is recursively cloned. Navigation collections, nested entities, and all reference types get independent copies:
+
+```c#
+public class Order : Data<Order>
+{
+    public Guid Id { get; private set; }
+    public string Status { get; private set; }
+    public List<OrderItem> Items { get; private set; }
+}
+
+var updated = order.WithBuild(o => o.Status, "Shipped");
+// updated.Items is a DEEP COPY — completely independent from order.Items
+```
+
+### Nested property modification
+
+EF Core entities often have owned types or value objects embedded within them:
+
+```c#
+// With records — cascading 'with' per level
+var updated = customer with
+{
+    Address = customer.Address with { City = "Vienna" }
+};
+
+// With Data<T> — single expression, any depth
+var updated = customer.WithBuild(c => c.Address.City, "Vienna");
+```
+
+The expression tree traversal in `Data<T>` handles arbitrary nesting depth. This scales — imagine an entity with 3 levels of nested owned types. With `with`, each level requires another `with` expression. With `Data<T>`, it is always one call.
+
+### Type hierarchies and F-bounded polymorphism
+
+EF Core entity hierarchies commonly use a base `Entity` class. Records cannot express F-bounded polymorphism — there is no way to make `with` on a base record return the concrete derived type:
+
+```c#
+// Records — 'with' returns the base type in generic code
+public abstract record Entity(Guid Id, DateTime CreatedAt);
+public record Customer(Guid Id, DateTime CreatedAt, string Email) : Entity(Id, CreatedAt);
+
+// In generic code operating on Entity, 'with' returns Entity — not Customer.
+// Records also require repeating all base parameters in the positional syntax,
+// which becomes unwieldy with many base properties.
+```
+
+`Data<T>` with F-bounded polymorphism preserves the concrete type:
+
+```c#
+public abstract class Entity<T> : Data<T>, IEntity where T : Entity<T>
+{
+    [Key] public Guid Id { get; private set; } = Guid.NewGuid();
+    [Required] public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    // ... other base properties
+}
+
+public sealed class Customer : Entity<Customer>
+{
+    [Required, MaxLength(255)] public string Email { get; private set; }
+    private Customer() { }
+    public static Customer New => new();
+}
+
+// With/Build returns Customer, not Entity
+var customer = Customer.New
+    .With(c => c.Email, "alice@example.com")
+    .With(c => c.CreatedBy, adminId)
+    .Build(); // Customer — not Entity
+```
+
+### Private setters and EF Core compatibility
+
+EF Core fully supports `private set` properties — the change tracker uses reflection to set values. This is exactly what `Data<T>` requires. The pattern is consistent: external immutability with internal mutability via reflection.
+
+Records with positional syntax generate `init` setters. EF Core can work with `init` (also via reflection), but there are subtle issues:
+
+- EF Core's `Update` and `Attach` methods work best with settable properties. `init` properties can cause issues with certain change tracking strategies.
+- Lazy loading proxies require `virtual` navigation properties on non-sealed classes. The conventional positional record style discourages `virtual` members.
+- EF Core's `ValueComparer` and snapshot change tracking need to copy property values. `private set` gives them a reliable mutation path.
+
+### Fluent builder vs cascading `with`
+
+For entity creation, records require all properties in the constructor or unordered object initializers. With `Data<T>`, the builder pattern provides named, type-safe, ordered construction:
+
+```c#
+var customer = Customer.New
+    .With(c => c.Email, "alice@example.com")
+    .With(c => c.Status, "Active")
+    .With(c => c.Type, "Personal")
+    .With(c => c.CreatedBy, adminId)
+    .With(c => c.ModifiedBy, adminId)
+    .Build();
+```
+
+Each `With` call is checked at compile time — the expression `c => c.Email` constrains the value to be a `string`. The builder accumulates modifications and deep-copies only once at `Build()`.
+
+### Change tracking and detached entities
+
+When modifying a tracked entity for update:
+
+```c#
+// With records — shared references cause tracking conflicts
+var order = db.Orders.Include(o => o.Items).First();  // tracked
+var updated = order with { Status = "Shipped" };       // detached, shares Items reference
+db.Entry(order).State = EntityState.Detached;
+db.Update(updated); // RISK: shared navigation references
+
+// With Data<T> — completely independent object graph
+var order = db.Orders.Include(o => o.Items).First();
+var updated = order
+    .With(o => o.Status, "Shipped")
+    .With(o => o.ModifiedAt, DateTime.UtcNow)
+    .Build(); // deep copy — no shared state
+db.Entry(order).State = EntityState.Detached;
+db.Update(updated); // safe — independent object graph
+```
+
+### Summary
+
+| Concern | C# Records + `with` | `Data<T>` + `With`/`Build` |
+|---------|---------------------|---------------------------|
+| **Copy depth** | Shallow (shared references) | Deep (independent graph) |
+| **Nested modification** | Cascading `with` per level | Single expression, any depth |
+| **Type hierarchies** | No F-bounded polymorphism | Full CRTP support |
+| **Return type in hierarchies** | Base type in generic code | Concrete derived type |
+| **EF Core private setters** | Uses `init` (reflection-dependent) | Uses `private set` (EF Core standard) |
+| **Builder pattern** | Not available | Fluent, batched, one deep-copy |
+| **Navigation property safety** | References shared after `with` | Deep-copied, independent |
+| **Constructor ergonomics** | All params required positionally | Named, incremental, type-safe |
+
+Records with `with` are the right tool for simple DTOs, configuration objects, and value types where shallow copy is sufficient. For EF Core entities — where object graph integrity, deep copying, type hierarchies, and controlled mutation matter — `Data<T>` provides guarantees that records cannot.
+
 ## Key characteristics
 
 To summarize, the `Data<T>` type provides:

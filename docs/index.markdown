@@ -226,6 +226,26 @@ var updated = account
     .Build();
 ```
 
+#### Why Data&lt;T&gt; over C# records for EF Core entities
+
+C# 9 records with `with` expressions solve a similar problem — creating modified copies — but fall short for EF Core entity modeling:
+
+| Concern | C# Records + `with` | `Data<T>` + `With`/`Build` |
+|---------|---------------------|---------------------------|
+| **Copy depth** | Shallow (shared references) | Deep (independent graph) |
+| **Nested modification** | Cascading `with` per level | Single expression, any depth |
+| **Type hierarchies** | No F-bounded polymorphism | Full CRTP support |
+| **Return type in hierarchies** | Base type in generic code | Concrete derived type |
+| **EF Core private setters** | Uses `init` (reflection-dependent) | Uses `private set` (EF Core standard) |
+| **Builder pattern** | Not available | Fluent, batched, one deep-copy |
+| **Navigation property safety** | References shared after `with` | Deep-copied, independent |
+
+The `with` expression performs a **shallow member-wise copy** — if an entity has navigation properties (collections, references), the original and the copy share the same objects. This causes change tracking conflicts when both are used with a `DbContext`. `Data<T>` performs **deep copying**, producing a completely independent object graph.
+
+Records also cannot express F-bounded polymorphism (`Entity<T> : Data<T> where T : Entity<T>`), meaning `with` on a base record returns the base type, not the concrete derived type. `Data<T>` preserves the concrete type through the entire `With`/`Build` chain.
+
+For a detailed analysis, see the [Data documentation](/Funk/types/data/).
+
 ### OneOf&lt;T1, …, T5&gt;
 
 Type-safe discriminated unions:
