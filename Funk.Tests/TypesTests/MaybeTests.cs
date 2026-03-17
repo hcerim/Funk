@@ -63,8 +63,7 @@ namespace Funk.Tests
         [Fact]
         public void Create_Maybe_With_Empty_Value()
         {
-            UnitTest(
-                _ => (object)null,
+            UnitTest(object (_) => null,
                 s =>
                 {
                     var maybe = s.AsMaybe().Map(ss => $"{s} is here");
@@ -80,8 +79,7 @@ namespace Funk.Tests
         [Fact]
         public void Create_Maybe_From_Maybe_With_Empty_Value()
         {
-            UnitTest(
-                _ => (object)null,
+            UnitTest(object (_) => null,
                 s =>
                 {
                     var maybe = s.AsMaybe().FlatMap(ss => 2.AsMaybe());
@@ -114,8 +112,7 @@ namespace Funk.Tests
         [Fact]
         public void Create_Maybe_Unsafe_Get_Fail()
         {
-            UnitTest(
-                _ => (object)null,
+            UnitTest(object (_) => null,
                 s =>
                 {
                     var maybe = s.AsMaybe().FlatMap(ss => 2.AsMaybe());

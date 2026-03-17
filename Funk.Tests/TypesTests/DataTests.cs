@@ -98,9 +98,119 @@ namespace Funk.Tests
                 }
             );
             return;
-            
+
             static Builder<NewCustomer> GetMiddle(NewCustomer data) =>
                 data.WithBuild(cc => cc.CreatedAt, (DateTime?)DateTime.Parse("12-12-2022"));
+        }
+
+        [Fact]
+        public void Deep_Copy_Preserves_Original()
+        {
+            UnitTest(
+                _ => NewCustomer.New
+                    .With(c => c.FirstName, "John")
+                    .With(c => c.LastName, "Doe")
+                    .With(c => c.Account, new Account
+                    {
+                        Number = 100,
+                        Description = "Original",
+                        CreditCard = new CreditCard
+                        {
+                            ExpirationDate = DateTime.Parse("01-01-2025")
+                        }
+                    })
+                    .Build(),
+                original =>
+                {
+                    var updated = original
+                        .With(c => c.FirstName, "Jane")
+                        .With(c => c.Account, new Account
+                        {
+                            Number = 200,
+                            Description = "Updated",
+                            CreditCard = new CreditCard
+                            {
+                                ExpirationDate = DateTime.Parse("01-01-2026")
+                            }
+                        })
+                        .Build();
+                    return (original, updated);
+                },
+                r =>
+                {
+                    Assert.Equal("John", r.original.FirstName);
+                    Assert.Equal("Jane", r.updated.FirstName);
+                    Assert.Equal(100, r.original.Account.Number);
+                    Assert.Equal(200, r.updated.Account.Number);
+                    Assert.NotSame(r.original, r.updated);
+                    Assert.NotSame(r.original.Account, r.updated.Account);
+                }
+            );
+        }
+
+        [Fact]
+        public void Multiple_Builds_From_Same_Source()
+        {
+            UnitTest(
+                _ => NewCustomer.New
+                    .With(c => c.FirstName, "Base")
+                    .Build(),
+                source =>
+                {
+                    var v1 = source.With(c => c.LastName, "Alpha").Build();
+                    var v2 = source.With(c => c.LastName, "Beta").Build();
+                    return (source, v1, v2);
+                },
+                r =>
+                {
+                    Assert.Equal("Base", r.source.FirstName);
+                    Assert.Equal("Alpha", r.v1.LastName);
+                    Assert.Equal("Beta", r.v2.LastName);
+                    Assert.Equal("Base", r.v1.FirstName);
+                    Assert.Equal("Base", r.v2.FirstName);
+                }
+            );
+        }
+
+        [Fact]
+        public void Update_With_Null_Account()
+        {
+            UnitTest(
+                _ => NewCustomer.New
+                    .With(c => c.FirstName, "John")
+                    .With(c => c.Account, new Account { Number = 1 })
+                    .Build(),
+                original =>
+                {
+                    var updated = original
+                        .With(c => c.Account, (Account)null)
+                        .Build();
+                    return (original, updated);
+                },
+                r =>
+                {
+                    Assert.NotNull(r.original.Account);
+                    Assert.Null(r.updated.Account);
+                }
+            );
+        }
+
+        [Fact]
+        public void Build_With_Only_Defaults()
+        {
+            UnitTest(
+                _ => NewCustomer.New
+                    .With(c => c.FirstName, (string)null)
+                    .Build(),
+                c => c,
+                c =>
+                {
+                    Assert.Null(c.FirstName);
+                    Assert.Null(c.LastName);
+                    Assert.Null(c.Account);
+                    Assert.Equal(Guid.Empty, c.Id);
+                }
+            );
         }
     }
 }

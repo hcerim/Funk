@@ -49,8 +49,7 @@ namespace Funk.Tests
         [Fact]
         public void List_From_Enumerable_Creates_Immutable_List()
         {
-            UnitTest(
-                _ => (IEnumerable<string>)new[] { "x", "y", "z" },
+            UnitTest(IEnumerable<string> (_) => new[] { "x", "y", "z" },
                 e => list(e),
                 l =>
                 {

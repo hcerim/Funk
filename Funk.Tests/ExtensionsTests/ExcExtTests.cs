@@ -239,5 +239,197 @@ namespace Funk.Tests
                 }
             );
         }
+
+        [Fact]
+        public async Task OnFlatFailureAsync_Recovers_From_Failure_With_Exc()
+        {
+            await UnitTestAsync(
+                _ => result(failure<string, Exception>(new Exception("failed"))),
+                e => e.OnFlatFailureAsync(_ => result(success<string, Exception>("recovered"))),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("recovered", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFlatFailureAsync_On_Success_Returns_Original()
+        {
+            await UnitTestAsync(
+                _ => result(success<string, Exception>("original")),
+                e => e.OnFlatFailureAsync(_ => result(success<string, Exception>("recovered"))),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("original", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFailureAsync_On_Success_Returns_Original()
+        {
+            await UnitTestAsync(
+                _ => result(success<string, Exception>("original")),
+                e => e.OnFailureAsync(_ => result("recovered")),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("original", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFlatEmptyAsync_Recovers_From_Empty_With_Exc()
+        {
+            await UnitTestAsync(
+                _ => result(Exc.Empty<string, Exception>()),
+                e => e.OnFlatEmptyAsync(_ => result(success<string, Exception>("recovered"))),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("recovered", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFlatEmptyAsync_On_Failure_Returns_Original_Failure()
+        {
+            await UnitTestAsync(
+                _ => result(failure<string, Exception>(new Exception("fail"))),
+                e => e.OnFlatEmptyAsync(_ => result(success<string, Exception>("recovered"))),
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.Equal("fail", r.RootFailure.UnsafeGet().Message);
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnEmptyAsync_On_Failure_Returns_Original_Failure()
+        {
+            await UnitTestAsync(
+                _ => result(failure<string, Exception>(new Exception("fail"))),
+                e => e.OnEmptyAsync(_ => result("recovered")),
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.Equal("fail", r.RootFailure.UnsafeGet().Message);
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFailureAsync_Sync_Exc_Async_Recovery()
+        {
+            await UnitTestAsync(
+                _ => result(failure<string, Exception>(new Exception("sync fail"))),
+                e => e.OnFailureAsync(_ => result("async recovered")),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("async recovered", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFlatFailureAsync_Sync_Exc_Async_Recovery()
+        {
+            await UnitTestAsync(
+                _ => result(failure<string, Exception>(new Exception("sync fail"))),
+                e => e.OnFlatFailureAsync(_ => result(success<string, Exception>("flat recovered"))),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("flat recovered", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnEmptyAsync_Sync_Exc_Async_Recovery()
+        {
+            await UnitTestAsync(
+                _ => result(Exc.Empty<string, Exception>()),
+                e => e.OnEmptyAsync(_ => result("empty recovered")),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("empty recovered", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task OnFlatEmptyAsync_Sync_Exc_Async_Recovery()
+        {
+            await UnitTestAsync(
+                _ => result(Exc.Empty<string, Exception>()),
+                e => e.OnFlatEmptyAsync(_ => result(success<string, Exception>("flat empty recovered"))),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("flat empty recovered", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public async Task MapFailureAsync_On_Success_Returns_Original()
+        {
+            await UnitTestAsync(
+                _ => result(success<string, ArgumentException>("ok")),
+                e => e.MapFailureAsync(f => result(new InvalidOperationException(f.Root.UnsafeGet().Message))),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("ok", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public void OnFailure_On_Empty_Returns_Empty()
+        {
+            UnitTest(
+                _ => Exc.Empty<string, Exception>(),
+                e => e.OnFailure(_ => "recovered"),
+                r => Assert.True(r.IsEmpty)
+            );
+        }
+
+        [Fact]
+        public void OnEmpty_On_Success_Returns_Original()
+        {
+            UnitTest(
+                _ => success<string, Exception>("original"),
+                e => e.OnEmpty(_ => "recovered"),
+                r =>
+                {
+                    Assert.True(r.IsSuccess);
+                    Assert.Equal("original", r.UnsafeGetSuccess());
+                }
+            );
+        }
+
+        [Fact]
+        public void OnEmpty_On_Failure_Returns_Original_Failure()
+        {
+            UnitTest(
+                _ => failure<string, Exception>(new Exception("fail")),
+                e => e.OnEmpty(_ => "recovered"),
+                r =>
+                {
+                    Assert.True(r.IsFailure);
+                    Assert.Equal("fail", r.RootFailure.UnsafeGet().Message);
+                }
+            );
+        }
     }
 }

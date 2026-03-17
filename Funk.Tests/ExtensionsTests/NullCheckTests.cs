@@ -8,8 +8,7 @@ namespace Funk.Tests
         [Fact]
         public void IsNull_On_Null_Returns_True()
         {
-            UnitTest(
-                _ => (string)null,
+            UnitTest(string (_) => null,
                 s => s.IsNull(),
                 result => Assert.True(result)
             );
@@ -28,8 +27,7 @@ namespace Funk.Tests
         [Fact]
         public void IsNotNull_On_Null_Returns_False()
         {
-            UnitTest(
-                _ => (string)null,
+            UnitTest(string (_) => null,
                 s => s.IsNotNull(),
                 result => Assert.False(result)
             );
@@ -48,8 +46,7 @@ namespace Funk.Tests
         [Fact]
         public void Initialize_On_Null_Creates_New_Instance()
         {
-            UnitTest(
-                _ => (List<int>)null,
+            UnitTest(List<int> (_) => null,
                 l => l.Initialize(),
                 result =>
                 {

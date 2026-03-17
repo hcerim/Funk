@@ -162,20 +162,20 @@ public static class EnumerableExt
         /// </summary>
         /// <param name="predicate">The condition to match. If null, all elements are included.</param>
         /// <returns>A Maybe containing an immutable list of matching elements, or an empty Maybe.</returns>
-        public Maybe<IImmutableList<T>> WhereOrDefault(Func<T, bool> predicate = null) => enumerable.Map().Where(predicate ?? (i => true)).AsNotEmptyList();
+        public Maybe<IImmutableList<T>> WhereOrDefault(Func<T, bool> predicate = null) => (enumerable ?? []).Where(predicate ?? (i => true)).AsNotEmptyList();
 
         /// <summary>
         /// Returns a Maybe of the last element in the sequence that satisfies the condition or returns an empty Maybe. Handles null sequence.
         /// </summary>
         /// <param name="predicate">The condition to match. If null, the last element is returned.</param>
         /// <returns>A Maybe containing the last matching element, or an empty Maybe.</returns>
-        public Maybe<T> AsLastOrDefault(Func<T, bool> predicate = null) => enumerable.Map().Reverse().AsFirstOrDefault(predicate);
+        public Maybe<T> AsLastOrDefault(Func<T, bool> predicate = null) => (enumerable ?? []).Reverse().AsFirstOrDefault(predicate);
 
         /// <summary>
         /// Checks whether a given sequence is empty. Handles null sequence.
         /// </summary>
         /// <returns>true if the sequence is empty or null; otherwise, false.</returns>
-        public bool IsEmpty() => enumerable.Map().Count.SafeEquals(0);
+        public bool IsEmpty() => enumerable is null || !enumerable.Any();
 
         /// <summary>
         /// Checks whether a given sequence is not empty or null. Handles null sequence.
@@ -200,10 +200,10 @@ public static class EnumerableExt
         /// <returns>A record where the first element contains items satisfying the predicate and the second contains the rest.</returns>
         public Record<IImmutableList<T>, IImmutableList<T>> ConditionalSplit(Func<T, bool> predicate)
         {
-            var collection = enumerable.Map();
-            var left = collection.Where(predicate).Map();
-            var right = collection.Where(i => !predicate(i)).Map();
-            return Record.Create(left, right);
+            var collection = (enumerable ?? []).ToList();
+            var left = ImmutableList.CreateRange(collection.Where(predicate));
+            var right = ImmutableList.CreateRange(collection.Where(i => !predicate(i)));
+            return Record.Create<IImmutableList<T>, IImmutableList<T>>(left, right);
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ public static class EnumerableExt
         /// <param name="selector">The function to extract the key used to determine uniqueness.</param>
         /// <returns>An immutable list containing distinct elements based on the specified key.</returns>
         public IImmutableList<T> DistinctBy<TKey>(Func<T, TKey> selector) =>
-            enumerable.Map().GroupBy(selector).Select(g => g.First()).Map();
+            ImmutableList.CreateRange((enumerable ?? []).GroupBy(selector).Select(g => g.First()));
 
         /// <summary>
         /// Returns unique items specified by a selector.
@@ -221,7 +221,7 @@ public static class EnumerableExt
         /// <param name="comparer">The equality comparer to use when comparing keys.</param>
         /// <returns>An immutable list containing distinct elements based on the specified key and comparer.</returns>
         public IImmutableList<T> DistinctBy<TKey>(Func<T, TKey> selector, IEqualityComparer<TKey> comparer) =>
-            enumerable.Map().GroupBy(selector, comparer).Select(g => g.First()).Map();
+            ImmutableList.CreateRange((enumerable ?? []).GroupBy(selector, comparer).Select(g => g.First()));
 
         /// <summary>
         /// Creates an immutable dictionary of key as a discriminator and corresponding immutable sequence. Handles null sequence.
@@ -230,7 +230,7 @@ public static class EnumerableExt
         /// <returns>An immutable dictionary mapping each key to its corresponding immutable list of elements.</returns>
         public IImmutableDictionary<TKey, IImmutableList<T>> ToDictionary<TKey>(Func<T, TKey> keySelector)
         {
-            return enumerable.Map().GroupBy(keySelector).ToImmutableDictionary(i => i.Key, i => i.Map());
+            return (enumerable ?? []).GroupBy(keySelector).ToImmutableDictionary(i => i.Key, IImmutableList<T> (i) => ImmutableList.CreateRange(i));
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ public static class EnumerableExt
         /// <returns>An immutable list of records containing grouped keys and their corresponding items.</returns>
         public IImmutableList<Record<TKey, IImmutableList<T>>> ToRecordList<TKey>(Func<T, TKey> keySelector)
         {
-            return enumerable.ToDictionary(keySelector).Select(i => Record.Create(i.Key, i.Value)).Map();
+            return ImmutableList.CreateRange(enumerable.ToDictionary(keySelector).Select(i => Record.Create(i.Key, i.Value)));
         }
     }
 
@@ -340,7 +340,10 @@ public static class EnumerableExt
         {
             return Exc.Create<Unit, E>(_ =>
             {
-                enumerable.Map().ToList().ForEach(operation);
+                foreach (var item in enumerable ?? [])
+                {
+                    operation(item);
+                }
                 return Unit.Value;
             });
         }
