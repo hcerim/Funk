@@ -200,7 +200,11 @@ public readonly struct Exc<T, E> : IEquatable<Exc<T, E>> where E : Exception
     /// Structure-preserving map.
     /// Continuation on successful result.
     /// Maps successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
-    /// Use FlatMap if you have nested Exc. 
+    /// Use FlatMap if you have nested Exc.
+    /// Note: The selector is intentionally wrapped in a try-catch via Exc.Create. If the selector throws
+    /// an exception of type E, it will be caught and the Exc will transition to a failure state rather than
+    /// propagating the exception. This is by design to support railway-oriented programming where mapping
+    /// operations can fail with domain-specific exceptions.
     /// </summary>
     /// <typeparam name="R">The mapped success type.</typeparam>
     /// <param name="selector">The mapping function.</param>
@@ -211,7 +215,11 @@ public readonly struct Exc<T, E> : IEquatable<Exc<T, E>> where E : Exception
     /// Structure-preserving map.
     /// Continuation on successful result.
     /// Maps Task of successful Exc to the new Exc specified by the selector. Otherwise returns failed Exc.
-    /// Use FlatMap if you have nested Exc. 
+    /// Use FlatMap if you have nested Exc.
+    /// Note: The selector is intentionally wrapped in a try-catch via Exc.CreateAsync. If the selector throws
+    /// an exception of type E, it will be caught and the Exc will transition to a failure state rather than
+    /// propagating the exception. This is by design to support railway-oriented programming where mapping
+    /// operations can fail with domain-specific exceptions.
     /// </summary>
     /// <typeparam name="R">The mapped success type.</typeparam>
     /// <param name="selector">The mapping function.</param>

@@ -267,14 +267,14 @@ public static class EnumerableExt
         /// </summary>
         /// <param name="mapper">The function to transform each element.</param>
         /// <returns>An immutable list containing the transformed elements.</returns>
-        public IImmutableList<R> Map<R>(Func<T, R> mapper) => enumerable.Map().Select(mapper).Map();
+        public IImmutableList<R> Map<R>(Func<T, R> mapper) => ImmutableList.CreateRange((enumerable ?? []).Select(mapper));
 
         /// <summary>
         /// Maps the specified sequence to an immutable sequence of specified type. Handles null sequence.
         /// </summary>
         /// <param name="mapper">The function to transform each element into a sequence.</param>
         /// <returns>An immutable list containing the flattened transformed elements.</returns>
-        public IImmutableList<R> FlatMap<R>(Func<T, IEnumerable<R>> mapper) => enumerable.Map().SelectMany(mapper).Map();
+        public IImmutableList<R> FlatMap<R>(Func<T, IEnumerable<R>> mapper) => ImmutableList.CreateRange((enumerable ?? []).SelectMany(mapper));
 
         /// <summary>
         /// Aggregates sequence to the specified result as Maybe. Handles null sequence.
