@@ -113,13 +113,13 @@ namespace Funk.Tests
                 _ => result("Funk12"),
                 s =>
                 {
-                    return result(act(async () =>
+                    return result(func(async () =>
                     {
                         await Exc.CreateAsync<string, ArgumentException>(_ => GetNameByIdAsync(s))
                             .OnFailureAsync(e => GetNameByIdAsync(null));
                     }));
                 },
-                async a => Assert.Throws<InvalidOperationException>(await a)
+                async a => await Assert.ThrowsAsync<InvalidOperationException>(await a)
             );
         }
 

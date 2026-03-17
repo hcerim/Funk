@@ -25,7 +25,7 @@ public static class MaybeExt
         /// <typeparam name="R">The type of the mapped value.</typeparam>
         /// <param name="selector">The async mapping function.</param>
         /// <returns>A task containing a Maybe with the mapped value, or an empty Maybe.</returns>
-        public async Task<Maybe<R>> MapAsync<R>(Func<T, Task<R>> selector) => await (await maybe).MapAsync(selector).ConfigureAwait(false);
+        public async Task<Maybe<R>> MapAsync<R>(Func<T, Task<R>> selector) => await (await maybe.ConfigureAwait(false)).MapAsync(selector).ConfigureAwait(false);
 
         /// <summary>
         /// Structure-preserving map.
@@ -36,7 +36,7 @@ public static class MaybeExt
         /// <typeparam name="R">The type of the mapped value.</typeparam>
         /// <param name="selector">The async mapping function returning a Maybe.</param>
         /// <returns>A task containing a Maybe with the mapped value, or an empty Maybe.</returns>
-        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector) => await (await maybe).FlatMapAsync(selector).ConfigureAwait(false);
+        public async Task<Maybe<R>> FlatMapAsync<R>(Func<T, Task<Maybe<R>>> selector) => await (await maybe.ConfigureAwait(false)).FlatMapAsync(selector).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static class MaybeExt
     /// <param name="maybe">The Task of Maybe value.</param>
     /// <param name="selector">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the underlying value or the result of the fallback function.</returns>
-    public static async Task<R> GetOrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<R>> selector) where T : R => await (await maybe).Match(_ => selector(Unit.Value), v => result((R)v)).ConfigureAwait(false);
+    public static async Task<R> GetOrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<R>> selector) where T : R => await (await maybe.ConfigureAwait(false)).Match(_ => selector(Unit.Value), v => result((R)v)).ConfigureAwait(false);
 
     /// <summary>
     /// USE GetOr PREFERABLY!
@@ -105,7 +105,7 @@ public static class MaybeExt
     /// Otherwise, returns the default types' value (null for reference types).
     /// </summary>
     /// <returns>A task containing the underlying value or the default value for the type.</returns>
-    public static async Task<T> GetOrDefaultAsync<T>(this Task<Maybe<T>> maybe) => (await maybe).Match(_ => default, v => v);
+    public static async Task<T> GetOrDefaultAsync<T>(this Task<Maybe<T>> maybe) => (await maybe.ConfigureAwait(false)).Match(_ => default, v => v);
 
     /// <summary>
     /// Flattens the nested Maybe object to the single Maybe object. 
@@ -155,7 +155,7 @@ public static class MaybeExt
     /// <param name="maybe">The Task of Maybe value.</param>
     /// <param name="ifEmpty">The async fallback function to execute if the value is empty.</param>
     /// <returns>A task containing the first non-empty Maybe, or an empty Maybe.</returns>
-    public static async Task<Maybe<R>> OrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => await (await maybe).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v).ToTask()).ConfigureAwait(false);
+    public static async Task<Maybe<R>> OrAsync<T, R>(this Task<Maybe<T>> maybe, Func<Unit, Task<Maybe<R>>> ifEmpty) where T : R => await (await maybe.ConfigureAwait(false)).Match(_ => ifEmpty(Unit.Value), v => Maybe.Create((R)v).ToTask()).ConfigureAwait(false);
 
     extension<T>(Maybe<T> first)
     {

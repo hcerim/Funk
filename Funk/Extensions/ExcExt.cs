@@ -57,7 +57,7 @@ public static class ExcExt
             return await exceptional.Match(
                 _ => result(Exc.Empty<T, E2>()),
                 s => result(success<T, E2>(s)),
-                async f => failure<T, E2>(await selector(f))
+                async f => failure<T, E2>(await selector(f).ConfigureAwait(false))
             ).ConfigureAwait(false);
         }
     }
@@ -70,7 +70,7 @@ public static class ExcExt
         /// <typeparam name="E2">The new exception type.</typeparam>
         /// <param name="selector">The async mapping function for the failure.</param>
         /// <returns>A Task of a new Exc with the mapped failure type.</returns>
-        public async Task<Exc<T, E2>> MapFailureAsync<E2>(Func<EnumerableException<E1>, Task<E2>> selector) where E2 : Exception => await (await exceptional).MapFailureAsync(selector).ConfigureAwait(false);
+        public async Task<Exc<T, E2>> MapFailureAsync<E2>(Func<EnumerableException<E1>, Task<E2>> selector) where E2 : Exception => await (await exceptional.ConfigureAwait(false)).MapFailureAsync(selector).ConfigureAwait(false);
 
         /// <summary>
         /// Maps Exc Error type to the new type specified by the selector.
@@ -122,7 +122,7 @@ public static class ExcExt
     /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function.</param>
     /// <returns>A Task of the recovered Exc or the original success.</returns>
-    public static async Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception => await OnFailureAsync(await operationResult, recoverOperation).ConfigureAwait(false);
+    public static async Task<Exc<R, E>> OnFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<R>> recoverOperation) where T : R where E : Exception => await OnFailureAsync(await operationResult.ConfigureAwait(false), recoverOperation).ConfigureAwait(false);
 
     /// <summary>
     /// Recover in case of the error during creation.
@@ -134,7 +134,7 @@ public static class ExcExt
     /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function returning an Exc.</param>
     /// <returns>A Task of the recovered Exc or the original success.</returns>
-    public static async Task<Exc<R, E>> OnFlatFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnFlatFailureAsync(recoverOperation).ConfigureAwait(false);
+    public static async Task<Exc<R, E>> OnFlatFailureAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<EnumerableException<E>, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult.ConfigureAwait(false)).OnFlatFailureAsync(recoverOperation).ConfigureAwait(false);
 
     /// <summary>
     /// Recover in case of the error during creation.
@@ -208,7 +208,7 @@ public static class ExcExt
     /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function.</param>
     /// <returns>A Task of the recovered Exc or the original success or failure.</returns>
-    public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnEmptyAsync(recoverOperation).ConfigureAwait(false);
+    public static async Task<Exc<R, E>> OnEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<R>> recoverOperation) where T : R where E : Exception => await (await operationResult.ConfigureAwait(false)).OnEmptyAsync(recoverOperation).ConfigureAwait(false);
 
     /// <summary>
     /// Recover in case of the empty exceptional.
@@ -220,7 +220,7 @@ public static class ExcExt
     /// <param name="operationResult">The Task of Exc to recover from.</param>
     /// <param name="recoverOperation">The async recovery function returning an Exc.</param>
     /// <returns>A Task of the recovered Exc or the original success or failure.</returns>
-    public static async Task<Exc<R, E>> OnFlatEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult).OnFlatEmptyAsync(recoverOperation).ConfigureAwait(false);
+    public static async Task<Exc<R, E>> OnFlatEmptyAsync<T, E, R>(this Task<Exc<T, E>> operationResult, Func<Unit, Task<Exc<R, E>>> recoverOperation) where T : R where E : Exception => await (await operationResult.ConfigureAwait(false)).OnFlatEmptyAsync(recoverOperation).ConfigureAwait(false);
 
     /// <summary>
     /// Recover in case of the empty exceptional.
@@ -264,7 +264,7 @@ public static class ExcExt
         /// <typeparam name="R">The mapped success type.</typeparam>
         /// <param name="continueOperation">The async mapping function.</param>
         /// <returns>A Task of a new Exc with the mapped value or the original failure.</returns>
-        public async Task<Exc<R, E>> MapAsync<R>(Func<T, Task<R>> continueOperation) => await (await operationResult).MapAsync(continueOperation).ConfigureAwait(false);
+        public async Task<Exc<R, E>> MapAsync<R>(Func<T, Task<R>> continueOperation) => await (await operationResult.ConfigureAwait(false)).MapAsync(continueOperation).ConfigureAwait(false);
 
         /// <summary>
         /// Structure-preserving map.
@@ -275,7 +275,7 @@ public static class ExcExt
         /// <typeparam name="R">The mapped success type.</typeparam>
         /// <param name="continueOperation">The async mapping function returning an Exc.</param>
         /// <returns>A Task of a new Exc with the mapped value or the original failure.</returns>
-        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> continueOperation) => await (await operationResult).FlatMapAsync(continueOperation).ConfigureAwait(false);
+        public async Task<Exc<R, E>> FlatMapAsync<R>(Func<T, Task<Exc<R, E>>> continueOperation) => await (await operationResult.ConfigureAwait(false)).FlatMapAsync(continueOperation).ConfigureAwait(false);
     }
 
     extension<T, E>(Exc<T, E> first) where E : Exception

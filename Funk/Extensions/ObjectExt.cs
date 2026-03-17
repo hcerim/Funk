@@ -55,7 +55,7 @@ public static class ObjectExt
     /// <summary>
     /// Acts as a pipe that returns the result of the function provided with the argument that initiated the pipeline.
     /// </summary>
-    public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item).ConfigureAwait(false);
+    public static async Task<R> DoAsync<T, R>(this Task<T> item, Func<T, Task<R>> function) => await function(await item.ConfigureAwait(false)).ConfigureAwait(false);
 
     /// <summary>
     /// Safely casts object to the specified type. Returns empty maybe if the casting fails.

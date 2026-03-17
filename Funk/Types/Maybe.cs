@@ -157,7 +157,7 @@ public readonly struct Maybe<T> : IEquatable<Maybe<T>>
     /// <typeparam name="R">The type of the mapped value.</typeparam>
     /// <param name="selector">The async mapping function.</param>
     /// <returns>A task containing a Maybe with the mapped value, or an empty Maybe.</returns>
-    public Task<Maybe<R>> MapAsync<R>(Func<T, Task<R>> selector) => FlatMapAsync(async v => (await selector(v)).AsMaybe());
+    public Task<Maybe<R>> MapAsync<R>(Func<T, Task<R>> selector) => FlatMapAsync(async v => (await selector(v).ConfigureAwait(false)).AsMaybe());
 
     /// <summary>
     /// Structure-preserving map.
